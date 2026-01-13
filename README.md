@@ -1,11 +1,6 @@
 eyesonspace.com
 
-[My Notes](notes.md)
-
 The goal is to create a working solar system that follows the laws of physics and is accurate based on the year. It will use NASA's Horizons API to provide precise planetary positions for any date. The application uses WebSockets to show how many other people are online viewing the simulation. It features a 3D interactive view where you can rotate the camera, zoom in and out, and explore the solar system from any angle.
-
-> [!NOTE]
-> If you are not familiar with Markdown then you should review the [documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) before continuing.
 
 ## 🚀 Specification Deliverable
 
