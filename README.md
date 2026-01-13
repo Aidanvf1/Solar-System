@@ -1,11 +1,8 @@
-# Your startup name here
+eyesonspace.com
 
 [My Notes](notes.md)
 
-A brief description of the application here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-> [!NOTE]
-> This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
+The goal is to create a working solar system that follows the laws of physics and is accurate based on the year. It will use NASA's Horizons API to provide precise planetary positions for any date. The application uses WebSockets to show how many other people are online viewing the simulation. It features a 3D interactive view where you can rotate the camera, zoom in and out, and explore the solar system from any angle.
 
 > [!NOTE]
 > If you are not familiar with Markdown then you should review the [documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) before continuing.
@@ -17,45 +14,36 @@ A brief description of the application here. Lorem ipsum dolor sit amet, consect
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] Proper use of Markdown
-- [ ] A concise and compelling elevator pitch
-- [ ] Description of key features
-- [ ] Description of how you will use each technology
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] Proper use of Markdown
+- [x] A concise and compelling elevator pitch
+- [x] Description of key features
+- [x] Description of how you will use each technology
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Have you ever wanted to see what the solar system looks like in real time or what it looked like in the past? It's hard to find a simple and updated 3D solar system visualization on the internet. What if there was a solar system simulator that got accurate information from NASA and conveyed it in a simple format? No complex numbers or confusing charts just visuals. EyesOnSpace.com gives you that simple 3D view of our solar system. Select your date, click play, and watch the solar system flow before your eyes.
 
 ### Design
-
-![Design image](placeholder.png)
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-```mermaid
-sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
-```
+<img width="700" height="510" alt="Screenshot 2026-01-10 at 1 01 53 PM" src="https://github.com/user-attachments/assets/a7dd36f1-2c9b-4c19-9339-9806e5eaa167" />
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- Solarsystem Animations
+- Cusumizable dates
+- 3d movement
+- Ambient music
 
 ### Technologies
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - Uses 1 Html page that shows all of the features.
+- **CSS** - Custom fonts (Eurostile/system-ui), glassmorphism effects, holographic styling, and dark space theme
+- **React** -  Interactive 3D solar system view with play/pause controls, date picker spinners, speed controls, planet selection, and real-time orbital animations.
+- **Service** - all planetary orbital data validated and sourced from NASA JPL APIs (Horizons System for positions)
+- **DB/Login** - User authentication with ability to save and bookmark favorite dates with a usarname.
+- **WebSocket** - Real-time presence system showing which users are currently online and viewing the simulation
 
 ## 🚀 AWS deliverable
 
