@@ -1,6 +1,6 @@
 eyesonspace.com
 
-The goal is to create a working solar system that follows the laws of physics and is accurate based on the year. It will use NASA's Horizons API to provide precise planetary positions for any date. The application uses WebSockets to show how many other people are online viewing the simulation. It features a 3D interactive view where you can rotate the camera, zoom in and out, and explore the solar system from any angle.
+The goal is to create a working solar system that follows the laws of physics and is accurate based on the year. It will use NASA's Horizons API to provide precise planetary positions for any date. The application uses WebSockets to show how many other people are online viewing the simulation. It features a 3D interactive view where you can rotate the camera, zoom in and out, and explore the solar system from any angle. There is goin to be react and 3js in the code. 3js helps animations and rendering.
 
 ## 🚀 Specification Deliverable
 
@@ -41,7 +41,7 @@ I am going to use the required technologies in the following ways.
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Server deployed and accessible with custom domain name** - [My server link](https://yourdomainnamehere.click).
+- [x] **Server deployed and accessible with custom domain name** - [My server link](https://yourdomainnamehere.click).
 
 ## 🚀 HTML deliverable
 
