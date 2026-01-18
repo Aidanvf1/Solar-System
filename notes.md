@@ -19,7 +19,7 @@ No problems worked just like it said in the [instruction](https://github.com/web
 
 ## HTML
 
-Well right now it honestly look sad. Not just he UI but the code its self just looks bare. Its kinda hard to really know what Things will look like without the css but for now thats what I will be seeing. I definatly see the importance of pre setting up the html to make sure that you have things ready for a smooth workflow.
+Well right now it honestly look sad. Not just he UI but the code its self just looks bare. Its kinda hard to really know what Things will look like without the css but for now thats what I will be seeing. I definatly see the importance of pre setting up the html to make sure that you have things ready for a smooth workflow. Need to remember as i deployed it that the startup is not going to be on the dmainname page but on start up.
 
 ## CSS
 
