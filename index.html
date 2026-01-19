@@ -8,12 +8,17 @@
 
 
 <body>
-    <header>
-        <p>Username: <span id="username-display">[Username]</span></p>
+    <header id="mainheader">
+        <h1>Eyes of Space</h1>
+        <p>Username: <span id="username-display">[Not logged in]</span></p>
     </header>
-    <div>
-        <p> Drag to move camera, scroll to zoom in and out.</p>
-    </div>
+
+
+    <main id="solarsystem">
+        <div id="scenearea"></div>
+        <div id="intructions">Drag to move camera • Scroll to zoom.</div>
+    </main>
+
     <section>
         <header>
             <h2> Websocket Holder</h2>
@@ -91,7 +96,7 @@
 
     <section>
             <nav>
-            <a href="about.html">About the Developer</a>
+                <a href="about.html">About the Developer</a>
             </nav>
     </section>
     <footer>
