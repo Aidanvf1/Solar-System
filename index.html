@@ -55,36 +55,36 @@
     </section>
 
     <!-- controls -->
-    <section>
-        <h2> Date Controls </h2>
-        <button type="button">Play</button>
-        <p>
+    <section id="dateandcontrols">
+        <h2> Controls </h2>
+        <button id="playbutton" type="button">Play</button>
+        <divid="daycontrol"></div>
             <button>▲</button><br>
             <label for="day">Day:</label>
             <input type="number" id="day" value="24" min="1" max="31"><br>
             <button>▼</button>
 
-        </p>
-        <p>
+        </div>
+        <divid id="monthcontrol">
             <button>▲</button><br>
             <label for="month">Month:</label>
             <input type="text" id="month" value="June"><br>
             <button>▼</button>
 
-        </p>
-        <p>
+        </div>
+        <div id="yearcontrol">
             <button>▲</button><br>
             <label for="year">Year:</label>
             <input type="number" id="year" value="2004" min="0" max="2500"><br>
             <button>▼</button>
 
-        </p>
-        <p>
+        </div>
+
+
+        <div id="speedcontrols">
             <label for="speed">Speed:</label>
-            <input type="range" id="speed" value="1" step=".1" max="5">
-        </p>
-
-
+            <input type="range" id="speed" value="1" step=".1" min=".1" max="5">
+        </div>
     </section>
 
     <!-- database placeholder -->
