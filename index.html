@@ -1,30 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<!-- web browser tab -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eyes of Space</title>
 </head>
 
-
+<!-- main title -->
 <body>
     <header id="mainheader">
         <h1>Eyes of Space</h1>
         <p>Username: <span id="username-display">[Not logged in]</span></p>
     </header>
 
-
+    <!-- Application Text -->
     <main id="solarsystem">
         <div id="scenearea"></div>
         <div id="intructions">Drag to move camera • Scroll to zoom.</div>
     </main>
 
-    <section>
-        <header>
-            <h2> Websocket Holder</h2>
-            <p>____ others online</p>
-        </header>
+    <!-- websocket placeholder -->
+    <section id="onlineusers">
+        <h2>Online Users</h2>
+            <p><span id="online-count">0</span> others online</p>
+        <ul>
+            <il>Placeholder</li>
+        </ul>
     </section>
+
+    <!-- login section -->
     <section>   
         <h2>Login(will be a popup)</h2>
             <form>
@@ -41,10 +47,14 @@
         </form>
 
     </section>
+
+    <!-- 3rd party api stuff -->
     <section>
         <h2> Nasa API Holder</h2>
         <p>Will check to make sure positions are correct from nasas api</p>
     </section>
+
+    <!-- controls -->
     <section>
         <h2> Date Controls </h2>
         <button type="button">Play</button>
@@ -76,6 +86,8 @@
 
 
     </section>
+
+    <!-- database placeholder -->
     <section>
         <h2>Database Holder</h2>
         <table border="1">
@@ -94,11 +106,14 @@
         </table>
     </section>
 
+    <!-- html cross links -->
     <section>
             <nav>
                 <a href="about.html">About the Developer</a>
             </nav>
     </section>
+
+    <!-- footer for github -->
     <footer>
         <p>© 2026 Aidan Fon Feldt</p>
         <a href="https://github.com/Aidanvf1/Solar-System">GitHub Repository</a>
