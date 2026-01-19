@@ -18,38 +18,38 @@
     <!-- Application Text -->
     <main id="solarsystem">
         <div id="scenearea"></div>
-        <div id="intructions">Drag to move camera • Scroll to zoom.</div>
+        <div id="instructions">Drag to move camera • Scroll to zoom.</div>
     </main>
 
     <!-- websocket placeholder -->
     <section id="onlineusers">
         <h2>Online Users</h2>
-            <p><span id="online-count">0</span> others online</p>
+        <p><span id="online-count">0</span> others online</p>
         <ul>
-            <il>Placeholder</li>
+            <li>Placeholder</li>
         </ul>
     </section>
 
     <!-- login section -->
-    <section>   
+    <section id="loginsection">   
         <h2>Login(will be a popup)</h2>
             <form>
-            <p>
-                <label for="username">Username:</label><br>
-                <input type="text" id="username" name="username" placeholder="Enter username">
-            </p>
-            <p>
-                <label for="password">Password:</label><br>
-                <input type="password" id="password" name="password" placeholder="Enter password">
-            </p>
-            <button type="button">Login</button>
-            <button type="button">Create Account</button>
-        </form>
+                <p>
+                    <label for="username">Username:</label><br>
+                    <input type="text" id="username" name="username" placeholder="Enter username">
+                </p>
+                <p>
+                    <label for="password">Password:</label><br>
+                    <input type="password" id="password" name="password" placeholder="Enter password">
+                </p>
+                <button type="button">Login</button>
+                <button type="button">Create Account</button>
+            </form>
 
     </section>
 
     <!-- 3rd party api stuff -->
-    <section>
+    <section id="nasaapi">
         <h2> Nasa API Holder</h2>
         <p>Will check to make sure positions are correct from nasas api</p>
     </section>
@@ -58,14 +58,14 @@
     <section id="dateandcontrols">
         <h2> Controls </h2>
         <button id="playbutton" type="button">Play</button>
-        <divid="daycontrol"></div>
+        <div id="daycontrol">
             <button>▲</button><br>
             <label for="day">Day:</label>
             <input type="number" id="day" value="24" min="1" max="31"><br>
             <button>▼</button>
 
         </div>
-        <divid id="monthcontrol">
+        <div id="monthcontrol">
             <button>▲</button><br>
             <label for="month">Month:</label>
             <input type="text" id="month" value="June"><br>
@@ -88,26 +88,18 @@
     </section>
 
     <!-- database placeholder -->
-    <section>
-        <h2>Database Holder</h2>
-        <table border="1">
-            <tr>
-                <th>Rank</th>
-                <th>Date</th>
-            </tr>
-            <tr>
-                <td>1st</td>
-                <td>20 June 2004</td>
-            </tr>
-            <tr>
-                <td>2nd</td>
-                <td>1 January 2005</td>
-            </tr>
-        </table>
+    <section id="saveddates">
+        <button id="savedatebutton">Save Current Date</button>
+        <button id="saved">Saved Dates</button>
+        <div id="saveddateslist">
+            <ul>
+                <li>Placeholder</li>
+            </ul>
+        </div>
     </section>
 
     <!-- html cross links -->
-    <section>
+    <section id="navigation">
             <nav>
                 <a href="about.html">About the Developer</a>
             </nav>
