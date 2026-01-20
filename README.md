@@ -54,7 +54,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **3rd party API placeholder** - I put in a section for the Nasa API. it will check the positions of the planet.
 - [x] **Images** - I added and image of myself on the about page. im going to be using 3js so there wont be an image from html.
 - [x] **Login placeholder** - I put in a section(will be popup) for the login.
-- [x] **DB data placeholder** - I put in a section for the "Database placeholder". This will get the history of daters looked at or saved.
+- [x] **DB data placeholder** - I put in a section for the "Database placeholder". This will get the history of dates looked at or saved.
 - [x] **WebSocket placeholder** - I put in a section for the future websocket. It will show how many people are online.
 
 ## 🚀 CSS deliverable
