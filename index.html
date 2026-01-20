@@ -7,14 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eyes of Space</title>
     <style>
-        #mainheader{text-align: center; background-color: #4100c2; color: #94a3b8; padding: 10px;}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; overflow: hidden; background: #000510; color: #fff; }
 
+        #mainheader{text-align: center; background-color: #000510; color: #94a3b8; padding: 10px;}
         #username-display{color: #94a3b8}
-        #solarsystem{width: 100%; height: 100vh; position: relative;}
-        #scenearea{width: 100%; height: 100%; background-color: #4100c2}
-        #instructions{ text-align: center; bottom: 0; }
+        /* #solarsystem { width: 100%; height: 100vh; position: relative; }
+        #scenearea { width: 100%; height: 100%; background: radial-gradient(ellipse at center, #0a1628 0%, #000510 100%); } */
+        #instructions{ position: absolute; right: 39%; bottom: 0; }
 
-        /* #onlineusers{} */
+        #onlineusers{position: absolute; right: 0; bottom: 0; }
         /* #online-count{} */
 
         /* #loginsection{} */
@@ -40,7 +42,7 @@
         /* #saveddateslist{} */
 
         /* #navigation{} */
-
+        footer{ bottom: 0;}
 
 
     </style>    
