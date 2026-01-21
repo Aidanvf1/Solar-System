@@ -6,12 +6,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon"  href="favicon.ico?v=2" />
-    <title>Eyes of Space</title>
+    <title>Eyes on Space</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
+    <!-- start css -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Space Mono', monospace; overflow: hidden; background: #000511; color: #fff; }
@@ -34,7 +35,7 @@
         #onlineusers ul { list-style: none; margin-top: 6px; }
         #onlineusers li { font-size: 11px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); text-decoration: none; }
 
-        #dateandcontrols{ position: absolute; top: 40%; left: 10px;; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 11px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        #dateandcontrols{ position: absolute; top: 40%; left: 10px; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 8px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
         #daycontrol, #monthcontrol, #yearcontrol { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         #daycontrol label, #monthcontrol label, #yearcontrol label { font-size: 10px; color: #64748b; text-transform: uppercase; }
@@ -77,15 +78,16 @@
 
     </style>    
 </head>
+    <!-- end css -->
 
 <!-- main title -->
 <body>
     <header id="mainheader">
-        <h1>Eyes of Space</h1>
+        <h1>Eyes on Space</h1>
         <p>Username: <span id="username-display">[Not logged in]</span></p>
     </header>
 
-    <!-- Application Text -->
+    <!-- application text -->
     <main id="solarsystem">
         <div id="scenearea"></div>
         <div id="instructions">Drag to move camera • Scroll to zoom.</div>

@@ -1,33 +1,331 @@
 <!DOCTYPE html>
-<html lang="en"></html>
-<link rel="icon" href="favicon.ico" />
+<html lang="en">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Space Mono', monospace; overflow: hidden; background: #000511; color: #fff; }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.ico" />
+    <title>Eyes of Space</title>
 
-        #profilepic { position: relative; top: 10px; display: block; margin-left: auto; margin-right: auto; border-radius: 12px; }
-        #name { position: relative; top: 15px; font-size: 12px; text-align: center; color: white;}
-        #websitelink { position: relative; top: 100px; left:13px; font-size: 20px; display: block; text-align: center; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); }
-        #backbutton { position: absolute; top: 20px; left: 20px; font-size: 16px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5);}
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; overflow: hidden; background: #000511; color: #fff; }
 
+        /* Header */
+        #mainheader { position: absolute; left: 0; right: 0; text-align: center; color: #94a3b8; padding: 10px; z-index: 20; pointer-events: none; }
+        #mainheader h1 { font-size: clamp(12px, 4vw, 20px); color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); letter-spacing: clamp(1px, 0.5vw, 3px); text-transform: uppercase; }
+        #mainheader p { font-size: 10px; color: #64748b; margin-top: 2px; }
+        #username-display { color: #94a3b8; }
+
+        /* Main Scene */
+        #solarsystem { width: 100%; height: 100vh; position: relative; }
+        #scenearea { width: 100%; height: 100%; background: radial-gradient(ellipse at center, #0a1628 0%, #000510 100%); }
+
+        /* Instructions */
+        #instructions { pointer-events: none; position: absolute; transform: translateX(-50%); left: 50%; bottom: 10px; padding: 6px 12px; border-radius: 6px; color: #64748b; font-size: 12px; z-index: 5; }
+
+        /* Online Users - Bottom Right */
+        #onlineusers { position: absolute; bottom: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 15; }
+        #onlineusers h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        #onlineusers h2::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        #onlineusers p { font-size: 11px; color: #64748b; }
+        #onlineusers ul { list-style: none; margin-top: 6px; }
+        #onlineusers li { font-size: 11px; color: #94a3b8; padding: 2px 0; }
+
+        /* Date Controls Group - Top Left using Flexbox */
+        #datecontrolsgroup {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 25;
+            background: rgba(0,20,40,0.85);
+            border: 1px solid rgba(100,200,255,0.4);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0,150,255,0.25);
+            padding: 12px 14px;
+            border-radius: 8px;
+            
+            /* Flexbox for responsive layout */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            max-width: 400px;
+        }
+
+        /* Individual Date Controls using Flexbox */
+        #daycontrol, #monthcontrol, #yearcontrol { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 4px;
+            min-width: 80px;
+        }
+        #daycontrol label, #monthcontrol label, #yearcontrol label { font-size: 10px; color: #64748b; text-transform: uppercase; }
+        .buttongroup { display: flex; flex-direction: row; align-items: center; gap: 4px; }
+        #daycontrol button, #monthcontrol button, #yearcontrol button { background: transparent; width: 20px; height: 16px; border: none; align-items: center; display: flex; justify-content: center; color: #00d4ff; font-size: 20px; transition: transform 0.1s; cursor: pointer; }
+        #daycontrol button:hover, #monthcontrol button:hover, #yearcontrol button:hover { color: #5ce1ff; transform: scale(1.15); }
+        #daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 2px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; width: 70px; font-family: inherit; }
+
+        /* Play & Speed Controls - Right Side, Vertically Centered */
+        #dateandcontrols { 
+            position: absolute; 
+            top: 50%; 
+            right: 10px;
+            transform: translateY(-50%);
+            z-index: 15; 
+            background: rgba(0,20,40,0.85); 
+            padding: 12px 14px; 
+            border-radius: 8px; 
+            border: 1px solid rgba(100,200,255,0.4); 
+            backdrop-filter: blur(10px); 
+            box-shadow: 0 0 20px rgba(0,150,255,0.25); 
+            
+            /* Flexbox for vertical layout */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 10px; 
+        }
+
+        #playbutton { width: 44px; height: 44px; border-radius: 50%; background: rgba(34,197,94,0.8); border: 2px solid rgba(100,200,255,0.6); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0,150,255,0.4); transition: background 0.2s; cursor: pointer; }
+        #playbutton:hover { background: rgba(34,197,94,1); }
+        
+        #speedcontrols { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        #speedcontrols label { font-size: 10px; text-transform: uppercase; color: #94a3b8; }
+        #speed { width: 6px; height: 80px; writing-mode: vertical-lr; direction: rtl; background: #1e293b; border-radius: 4px; outline: none; cursor: pointer; }
+        #speed::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 8px rgba(0,212,255,0.6); }
+
+        /* Saved Dates - Top Right using Flexbox */
+        #saveddates { 
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            z-index: 20; 
+            
+            display: flex; 
+            flex-wrap: wrap;
+            gap: 6px; 
+        }
+        #savedatebutton, #saved { background: rgba(0,20,40,0.85); border: 1px solid rgba(100,200,255,0.4); color: #00d4ff; padding: 8px 12px; border-radius: 6px; font-size: 11px; transition: background 0.2s; cursor: pointer; }
+        #savedatebutton:hover, #saved:hover { background: rgba(0,40,80,0.9); }
+        #savedatebutton { background: rgba(34,197,94,0.3); border-color: rgba(34,197,94,0.6); }
+        #savedatebutton:hover { background: rgba(34,197,94,0.5); }
+
+        /* Footer - Bottom Left */
+        footer { position: absolute; bottom: 10px; left: 10px; z-index: 5; }
+        footer a { font-size: 12px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); margin-right: 15px; }
+        footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
+
+        /* Arrow animation */
         .link-with-arrow { position: relative; text-decoration: none; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); }
         .arrow { color: #00d4ff; display: inline-block; margin-left: 8px; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease; }
         .link-with-arrow:hover .arrow { opacity: 1; transform: translateX(0); }
 
-    
-</style>
+        /* Hidden sections */
+        #loginsection, #nasaapi, #navigation, #saveddateslist { display: none; }
+
+        /* ============ RESPONSIVE - SMALL SCREENS (PHONES) ============ */
+        @media (max-width: 500px) {
+            #mainheader p {
+                display: none;
+            }
+            
+            /* Hide instructions on small screens */
+            #instructions {
+                display: none;
+            }
+            
+            /* Date controls - smaller and stacked */
+            #datecontrolsgroup {
+                flex-direction: column;
+                max-width: 120px;
+                padding: 6px 8px;
+                gap: 6px;
+            }
+            
+            #daycontrol, #monthcontrol, #yearcontrol {
+                min-width: auto;
+                gap: 2px;
+            }
+            
+            #daycontrol label, #monthcontrol label, #yearcontrol label {
+                font-size: 8px;
+            }
+            
+            #daycontrol input, #monthcontrol input, #yearcontrol input {
+                width: 50px;
+                font-size: 11px;
+                padding: 4px 2px;
+            }
+            
+            #daycontrol button, #monthcontrol button, #yearcontrol button {
+                font-size: 14px;
+                width: 16px;
+                height: 14px;
+            }
+            
+            /* Move play/speed to left side */
+            #dateandcontrols {
+                top: 50%;
+                right: auto;
+                left: 10px;
+                transform: translateY(-50%);
+                flex-direction: column;
+                padding: 8px 10px;
+            }
+            
+            #playbutton {
+                width: 36px;
+                height: 36px;
+                font-size: 12px;
+            }
+            
+            #speed {
+                height: 50px;
+            }
+            
+            #speedcontrols label {
+                font-size: 8px;
+            }
+            
+            /* Simplify online users */
+            #onlineusers ul {
+                display: none;
+            }
+            
+            #onlineusers {
+                padding: 6px 8px;
+            }
+            
+            #onlineusers h2 {
+                font-size: 8px;
+            }
+            
+            #onlineusers p {
+                font-size: 9px;
+            }
+            
+            /* Smaller saved dates */
+            #saveddates {
+                flex-direction: column;
+            }
+            
+            #savedatebutton, #saved {
+                padding: 5px 8px;
+                font-size: 9px;
+            }
+            
+            /* Smaller footer */
+            footer a {
+                font-size: 9px;
+                margin-right: 8px;
+            }
+            
+            footer p {
+                font-size: 8px;
+            }
+        }
+    </style>    
+</head>
+
 <body>
-
-    <a id="backbutton" class="link-with-arrow" href="index.html">Back<span class="arrow">←</span></a>
-
-    <header>
-        <img id="profilepic" src="Aidanprofessional.png" alt="Profile Picture" width="205" height="307">
-        <p id="name">Created by Aidan Von Feldt</p>   
-        <a id="websitelink" class="link-with-arrow" href="https://www.aidanvonfeldt.com/">Visit My Website<span class="arrow">←</span></a>
+    <header id="mainheader">
+        <h1>Eyes of Space</h1>
+        <p>Username: <span id="username-display">[Not logged in]</span></p>
     </header>
+
+    <main id="solarsystem">
+        <div id="scenearea"></div>
+        <div id="instructions">Drag to move camera • Scroll to zoom.</div>
+    </main>
+
+    <section id="onlineusers">
+        <h2>Online Users</h2>
+        <p><span id="online-count">0</span> others online</p>
+        <ul>
+            <li>list</li>
+        </ul>
+    </section>
+
+    <section id="loginsection">   
+        <h2>Login (will be a popup)</h2>
+        <form>
+            <p>
+                <label for="username">Username:</label><br>
+                <input type="text" id="username" name="username" placeholder="Enter username">
+            </p>
+            <p>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password" placeholder="Enter password">
+            </p>
+            <button type="button">Login</button>
+            <button type="button">Create Account</button>
+        </form>
+    </section>
+
+    <section id="nasaapi">
+        <h2>Nasa API Holder</h2>
+        <p>Will check to make sure positions are correct from nasas api</p>
+    </section>
+
+    <!-- Date Controls - Top Left -->
+    <div id="datecontrolsgroup">
+        <div id="daycontrol">
+            <label for="day">Day</label>
+            <input type="number" id="day" value="24" min="1" max="31">
+            <div class="buttongroup">
+                <button class="buttonleft">◀</button>
+                <button class="buttonright">▶</button>
+            </div>
+        </div>
+        <div id="monthcontrol">
+            <label for="month">Month</label>
+            <input type="text" id="month" value="June">
+            <div class="buttongroup">
+                <button class="buttonleft">◀</button>
+                <button class="buttonright">▶</button>
+            </div>
+        </div>
+        <div id="yearcontrol">
+            <label for="year">Year</label>
+            <input type="number" id="year" value="2004" min="1900" max="2100">
+            <div class="buttongroup">
+                <button class="buttonleft">◀</button>
+                <button class="buttonright">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Play & Speed - Right Side Centered -->
+    <section id="dateandcontrols">
+        <button id="playbutton" type="button">▶</button>
+        <div id="speedcontrols">
+            <label for="speed">Speed</label>
+            <input type="range" id="speed" value="1" step=".1" min=".1" max="5">
+        </div>
+    </section>
+
+    <!-- Saved Dates - Top Right -->
+    <section id="saveddates">
+        <button id="savedatebutton">+ Save Date</button>
+        <button id="saved">📅 Saved</button>
+        <div id="saveddateslist">
+            <ul>
+                <li>Placeholder</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <nav>
+            <a href="about.html" class="link-with-arrow">About <span class="arrow">→</span></a>
+        </nav>
+        <a href="https://github.com/Aidanvf1/Solar-System" class="link-with-arrow">GitHub <span class="arrow">→</span></a>
+        <p>© 2026 Aidan Fon Feldt</p>
+    </footer>
+
 </body>
+</html>

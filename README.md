@@ -61,12 +61,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [x] **Visually appealing colors and layout. No overflowing elements.** - I did not complete this part of the deliverable.
-- [x] **Use of a CSS framework** - I did not complete this part of the deliverable.
-- [x] **All visual elements styled using CSS** - I did not complete this part of the deliverable.
+- [x] **Visually appealing colors and layout. No overflowing elements.** - I mad it visually apealing lol
+- [x] **Use of a CSS framework** - I also used css framework of everything
+- [x] **All visual elements styled using CSS** - all of it was styled in css, even the animations
 - [ ] **Responsive to window resizing using flexbox and/or grid display** - I did not complete this part of the deliverable.
-- [x] **Use of a imported font** - I did not complete this part of the deliverable.
-- [ ] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I did not complete this part of the deliverable.
+- [x] **Use of a imported font** - I imported the Space mono from googles apis
+- [x] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I used elements(footer { ... }), class(.arrow { ... }), ids( #mainheader { ... }), and Pseudo slelectors(:hover).
 
 ## 🚀 React part 1: Routing deliverable
 
