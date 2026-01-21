@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="icon" href="favicon.ico" />
 
 <!-- web browser tab -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon"  href="favicon.ico?v=2" />
     <title>Eyes of Space</title>
 
     <style>
@@ -30,13 +30,16 @@
         #onlineusers ul { list-style: none; margin-top: 6px; }
         #onlineusers li { font-size: 11px; color: #94a3b8; padding: 2px 0; }
 
-        #dateandcontrols{ position: absolute; top: 40%; left: 10px; z-index: 5; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 11px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        #dateandcontrols{ position: absolute; top: 40%; left: 10px;; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 11px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
         #daycontrol, #monthcontrol, #yearcontrol { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         #daycontrol label, #monthcontrol label, #yearcontrol label { font-size: 10px; color: #64748b; text-transform: uppercase; }
-        #daycontrol button, #monthcontrol button, #yearcontrol button { background: transparent; width: 20px; height: 16px; border: none; align-items: center; display: flex; justify-content: center; color: #00d4ff; font-size: 12px; transition: transform 0.1s; }
+        .buttongroup { display: flex; flex-direction: row; align-items: center; gap: 4px; }
+        #daycontrol button, #monthcontrol button, #yearcontrol button { background: transparent; width: 20px; height: 16px; border: none; align-items: center; display: flex; justify-content: center; color: #00d4ff; font-size: 20px; transition: transform 0.1s; cursor: pointer; }
         #daycontrol button:hover, #monthcontrol button:hover, #yearcontrol button:hover { color: #5ce1ff; transform: scale(1.15); }
         #daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 2px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; width: 70px; font-family: inherit; }
+        #buttonleft, #buttonright { flex-direction: row; }
+
 
         #datecontrolsgroup {position: absolute;top: 10px;left: 10px; z-index: 25;background: rgba(0,20,40,0.85);border: 1px solid rgba(100,200,255,0.4);backdrop-filter: blur(10px);box-shadow: 0 0 20px rgba(0,150,255,0.25);padding: 12px 14px;border-radius: 8px;display: flex;align-items: center;gap: 16px;font-size: 11px;}
 
@@ -45,7 +48,7 @@
         
         #speedcontrols { display: flex; flex-direction: column; align-items: center; gap: 6px; }
         #speedcontrols label { font-size: 10px; text-transform: uppercase; color: #94a3b8; }
-        #speed { width: 6px; height: 80px; writing-mode: vertical-lr; direction: rtl; background: #1e293b; border-radius: 4px; outline: none; cursor: pointer; }
+        #speed { width: 6px; height: 80px; writing-mode: vertical-lr; direction: rtl; background: #1e293b; border-radius: 4px; outline: none; }
         #speed::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 8px rgba(0,212,255,0.6); }
         
 
@@ -118,26 +121,32 @@
     </section>
 
     <!-- controls -->
-    <div id="datecontrolsgroup">
-        <div id="daycontrol">
-            <button>▲</button>
-            <label for="day">Day:</label>
-            <input type="number" id="day" value="24" min="1" max="31">
-            <button>▼</button>
-        </div>
-        <div id="monthcontrol">
-            <button>▲</button>
-            <label for="month">Month:</label>
-            <input type="text" id="month" value="June">
-            <button>▼</button>
-        </div>
-        <div id="yearcontrol">
-            <button>▲</button>
-            <label for="year">Year:</label>
-            <input type="number" id="year" value="2004" min="0" max="2500">
-            <button>▼</button>
+   <div id="datecontrolsgroup">
+    <div id="daycontrol">
+        <label for="day">Day:</label>
+        <input type="number" id="day" value="24" min="1" max="31">
+        <div class="buttongroup">
+            <button class="buttonleft">⋖</button>
+            <button class="buttonright">⋗</button>
         </div>
     </div>
+    <div id="monthcontrol">
+        <label for="month">Month:</label>
+        <input type="text" id="month" value="June">
+        <div class="buttongroup">
+            <button class="buttonleft">⋖</button>
+            <button class="buttonright">⋗</button>
+        </div>
+    </div>
+    <div id="yearcontrol">
+        <label for="year">Year:</label>
+        <input type="number" id="year" value="2004" min="0" max="2500">
+        <div class="buttongroup">
+            <button class="buttonleft">⋖</button>
+            <button class="buttonright">⋗</button>
+        </div>
+    </div>
+   </div>
 
     
     <section id="dateandcontrols">
