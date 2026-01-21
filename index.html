@@ -35,14 +35,15 @@
         /* #password{} */
 
         #dateandcontrols{ position: absolute; top: 0; left: 0; z-index: 5; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 11px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        #dateandcontrols h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
 
         #daycontrol, #monthcontrol, #yearcontrol { display: flex; flex-direction: row; align-items: center; gap: 4px; }
         #daycontrol label, #monthcontrol label, #yearcontrol label { font-size: 10px; color: #64748b; text-transform: uppercase; width: 50px; }
         #daycontrol button, #monthcontrol button, #yearcontrol button { background: transparent; border: none; color: #00d4ff; font-size: 12px; transition: transform 0.1s; }
         #daycontrol button:hover, #monthcontrol button:hover, #yearcontrol button:hover { color: #5ce1ff; transform: scale(1.15); }
-        #daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 8px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; outline: none; width: 55px; font-family: inherit; }
-        /* #playbutton{} */
+        #daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 2px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; width: 70px; font-family: inherit; }
+
+        #playbutton { width: 44px; height: 44px; border-radius: 50%; background: rgba(34,197,94,0.8); border: 2px solid rgba(100,200,255,0.6); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0,150,255,0.4); transition: background 0.2s; }
+        #playbutton:hover { background: rgba(34,197,94,1); }
         /* #daycontrol{} */
         /* #monthcontrol{} */
         /* #day{} */
@@ -53,7 +54,7 @@
         
 
         #saveddates { position: absolute; top: 10px; right: 10px; z-index: 20; display: flex; gap: 6px; }
-        #savedatebutton, #saved { background: rgba(0,20,40,0.85); border: 1px solid rgba(100,200,255,0.4); color: #00d4ff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-family: inherit; transition: background 0.2s; }
+        #savedatebutton, #saved { background: rgba(0,20,40,0.85); border: 1px solid rgba(100,200,255,0.4); color: #00d4ff; padding: 8px 12px; border-radius: 6px; font-size: 11px; transition: background 0.2s; }
         #savedatebutton:hover, #saved:hover { background: rgba(0,40,80,0.9); }
 
 
@@ -120,7 +121,7 @@
 
     <!-- controls -->
     <section id="dateandcontrols">
-        <button id="playbutton" type="button">Play</button>
+        <button id="playbutton" type="button">▶</button>
         <div id="daycontrol">
             <button>▲</button><br>
             <label for="day">Day:</label>
