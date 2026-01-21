@@ -12,14 +12,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
+    
     <!-- start css -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Space Mono', monospace; overflow: hidden; background: #000511; color: #fff; }
 
         #mainheader{position: absolute; left: 0; right: 0; text-align: center; color: #94a3b8; padding: 10px; z-index: 20; pointer-events: none; }
-        #mainheader h1{font-size: 20px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); letter-spacing: 3px; text-transform: uppercase; }
-        #mainheader p { font-size: 10px; color: #64748b; margin-top: 2px; }
+        #mainheader h1{font-size: clamp(12px, 4vw, 20px); color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); letter-spacing: clamp(1px, 0.5vw, 3px); text-transform: uppercase; }        
+        #mainheader p { font-size: clamp(8px, 2vw, 10px); color: #64748b; margin-top: 2px; }
         #username-display{color: #94a3b8}
 
         #solarsystem { width: 100%; height: 100vh; position: relative; }
@@ -46,8 +47,7 @@
         #buttonleft, #buttonright { flex-direction: row; }
 
 
-        #datecontrolsgroup {position: absolute;top: 10px;left: 10px; z-index: 25;background: rgba(0,20,40,0.85);border: 1px solid rgba(100,200,255,0.4);backdrop-filter: blur(10px);box-shadow: 0 0 20px rgba(0,150,255,0.25);padding: 12px 14px;border-radius: 8px;display: flex;align-items: center;gap: 16px;font-size: 11px;}
-
+        #datecontrolsgroup {position: absolute;top: 10px;left: 10px; z-index: 25;background: rgba(0,20,40,0.85);border: 1px solid rgba(100,200,255,0.4);backdrop-filter: blur(10px);box-shadow: 0 0 20px rgba(0,150,255,0.25);padding: 12px 14px;border-radius: 8px;display: flex;flex-wrap: wrap;justify-content: center;align-items: center;gap: 16px;font-size: 11px;max-width: 320px;}
         #playbutton { width: 44px; height: 44px; border-radius: 50%; background: rgba(34,197,94,0.8); border: 2px solid rgba(100,200,255,0.6); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0,150,255,0.4); transition: background 0.2s; }
         #playbutton:hover { background: rgba(34,197,94,1); }
         
@@ -74,6 +74,7 @@
         .link-with-arrow:hover .arrow { opacity: 1; transform: translateX(0); }
 
         #loginsection, #nasaapi, #navigation, #saveddateslist{ display: none; }
+
 
 
     </style>    
