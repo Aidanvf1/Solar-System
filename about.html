@@ -6,16 +6,19 @@
         body { font-family: system-ui, -apple-system, sans-serif; overflow: hidden; background: #000511; color: #fff; }
 
         #profilepic { position: relative; top: 10px; display: block; margin-left: auto; margin-right: auto; border-radius: 12px; }
-        #name { position: relative; top: 15px; font-size: 12px; text-align: center; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); margin-right: 15px; }
-        #websitelink { position: relative; top: 17px; font-size: 12px; text-align: center; top: 10px;  color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); margin-right: 15px; }
-        
+        #name { position: relative; top: 15px; font-size: 12px; text-align: center; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); }
+        #websitelink { position: relative; top: 100px; left:13px; font-size: 20px; display: block; text-align: center; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); }
+
+        .link-with-arrow { position: relative; text-decoration: none; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); }
+        .arrow { color: #00d4ff; display: inline-block; margin-left: 8px; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease; }
+        .link-with-arrow:hover .arrow { opacity: 1; transform: translateX(0); }
 
     
 </style>
 <body>
     <header>
         <img id="profilepic" src="Aidanprofessional.png" alt="Profile Picture" width="205" height="307">
-        <p id="name">Aidan Von Feldt</p>   
-        <a id="websitelink" class="link-with-arrow" href="https://www.aidanvonfeldt.com/"><span class="arrow">←</span>Visit My Website</a>
+        <p id="name">Created by Aidan Von Feldt</p>   
+        <a id="websitelink" class="link-with-arrow" href="https://www.aidanvonfeldt.com/">Visit My Website<span class="arrow">←</span></a>
     </header>
 </body>
