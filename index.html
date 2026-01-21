@@ -8,9 +8,13 @@
     <link rel="icon" type="image/x-icon"  href="favicon.ico?v=2" />
     <title>Eyes of Space</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; overflow: hidden; background: #000511; color: #fff; }
+        body { font-family: 'Space Mono', monospace; overflow: hidden; background: #000511; color: #fff; }
 
         #mainheader{position: absolute; left: 0; right: 0; text-align: center; color: #94a3b8; padding: 10px; z-index: 20; pointer-events: none; }
         #mainheader h1{font-size: 20px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); letter-spacing: 3px; text-transform: uppercase; }
@@ -28,7 +32,7 @@
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         #onlineusers p { font-size: 11px; color: #64748b; }
         #onlineusers ul { list-style: none; margin-top: 6px; }
-        #onlineusers li { font-size: 11px; color: #94a3b8; padding: 2px 0; }
+        #onlineusers li { font-size: 11px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); text-decoration: none; }
 
         #dateandcontrols{ position: absolute; top: 40%; left: 10px;; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 11px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
@@ -92,7 +96,7 @@
         <h2>Online Users</h2>
         <p><span id="online-count">0</span> others online</p>
         <ul>
-            <li>list</li>
+            <li class="link-with-arrow">See Users<span class="arrow">←</span></li>
         </ul>
     </section>
 
