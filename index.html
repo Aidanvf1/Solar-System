@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="icon" href="favicon.ico" />
 
 <!-- web browser tab -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eyes of Space</title>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui, -apple-system, sans-serif; overflow: hidden; background: #000511; color: #fff; }
@@ -38,21 +40,21 @@
         /* #speed */
         
 
-        #saveddates{ position: absolute; top: 10px; right: 0%; z-index: 5; z-index: 20; display: flex; gap: 6px; }
-        /* #savedatebutton{} */
-        /* #saved{} */
-        /* #saveddateslist{} */
+        #saveddates { position: absolute; top: 10px; right: 10px; z-index: 20; display: flex; gap: 6px; }
+        #savedatebutton, #saved { background: rgba(0,20,40,0.85); border: 1px solid rgba(100,200,255,0.4); color: #00d4ff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-family: inherit; transition: background 0.2s; }
+        #savedatebutton:hover, #saved:hover { background: rgba(0,40,80,0.9); }
+
 
         footer { position: absolute; bottom: 10px; left: 10px; z-index: 5;}
-        footer a { font-size: 12px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5) margin-right: 15px; }
+        footer a { font-size: 12px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); margin-right: 15px; }
         footer p { color: #64748b; font-size: 12px; margin: 0; }
 
         /* arrow animation */
-        .link-with-arrow { position: relative; text-decoration: none; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5) }
+        .link-with-arrow { position: relative; text-decoration: none; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); }
         .arrow { color: #00d4ff; display: inline-block; margin-left: 8px; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease; }
         .link-with-arrow:hover .arrow { opacity: 1; transform: translateX(0); }
 
-        #loginsection, #nasaapi, #navigation { display: none; }
+        #loginsection, #nasaapi, #navigation, #saveddateslist{ display: none; }
 
 
     </style>    
@@ -152,7 +154,7 @@
     <!-- footer for github and html cross links -->
     <footer>
         <nav>
-       <a href="about.html" class="link-with-arrow">About <span class="arrow">←</span></a>
+            <a href="about.html" class="link-with-arrow">About <span class="arrow">←</span></a>
         </nav>
         <a href="https://github.com/Aidanvf1/Solar-System" class="link-with-arrow">GitHub Repository <span class="arrow">←</span></a>
         <p>© 2026 Aidan Fon Feldt</p>
