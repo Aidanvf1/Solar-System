@@ -34,7 +34,14 @@
         /* #username{} */
         /* #password{} */
 
-        #dateandcontrols{ position: absolute; top: 0; left: 0; z-index: 5; }
+        #dateandcontrols{ position: absolute; top: 0; left: 0; z-index: 5; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 11px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        #dateandcontrols h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+
+        #daycontrol, #monthcontrol, #yearcontrol { display: flex; flex-direction: row; align-items: center; gap: 4px; }
+        #daycontrol label, #monthcontrol label, #yearcontrol label { font-size: 10px; color: #64748b; text-transform: uppercase; width: 50px; }
+        #daycontrol button, #monthcontrol button, #yearcontrol button { background: transparent; border: none; color: #00d4ff; font-size: 12px; transition: transform 0.1s; }
+        #daycontrol button:hover, #monthcontrol button:hover, #yearcontrol button:hover { color: #5ce1ff; transform: scale(1.15); }
+        #daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 8px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; outline: none; width: 55px; font-family: inherit; }
         /* #playbutton{} */
         /* #daycontrol{} */
         /* #monthcontrol{} */
@@ -113,7 +120,6 @@
 
     <!-- controls -->
     <section id="dateandcontrols">
-        <h2> Controls </h2>
         <button id="playbutton" type="button">Play</button>
         <div id="daycontrol">
             <button>▲</button><br>
