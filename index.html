@@ -38,7 +38,7 @@
         /* #speed */
         
 
-        #saveddates{ position: absolute; top: 10px; right: 0%; z-index: 5;}
+        #saveddates{ position: absolute; top: 10px; right: 0%; z-index: 5; z-index: 20; display: flex; gap: 6px; }
         /* #savedatebutton{} */
         /* #saved{} */
         /* #saveddateslist{} */
@@ -47,10 +47,9 @@
         footer a { font-size: 12px;color: #00d4ff; margin-right: 15px; }
         footer p { color: #64748b; font-size: 12px; margin: 0; }
 
+        /* arrow animation */
         .link-with-arrow { position: relative; text-decoration: none; color: inherit; color: #00d4ff;}
-
-        .arrow { color: #00d4ff; display: inline-block; margin-left: 8px; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease;pointer-events: none;}
-
+        .arrow { color: #00d4ff; display: inline-block; margin-left: 8px; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease;}
         .link-with-arrow:hover .arrow {opacity: 1; transform: translateX(0);}
 
         #loginsection, #nasaapi, #navigation { display: none; }
@@ -77,7 +76,7 @@
         <h2>Online Users</h2>
         <p><span id="online-count">0</span> others online</p>
         <ul>
-            <li>Placeholder</li>
+            <li>list</li>
         </ul>
     </section>
 
