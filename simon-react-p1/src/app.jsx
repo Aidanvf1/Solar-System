@@ -47,6 +47,7 @@ export default function App() {
           <Route path="/play" element={<Play />} />
           <Route path="/scores" element={<Scores />} />
           <Route path="/about" element={<About />} />
+          <Route path="/*" element={<About />} />
         </Routes>
 
         <footer className="bg-dark text-white-50">
