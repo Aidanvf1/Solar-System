@@ -23,7 +23,7 @@ Well right now it honestly look sad. Not just he UI but the code its self just l
 
 ## CSS
 
-Noting that making ids in the future for my projects first make this super simple and easy.
+Noting that making ids in the future for my projects first make this super simple and easy. I didnt start by making my things flex and would have saved lots of time if i just put that in at the start. I didnt think it would bee such a big task. I would have also planned my layout look diffrently so i didnt have to go and change things along the way. but i guess that is the way of learning.
 
 ## React Part 1: Routing
 
