@@ -75,6 +75,21 @@
 
         #loginsection, #nasaapi, #navigation, #saveddateslist{ display: none; }
 
+        @media (max-width: 768px) {
+            #instructions {display: none;}
+            
+            #datecontrolsgroup {flex-direction: column;max-width: 120px;padding: 6px 8px;gap: 6px;}
+            
+            #daycontrol, #monthcontrol, #yearcontrol {gap: 2px;}
+            
+            #daycontrol label, #monthcontrol label, #yearcontrol label {font-size: 8px;}
+            
+            #daycontrol input, #monthcontrol input, #yearcontrol input {width: 50px;font-size: 11px;padding: 4px 2px;}
+            
+            #daycontrol button, #monthcontrol button, #yearcontrol button {font-size: 14px;width: 16px;height: 14px;}
+            
+            #dateandcontrols {padding: 8px 10px;}
+        }
 
 
     </style>    
