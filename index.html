@@ -12,88 +12,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-    
-    <!-- start css -->
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Space Mono', monospace; overflow: hidden; background: #000511; color: #fff; }
-
-        #mainheader{position: absolute; left: 0; right: 0; text-align: center; color: #94a3b8; padding: 10px; z-index: 20; pointer-events: none; }
-        #mainheader h1{font-size: clamp(12px, 4vw, 20px); color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); letter-spacing: clamp(1px, 0.5vw, 3px); text-transform: uppercase; }        
-        #mainheader p { font-size: clamp(8px, 2vw, 10px); color: #64748b; margin-top: 2px; }
-        #username-display{color: #94a3b8}
-
-        #solarsystem { width: 100%; height: 100vh; position: relative; }
-        #scenearea { width: 100%; height: 100%; background: radial-gradient(ellipse at center, #0a1628 0%, #000510 100%); }
-
-        #instructions{ pointer-events: none; position: absolute; transform: translateX(-50%); left: 50%; bottom: 0;  padding: 6px 12px; border-radius: 6px; color: #64748b; font-size: 12px; z-index: 5; }
-
-        #onlineusers { position: absolute; bottom: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 15;}
-        #onlineusers h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-        #onlineusers h2::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-        #onlineusers p { font-size: 11px; color: #64748b; }
-        #onlineusers ul { list-style: none; margin-top: 6px; }
-        #onlineusers li { font-size: 11px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); text-decoration: none; }
-
-        #dateandcontrols{ position: absolute; top: 40%; left: 10px; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 8px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-
-        #daycontrol, #monthcontrol, #yearcontrol { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        #daycontrol label, #monthcontrol label, #yearcontrol label { font-size: 10px; color: #64748b; text-transform: uppercase; }
-        .buttongroup { display: flex; flex-direction: row; align-items: center; gap: 4px; }
-        #daycontrol button, #monthcontrol button, #yearcontrol button { background: transparent; width: 20px; height: 16px; border: none; align-items: center; display: flex; justify-content: center; color: #00d4ff; font-size: 20px; transition: transform 0.1s; cursor: pointer; }
-        #daycontrol button:hover, #monthcontrol button:hover, #yearcontrol button:hover { color: #5ce1ff; transform: scale(1.15); }
-        #daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 2px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; width: 70px; font-family: inherit; }
-        #buttonleft, #buttonright { flex-direction: row; }
-
-
-        #datecontrolsgroup {position: absolute;top: 10px;left: 10px; z-index: 25;background: rgba(0,20,40,0.85);border: 1px solid rgba(100,200,255,0.4);backdrop-filter: blur(10px);box-shadow: 0 0 20px rgba(0,150,255,0.25);padding: 12px 14px;border-radius: 8px;display: flex;flex-wrap: wrap;justify-content: center;align-items: center;gap: 16px;font-size: 11px;max-width: 320px;}
-        #playbutton { width: 44px; height: 44px; border-radius: 50%; background: rgba(34,197,94,0.8); border: 2px solid rgba(100,200,255,0.6); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0,150,255,0.4); transition: background 0.2s; }
-        #playbutton:hover { background: rgba(34,197,94,1); }
-        
-        #speedcontrols { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-        #speedcontrols label { font-size: 10px; text-transform: uppercase; color: #94a3b8; }
-        #speed { width: 6px; height: 80px; writing-mode: vertical-lr; direction: rtl; background: #1e293b; border-radius: 4px; outline: none; }
-        #speed::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 8px rgba(0,212,255,0.6); }
-        
-
-        
-
-        #saveddates { position: absolute; top: 10px; right: 10px; z-index: 20; display: flex; gap: 6px; }
-        #savedatebutton, #saved { background: rgba(0,20,40,0.85); border: 1px solid rgba(100,200,255,0.4); color: #00d4ff; padding: 8px 12px; border-radius: 6px; font-size: 11px; transition: background 0.2s; }
-        #savedatebutton:hover, #saved:hover { background: rgba(0,40,80,0.9); }
-
-
-        footer { position: absolute; bottom: 10px; left: 10px; z-index: 5;}
-        footer a { font-size: 12px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); margin-right: 15px; }
-        footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
-
-        /* arrow animation */
-        .link-with-arrow { position: relative; text-decoration: none; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); }
-        .arrow { color: #00d4ff; display: inline-block; margin-left: 8px; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease; }
-        .link-with-arrow:hover .arrow { opacity: 1; transform: translateX(0); }
-
-        #loginsection, #nasaapi, #navigation, #saveddateslist{ display: none; }
-
-        @media (max-width: 768px) {
-            #instructions {display: none;}
-            
-            #datecontrolsgroup {flex-direction: column;max-width: 120px;padding: 6px 8px;gap: 6px;}
-            #daycontrol, #monthcontrol, #yearcontrol {gap: 2px;}
-            #daycontrol label, #monthcontrol label, #yearcontrol label {font-size: 8px;}
-            #daycontrol input, #monthcontrol input, #yearcontrol input {width: 50px;font-size: 11px;padding: 4px 2px;}
-            #daycontrol button, #monthcontrol button, #yearcontrol button {font-size: 14px;width: 16px;height: 14px;}
-            #dateandcontrols {padding: 8px 10px;}
-
-            #saveddates {flex-direction: column;}
-            #savedatebutton, #saved {padding: 5px 8px;font-size: 9px;}
-        }
-
-
-    </style>    
+    <link href="index.css" rel="stylesheet" />
 </head>
-    <!-- end css -->
 
 <!-- main title -->
 <body>
