@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
-  }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/webprogramming260/simon-css.git"
@@ -21,5 +21,12 @@
   "homepage": "https://github.com/webprogramming260/simon-css#readme",
   "devDependencies": {
     "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "react": "^19.2.3",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.12.0"
   }
 }
