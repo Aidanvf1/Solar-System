@@ -72,9 +72,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Bundled using Vite** - I did not complete this part of the deliverable.
-- [ ] **Components** - I did not complete this part of the deliverable.
-- [ ] **Router** - I did not complete this part of the deliverable.
+- [x] **Bundled using Vite** - idk what to say, I bundled it with vite and updated the package.json.
+- [x] **Components** - I got all the react into the src folder and put the jsx files into the right folders. I created and am using only 2 pages, Main.jsx(my "/" file) and About.jsx.
+- [x] **Router** - I put the main and about routers into my app.jsx file. I also did the rounter for the page not found if it's anything else.
 
 ## 🚀 React part 2: Reactivity deliverable
 
