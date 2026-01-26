@@ -27,7 +27,7 @@ Noting that making ids in the future for my projects first make this super simpl
 
 ## React Part 1: Routing
 
-Setting up Vite and React was pretty simple. I had a bit of trouble because of conflicting CSS. This isn't as straight forward as you would find with Svelte or Vue, but I made it work in the end. If there was a ton of CSS it would be a real problem. It sure was nice to have the code structured in a more usable way.
+Okay, setting it up was literally pain, but ones I did it with simon doing it to my own server was much easier. It's really important to make sure that everthing is getting send to the right page. Most of my problems didnt come from any code had changed but the new code just not working. Making sure all the react code was in order and there were no bugs in it. I'm aually super excited now beacuse I feel like its going to be much eaier to navigate and complete the rest of the project. Stuff is set up very nicely and organized now.
 
 ## React Part 2: Reactivity
 
