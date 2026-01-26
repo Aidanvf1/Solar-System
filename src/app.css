@@ -1,5 +1,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Space Mono', monospace; overflow: hidden; background: #000511; color: #fff; }
+body { font-family: 'Space Mono', monospace; background: #000511; color: #fff; }
+#root { width: 100%; height: 100vh; overflow: hidden; }
 
 #mainheader{position: absolute; left: 0; right: 0; text-align: center; color: #94a3b8; padding: 10px; z-index: 20; pointer-events: none; }
 #mainheader h1{font-size: clamp(12px, 4vw, 20px); color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); letter-spacing: clamp(1px, 0.5vw, 3px); text-transform: uppercase; }        
