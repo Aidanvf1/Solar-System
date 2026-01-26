@@ -1,9 +1,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Space Mono', monospace; background: #000511; color: #fff; }
-#root { width: 100%; height: 100vh; overflow: hidden; }
+body { font-family: 'Space Mono', monospace; overflow: hidden; background: #000511; color: #fff; }
 
 #mainheader{position: absolute; left: 0; right: 0; text-align: center; color: #94a3b8; padding: 10px; z-index: 20; pointer-events: none; }
-#mainheader h1{font-size: clamp(12px, 4vw, 20px); color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); letter-spacing: clamp(1px, 0.5vw, 3px); text-transform: uppercase; }        
+#mainheader h1{font-size: clamp(12px, 4vw, 20px); color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); letter-spacing: clamp(1px, 0.5vw, 3px); font-weight: bold; text-transform: uppercase; }        
 #mainheader p { font-size: clamp(8px, 2vw, 10px); color: #64748b; margin-top: 2px; }
 #username-display{color: #94a3b8}
 
@@ -12,12 +11,12 @@ body { font-family: 'Space Mono', monospace; background: #000511; color: #fff; }
 
 #instructions{ pointer-events: none; position: absolute; transform: translateX(-50%); left: 50%; bottom: 0;  padding: 6px 12px; border-radius: 6px; color: #64748b; font-size: 12px; z-index: 5; }
 
-#onlineusers { position: absolute; bottom: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 15;}
+#onlineusers { position: absolute; bottom: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 14px 12px 0px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 15;}
 #onlineusers h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
 #onlineusers h2::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-#onlineusers p { font-size: 11px; color: #64748b; }
-#onlineusers ul { list-style: none; margin-top: 6px; }
+#onlineusers p { font-size: 11px; color: #64748b; margin-bottom: 0; }
+#onlineusers ul { list-style: none; margin-top: 4px; padding: 0; }
 #onlineusers li { font-size: 11px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); text-decoration: none; }
 
 #dateandcontrols{ position: absolute; top: 40%; left: 10px; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 8px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }

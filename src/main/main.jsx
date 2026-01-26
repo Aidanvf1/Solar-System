@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export function Main() {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ export function Main() {
    <div id="datecontrolsgroup">
     <div id="daycontrol">
         <label htmlFor="day">Day:</label>
-        <input type="number" id="day" value="24" min="1" max="31" />
+        <input id="day" value="20" min="1" max="31" />
         <div class="buttongroup">
             <button class="buttonleft">⋖</button>
             <button class="buttonright">⋗</button>
@@ -62,7 +62,7 @@ export function Main() {
     </div>
     <div id="monthcontrol">
         <label htmlFor="month">Month:</label>
-        <input type="text" id="month" value="June" />
+        <input id="month" value="June" />
         <div class="buttongroup">
             <button class="buttonleft">⋖</button>
             <button class="buttonright">⋗</button>
@@ -70,7 +70,7 @@ export function Main() {
     </div>
     <div id="yearcontrol">
         <label htmlFor="year">Year:</label>
-        <input  id="year" value="2004" min="0" max="2500" />
+        <input id="year" value="2004" min="0" max="2500" />
         <div class="buttongroup">
             <button class="buttonleft">⋖</button>
             <button class="buttonright">⋗</button>
@@ -103,9 +103,9 @@ export function Main() {
     {/* footer for github and html cross links */}
     <footer>
         <nav>
-            <a href="about.html" class="link-with-arrow">About <span class="arrow">←</span></a>
+            <Link to="/about" className="link-with-arrow">About <span className="arrow">←</span></Link>
         </nav>
-        <a href="https://github.com/Aidanvf1/Solar-System" class="link-with-arrow">GitHub Repository <span class="arrow">←</span></a>
+        <a href="https://github.com/Aidanvf1/Solar-System" className="link-with-arrow">GitHub Repository <span className="arrow">←</span></a>
         <p>© 2026 Aidan Von Feldt</p>
     </footer>
 
