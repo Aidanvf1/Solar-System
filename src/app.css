@@ -68,5 +68,5 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
     #dateandcontrols {padding: 8px 10px;}
 
     #saveddates {flex-direction: column;}
-    #savedatebutton, #saved {padding: 5px 8px;font-size: 9px;}
+    #savedatebutton, #saved {padding: 5px 8px;font-size: 7px;}
 }
