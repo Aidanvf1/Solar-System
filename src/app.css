@@ -12,12 +12,12 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 #instructions{ pointer-events: none; position: absolute; transform: translateX(-50%); left: 50%; bottom: 0;  padding: 6px 12px; border-radius: 6px; color: #64748b; font-size: 12px; z-index: 5; }
 
 #onlineusers { position: absolute; bottom: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 14px 12px 0px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 15;}
-#onlineusers h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-#onlineusers h2::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; }
+#onlineusers h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; pointer-events: none; }
+#onlineusers h2::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; pointer-events: none; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-#onlineusers p { font-size: 11px; color: #64748b; margin-bottom: 0; }
+#onlineusers p { font-size: 11px; color: #64748b; margin-bottom: 0; pointer-events: none; }
 #onlineusers ul { list-style: none; margin-top: 4px; padding: 0; }
-#onlineusers li { font-size: 11px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); text-decoration: none; }
+#onlineusers li { font-size: 11px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); text-decoration: none;}
 
 #dateandcontrols{ position: absolute; top: 40%; left: 10px; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 8px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
@@ -26,7 +26,7 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 .buttongroup { display: flex; flex-direction: row; align-items: center; gap: 4px; }
 #daycontrol button, #monthcontrol button, #yearcontrol button { background: transparent; width: 20px; height: 16px; border: none; align-items: center; display: flex; justify-content: center; color: #00d4ff; font-size: 20px; transition: transform 0.1s; cursor: pointer; }
 #daycontrol button:hover, #monthcontrol button:hover, #yearcontrol button:hover { color: #5ce1ff; transform: scale(1.15); }
-#daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 2px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; width: 70px; font-family: inherit; }
+#daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 2px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; width: 70px; font-family: inherit; pointer-events: none; }
 #buttonleft, #buttonright { flex-direction: row; }
 
 
@@ -34,10 +34,10 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 #playbutton { width: 44px; height: 44px; border-radius: 50%; background: rgba(34,197,94,0.8); border: 2px solid rgba(100,200,255,0.6); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0,150,255,0.4); transition: background 0.2s; }
 #playbutton:hover { background: rgba(34,197,94,1); }
 
-#speedcontrols { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+#speedcontrols { display: flex; flex-direction: column; align-items: center; gap: 6px;}
 #speedcontrols label { font-size: 10px; text-transform: uppercase; color: #94a3b8; }
 #speed { width: 6px; height: 80px; writing-mode: vertical-lr; direction: rtl; background: #1e293b; border-radius: 4px; outline: none; }
-#speed::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 8px rgba(0,212,255,0.6); }
+#speed::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 8px rgba(0,212,255,0.6); cursor: pointer; }
 
 
 
