@@ -16,7 +16,7 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 #onlineusers h2::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; pointer-events: none; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 #onlineusers p { font-size: 11px; color: #64748b; margin-bottom: 0; pointer-events: none; }
-#onlineusers ul { list-style: none; margin-top: 4px; padding: 0; }
+#onlineusers ul { list-style: none; margin-top: 4px; padding: 0; cursor: pointer; }
 #onlineusers li { font-size: 11px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); text-decoration: none;}
 
 #dateandcontrols{ position: absolute; top: 40%; left: 10px; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 8px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
