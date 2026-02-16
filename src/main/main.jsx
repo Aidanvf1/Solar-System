@@ -1,8 +1,21 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useRef, useState, useEffect } from 'react';
+import * as THREE from 'three';
 
 export function Main() {
+
+    
   const navigate = useNavigate();
+  const containerRef = useRef(null);
+  const sceneRef = useRef(null);
+  const rendererRef = useRef(null);
+  const cameraRef = useRef(null);
+  
+  const [year, setYear] = useState(2026);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
+  const [currentDay, setCurrentDay] = useState(0);
 
   return (
     <div>
@@ -13,7 +26,7 @@ export function Main() {
 
     {/* application text */}
     <main id="solarsystem">
-        <div id="scenearea"></div>
+        <div id="scenearea" ref={containerRef}></div>
         <div id="instructions">Drag to move camera • Scroll to zoom.</div>
     </main>
 
@@ -22,7 +35,7 @@ export function Main() {
         <h2>Online Users</h2>
         <p><span id="online-count">0</span> others online</p>
         <ul>
-            <li class="link-with-arrow">See Users<span class="arrow">←</span></li>
+            <li className="link-with-arrow">See Users<span className="arrow">←</span></li>
         </ul>
     </section>
 
@@ -51,44 +64,44 @@ export function Main() {
     </section>
 
     {/* controls */}
-        <div id="datecontrolsgroup">
-         <div id="daycontrol">
-              <label htmlFor="day">Day:</label>
-              <input id="day" value="20" min="1" max="31" />
-              <div className="buttongroup">
-                    <button className="buttonleft">⋖</button>
-                    <button className="buttonright">⋗</button>
-              </div>
-         </div>
-         <div id="monthcontrol">
-              <label htmlFor="month">Month:</label>
-              <input id="month" value="June" />
-              <div className="buttongroup">
-                    <button className="buttonleft">⋖</button>
-                    <button className="buttonright">⋗</button>
-              </div>
-         </div>
-         <div id="yearcontrol">
-              <label htmlFor="year">Year:</label>
-              <input id="year" value="2004" min="0" max="2500" />
-              <div className="buttongroup">
-                    <button className="buttonleft">⋖</button>
-                    <button className="buttonright">⋗</button>
-              </div>
-         </div>
+   <div id="datecontrolsgroup">
+    <div id="daycontrol">
+        <label htmlFor="day">Day:</label>
+        <input id="day" value="20" min="1" max="31" />
+        <div className="buttongroup">
+            <button className="buttonleft">⋖</button>
+            <button className="buttonright">⋗</button>
         </div>
+    </div>
+    <div id="monthcontrol">
+        <label htmlFor="month">Month:</label>
+        <input id="month" value="June" />
+        <div className="buttongroup">
+            <button className="buttonleft">⋖</button>
+            <button className="buttonright">⋗</button>
+        </div>
+    </div>
+    <div id="yearcontrol">
+        <label htmlFor="year">Year:</label>
+        <input id="year" value="2004" min="0" max="2500" />
+        <div className="buttongroup">
+            <button className="buttonleft">⋖</button>
+            <button className="buttonright">⋗</button>
+        </div>
+    </div>
+   </div>
 
-         
-         <section id="dateandcontrols">
-              <button id="playbutton" type="button">▶</button>
-              
-              <div id="speedcontrols">
-                    <label htmlFor="speed">Speed:</label>
-                    <input type="range" id="speed" value="1" step=".1" min=".1" max="5" />
-              </div>
-         </section>
+    
+    <section id="dateandcontrols">
+        <button id="playbutton" type="button">▶</button>
+        
+        <div id="speedcontrols">
+            <label htmlFor="speed">Speed:</label>
+            <input type="range" id="speed" value="1" step=".1" min=".1" max="5" />
+        </div>
+    </section>
 
-         {/* database placeholder */}}
+    {/* database placeholder */}
     <section id="saveddates">
         <button id="savedatebutton">Save Current Date</button>
         <button id="saved">Saved Dates</button>
