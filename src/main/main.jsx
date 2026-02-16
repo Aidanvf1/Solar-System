@@ -51,44 +51,44 @@ export function Main() {
     </section>
 
     {/* controls */}
-   <div id="datecontrolsgroup">
-    <div id="daycontrol">
-        <label htmlFor="day">Day:</label>
-        <input id="day" value="20" min="1" max="31" />
-        <div class="buttongroup">
-            <button class="buttonleft">⋖</button>
-            <button class="buttonright">⋗</button>
+        <div id="datecontrolsgroup">
+         <div id="daycontrol">
+              <label htmlFor="day">Day:</label>
+              <input id="day" value="20" min="1" max="31" />
+              <div className="buttongroup">
+                    <button className="buttonleft">⋖</button>
+                    <button className="buttonright">⋗</button>
+              </div>
+         </div>
+         <div id="monthcontrol">
+              <label htmlFor="month">Month:</label>
+              <input id="month" value="June" />
+              <div className="buttongroup">
+                    <button className="buttonleft">⋖</button>
+                    <button className="buttonright">⋗</button>
+              </div>
+         </div>
+         <div id="yearcontrol">
+              <label htmlFor="year">Year:</label>
+              <input id="year" value="2004" min="0" max="2500" />
+              <div className="buttongroup">
+                    <button className="buttonleft">⋖</button>
+                    <button className="buttonright">⋗</button>
+              </div>
+         </div>
         </div>
-    </div>
-    <div id="monthcontrol">
-        <label htmlFor="month">Month:</label>
-        <input id="month" value="June" />
-        <div class="buttongroup">
-            <button class="buttonleft">⋖</button>
-            <button class="buttonright">⋗</button>
-        </div>
-    </div>
-    <div id="yearcontrol">
-        <label htmlFor="year">Year:</label>
-        <input id="year" value="2004" min="0" max="2500" />
-        <div class="buttongroup">
-            <button class="buttonleft">⋖</button>
-            <button class="buttonright">⋗</button>
-        </div>
-    </div>
-   </div>
 
-    
-    <section id="dateandcontrols">
-        <button id="playbutton" type="button">▶</button>
-        
-        <div id="speedcontrols">
-            <label htmlFor="speed">Speed:</label>
-            <input type="range" id="speed" value="1" step=".1" min=".1" max="5" />
-        </div>
-    </section>
+         
+         <section id="dateandcontrols">
+              <button id="playbutton" type="button">▶</button>
+              
+              <div id="speedcontrols">
+                    <label htmlFor="speed">Speed:</label>
+                    <input type="range" id="speed" value="1" step=".1" min=".1" max="5" />
+              </div>
+         </section>
 
-    {/* database placeholder */}
+         {/* database placeholder */}}
     <section id="saveddates">
         <button id="savedatebutton">Save Current Date</button>
         <button id="saved">Saved Dates</button>
