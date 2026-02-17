@@ -27,8 +27,68 @@ const [speed, setSpeed] = useState(1);
 const [currentDay, setCurrentDay] = useState(0);
 
 useEffect(() => {
-  console.log('useEffect is running!');
-  console.log('Container element:', containerRef.current);
+  if (!containerRef.current) return;
+  
+  const w = containerRef.current.clientWidth;
+  const h = containerRef.current.clientHeight;
+  
+  console.log('Creating 3D scene...');
+  
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000510);
+  sceneRef.current = scene;
+  
+  // camera
+  const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
+  camera.position.set(0, 30, 50);
+  camera.lookAt(0, 0, 0);
+  cameraRef.current = camera;
+  
+  // renderer
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(w, h);
+  containerRef.current.appendChild(renderer.domElement);
+  rendererRef.current = renderer;
+  
+  // stars
+  const starsGeo = new THREE.BufferGeometry();
+  const starPositions = [];
+  for (let i = 0; i < 2000; i++) {
+    const x = (Math.random() - 0.5) * 500;
+    const y = (Math.random() - 0.5) * 500;
+    const z = (Math.random() - 0.5) * 500;
+    starPositions.push(x, y, z);
+  }
+  starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+  const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3 });
+  scene.add(new THREE.Points(starsGeo, starsMat));
+  
+  // sun
+  const sunGeo = new THREE.SphereGeometry(0.8, 32, 32);
+  const sunMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
+  const sun = new THREE.Mesh(sunGeo, sunMat);
+  scene.add(sun);
+  
+  const glowGeo = new THREE.SphereGeometry(1.5, 32, 32);
+  const glowMat = new THREE.MeshBasicMaterial({ 
+    color: 0xffaa33, 
+    transparent: true, 
+    opacity: 0.15 
+  });
+  scene.add(new THREE.Mesh(glowGeo, glowMat));
+  
+  // render the scene
+  renderer.render(scene, camera);
+  
+  console.log('3D scene created!');
+  
+  // cleanup
+  return () => {
+    renderer.dispose();
+    if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
+      containerRef.current.removeChild(renderer.domElement);
+    }
+  };
 }, []);
 
 
@@ -83,7 +143,7 @@ return (
 <div id="datecontrolsgroup">
 <div id="daycontrol">
     <label htmlFor="day">Day:</label>
-    <input id="day" value="20" min="1" max="31" />
+    <input id="day" value="20" min="1" max="31" readOnly />
     <div className="buttongroup">
         <button className="buttonleft">⋖</button>
         <button className="buttonright">⋗</button>
@@ -91,7 +151,7 @@ return (
 </div>
 <div id="monthcontrol">
     <label htmlFor="month">Month:</label>
-    <input id="month" value="June" />
+    <input id="month" value="June" readOnly />
     <div className="buttongroup">
         <button className="buttonleft">⋖</button>
         <button className="buttonright">⋗</button>
@@ -99,7 +159,7 @@ return (
 </div>
 <div id="yearcontrol">
     <label htmlFor="year">Year:</label>
-    <input id="year" value="2004" min="0" max="2500" />
+    <input id="year" value="2004" min="0" max="2500" readOnly />
     <div className="buttongroup">
         <button className="buttonleft">⋖</button>
         <button className="buttonright">⋗</button>
@@ -113,7 +173,7 @@ return (
     
     <div id="speedcontrols">
         <label htmlFor="speed">Speed:</label>
-        <input type="range" id="speed" value="1" step=".1" min=".1" max="5" />
+        <input type="range" id="speed" value="1" step=".1" min=".1" max="5" onChange={() => {}} />
     </div>
 </section>
 
