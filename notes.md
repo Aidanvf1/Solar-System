@@ -31,7 +31,7 @@ Okay, setting it up was literally pain, but ones I did it with simon doing it to
 
 ## React Part 2: Reactivity
 
-This was a lot of fun to see it all come together. I had to keep remembering to use React state instead of just manipulating the DOM directly.
+Need to remember that this makes or breaks the website. I think that having interactions and animations is whatwill make people look at my page and stay on my page.
 
 Handling the toggling of the checkboxes was particularly interesting.
 
