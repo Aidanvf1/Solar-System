@@ -4,7 +4,16 @@ import { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 
 export function Main() {
-
+    const PLANETS_DATA = {
+        Mercury: { a: 0.387, e: 0.205, i: 7.0, color: '#8c8c8c', size: 0.08, period: 87.97, omega: 77.45, node: 48.33, M0: 174.79 },
+        Venus: { a: 0.723, e: 0.007, i: 3.4, color: '#e6c87a', size: 0.12, period: 224.7, omega: 131.53, node: 76.68, M0: 50.42 },
+        Earth: { a: 1.0, e: 0.017, i: 0.0, color: '#4a90d9', size: 0.13, period: 365.25, omega: 102.94, node: -11.26, M0: 357.53 },
+        Mars: { a: 1.524, e: 0.093, i: 1.85, color: '#c1440e', size: 0.1, period: 686.98, omega: 336.04, node: 49.58, M0: 19.41 },
+        Jupiter: { a: 5.203, e: 0.048, i: 1.3, color: '#d4a574', size: 0.35, period: 4332.59, omega: 14.75, node: 100.56, M0: 20.02 },
+        Saturn: { a: 9.537, e: 0.054, i: 2.49, color: '#e6d4a3', size: 0.3, period: 10759.22, omega: 92.43, node: 113.72, M0: 317.02, rings: true },
+        Uranus: { a: 19.19, e: 0.047, i: 0.77, color: '#7de3f4', size: 0.22, period: 30688.5, omega: 170.96, node: 74.23, M0: 142.24 },
+        Neptune: { a: 30.07, e: 0.009, i: 1.77, color: '#4b70dd', size: 0.21, period: 60182, omega: 44.97, node: 131.72, M0: 256.23 }
+    };
     
 const navigate = useNavigate();
 const containerRef = useRef(null);
@@ -20,22 +29,6 @@ const [currentDay, setCurrentDay] = useState(0);
 useEffect(() => {
   console.log('useEffect is running!');
   console.log('Container element:', containerRef.current);
-  
-  if (containerRef.current) {
-    const testDiv = document.createElement('div');
-    testDiv.style.width = '200px';
-    testDiv.style.height = '200px';
-    testDiv.style.background = 'red';
-    testDiv.style.margin = '50px auto';
-    testDiv.textContent = 'TEST - If you see this, React works!';
-    testDiv.style.color = 'white';
-    testDiv.style.display = 'flex';
-    testDiv.style.alignItems = 'center';
-    testDiv.style.justifyContent = 'center';
-    containerRef.current.appendChild(testDiv);
-    
-    console.log('Red box added!');
-  }
 }, []);
 
 
