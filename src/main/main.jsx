@@ -54,7 +54,8 @@ const [currentDay, setCurrentDay] = useState(0);
 
     // camera
     const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
-    camera.position.set(0, 30, 50);
+    camera.position.set(0, 30, 95
+    );
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
@@ -117,39 +118,37 @@ const [currentDay, setCurrentDay] = useState(0);
     });
 
     const onMouseDown = (e) => {
-  controlsRef.current.isDragging = true;
-  controlsRef.current.prevX = e.clientX;
-  controlsRef.current.prevY = e.clientY;
-  console.log('Started dragging!');
-};
+        controlsRef.current.isDragging = true;
+        controlsRef.current.prevX = e.clientX;
+        controlsRef.current.prevY = e.clientY;
+    };
 
-const onMouseMove = (e) => {
-  if (!controlsRef.current.isDragging) return;
-  
-  const dx = e.clientX - controlsRef.current.prevX;
-  const dy = e.clientY - controlsRef.current.prevY;
-  
-  controlsRef.current.rotY += dx * 0.005;
-  controlsRef.current.rotX += dy * 0.005;
-  
-  // Update camera position
-  const c = controlsRef.current;
-  camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
-  camera.position.y = Math.sin(c.rotX) * c.zoom;
-  camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
-  camera.lookAt(0, 0, 0);
-  
-  // Re-render the scene
-  renderer.render(scene, camera);
-  
-  controlsRef.current.prevX = e.clientX;
-  controlsRef.current.prevY = e.clientY;
-};
+    const onMouseMove = (e) => {
+        if (!controlsRef.current.isDragging) return;
 
-const onMouseUp = () => {
-  controlsRef.current.isDragging = false;
-  console.log('Stopped dragging!');
-};
+        const dx = e.clientX - controlsRef.current.prevX;
+        const dy = e.clientY - controlsRef.current.prevY;
+
+        controlsRef.current.rotY += dx * 0.005;
+        controlsRef.current.rotX += dy * 0.005;
+
+        // update camera position
+        const c = controlsRef.current;
+        camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
+        camera.position.y = Math.sin(c.rotX) * c.zoom;
+        camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
+        camera.lookAt(0, 0, 0);
+
+        // re-render
+        renderer.render(scene, camera);
+
+        controlsRef.current.prevX = e.clientX;
+        controlsRef.current.prevY = e.clientY;
+    };
+
+    const onMouseUp = () => {
+        controlsRef.current.isDragging = false;
+    };
 
     renderer.domElement.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
