@@ -3,8 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 
-export function Main() {
-    const PLANETS_DATA = {
+const PLANETS_DATA = {
         Mercury: { a: 0.387, e: 0.205, i: 7.0, color: '#8c8c8c', size: 0.08, period: 87.97, omega: 77.45, node: 48.33, M0: 174.79 },
         Venus: { a: 0.723, e: 0.007, i: 3.4, color: '#e6c87a', size: 0.12, period: 224.7, omega: 131.53, node: 76.68, M0: 50.42 },
         Earth: { a: 1.0, e: 0.017, i: 0.0, color: '#4a90d9', size: 0.13, period: 365.25, omega: 102.94, node: -11.26, M0: 357.53 },
@@ -14,6 +13,8 @@ export function Main() {
         Uranus: { a: 19.19, e: 0.047, i: 0.77, color: '#7de3f4', size: 0.22, period: 30688.5, omega: 170.96, node: 74.23, M0: 142.24 },
         Neptune: { a: 30.07, e: 0.009, i: 1.77, color: '#4b70dd', size: 0.21, period: 60182, omega: 44.97, node: 131.72, M0: 256.23 }
     };
+
+export function Main() {
     
 const navigate = useNavigate();
 const containerRef = useRef(null);
@@ -26,72 +27,98 @@ const [isPlaying, setIsPlaying] = useState(false);
 const [speed, setSpeed] = useState(1);
 const [currentDay, setCurrentDay] = useState(0);
 
-useEffect(() => {
-  if (!containerRef.current) return;
+
+// START OF JAVASCRIPT
+    useEffect(() => {
+    if (!containerRef.current) return;
+
+    const w = containerRef.current.clientWidth;
+    const h = containerRef.current.clientHeight;
+
+    console.log('Creating 3D scene...');
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000510);
+    sceneRef.current = scene;
+
+    // camera
+    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
+    camera.position.set(0, 30, 50);
+    camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
+
+    // renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(w, h);
+    containerRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    // stars
+    const starsGeo = new THREE.BufferGeometry();
+    const starPositions = [];
+    for (let i = 0; i < 2000; i++) {
+        const x = (Math.random() - 0.5) * 500;
+        const y = (Math.random() - 0.5) * 500;
+        const z = (Math.random() - 0.5) * 500;
+        starPositions.push(x, y, z);
+    }
+    starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+    const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3 });
+    scene.add(new THREE.Points(starsGeo, starsMat));
+
+    // sun
+    const sunGeo = new THREE.SphereGeometry(0.8, 32, 32);
+    const sunMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
+    const sun = new THREE.Mesh(sunGeo, sunMat);
+    scene.add(sun);
+
+    const glowGeo = new THREE.SphereGeometry(1.5, 32, 32);
+    const glowMat = new THREE.MeshBasicMaterial({ 
+        color: 0xffaa33, 
+        transparent: true, 
+        opacity: 0.15 
+    });
+    scene.add(new THREE.Mesh(glowGeo, glowMat));
+
+    // lights
+    const light = new THREE.PointLight(0xffffff, 2, 200);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x333333));
+
+    const scale = 1; // Make orbits smaller
+
+    Object.entries(PLANETS_DATA).forEach(([name, data]) => {
+        // planets
+        const planetGeo = new THREE.SphereGeometry(data.size * 3, 24, 24); // Make planets 3x bigger
+        const planetMat = new THREE.MeshStandardMaterial({ 
+        color: data.color, 
+        roughness: 0.8 
+        });
+        const planet = new THREE.Mesh(planetGeo, planetMat);
+        planet.userData.name = name;
+        
+        const distance = data.a * scale;
+        planet.position.set(distance, 0, 0);
+        
+        scene.add(planet);
+
+        console.log(`Added ${name} at distance ${distance}, position:`, planet.position);
+    });
   
-  const w = containerRef.current.clientWidth;
-  const h = containerRef.current.clientHeight;
-  
-  console.log('Creating 3D scene...');
-  
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000510);
-  sceneRef.current = scene;
-  
-  // camera
-  const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
-  camera.position.set(0, 30, 50);
-  camera.lookAt(0, 0, 0);
-  cameraRef.current = camera;
-  
-  // renderer
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(w, h);
-  containerRef.current.appendChild(renderer.domElement);
-  rendererRef.current = renderer;
-  
-  // stars
-  const starsGeo = new THREE.BufferGeometry();
-  const starPositions = [];
-  for (let i = 0; i < 2000; i++) {
-    const x = (Math.random() - 0.5) * 500;
-    const y = (Math.random() - 0.5) * 500;
-    const z = (Math.random() - 0.5) * 500;
-    starPositions.push(x, y, z);
-  }
-  starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
-  const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3 });
-  scene.add(new THREE.Points(starsGeo, starsMat));
-  
-  // sun
-  const sunGeo = new THREE.SphereGeometry(0.8, 32, 32);
-  const sunMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
-  const sun = new THREE.Mesh(sunGeo, sunMat);
-  scene.add(sun);
-  
-  const glowGeo = new THREE.SphereGeometry(1.5, 32, 32);
-  const glowMat = new THREE.MeshBasicMaterial({ 
-    color: 0xffaa33, 
-    transparent: true, 
-    opacity: 0.15 
-  });
-  scene.add(new THREE.Mesh(glowGeo, glowMat));
-  
-  // render the scene
-  renderer.render(scene, camera);
-  
-  console.log('3D scene created!');
-  
-  // cleanup
-  return () => {
+    // render the scene
+    renderer.render(scene, camera);
+
+    console.log('3D scene created!');
+
+    // cleanup
+    return () => {
     renderer.dispose();
     if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
-      containerRef.current.removeChild(renderer.domElement);
+        containerRef.current.removeChild(renderer.domElement);
     }
-  };
-}, []);
-
-
+    };
+    }, []);
+// END OF JAVASCRIPT
 
 return (
 <div>
