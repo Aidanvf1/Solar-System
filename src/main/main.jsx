@@ -28,7 +28,18 @@ const [speed, setSpeed] = useState(1);
 const [currentDay, setCurrentDay] = useState(0);
 
 
+
 // START OF JAVASCRIPT
+    const controlsRef = useRef({ 
+        isDragging: false, 
+        prevX: 0, 
+        prevY: 0, 
+        rotX: 0.2, 
+        rotY: 0, 
+        zoom: 100 
+    });
+
+
     useEffect(() => {
     if (!containerRef.current) return;
 
@@ -89,7 +100,7 @@ const [currentDay, setCurrentDay] = useState(0);
 
     Object.entries(PLANETS_DATA).forEach(([name, data]) => {
         // planets
-        const planetGeo = new THREE.SphereGeometry(data.size * 3, 24, 24); // Make planets 3x bigger
+        const planetGeo = new THREE.SphereGeometry(data.size * 3, 24, 24);
         const planetMat = new THREE.MeshStandardMaterial({ 
         color: data.color, 
         roughness: 0.8 
@@ -104,6 +115,46 @@ const [currentDay, setCurrentDay] = useState(0);
 
         console.log(`Added ${name} at distance ${distance}, position:`, planet.position);
     });
+
+    const onMouseDown = (e) => {
+  controlsRef.current.isDragging = true;
+  controlsRef.current.prevX = e.clientX;
+  controlsRef.current.prevY = e.clientY;
+  console.log('Started dragging!');
+};
+
+const onMouseMove = (e) => {
+  if (!controlsRef.current.isDragging) return;
+  
+  const dx = e.clientX - controlsRef.current.prevX;
+  const dy = e.clientY - controlsRef.current.prevY;
+  
+  controlsRef.current.rotY += dx * 0.005;
+  controlsRef.current.rotX += dy * 0.005;
+  
+  // Update camera position
+  const c = controlsRef.current;
+  camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
+  camera.position.y = Math.sin(c.rotX) * c.zoom;
+  camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
+  camera.lookAt(0, 0, 0);
+  
+  // Re-render the scene
+  renderer.render(scene, camera);
+  
+  controlsRef.current.prevX = e.clientX;
+  controlsRef.current.prevY = e.clientY;
+};
+
+const onMouseUp = () => {
+  controlsRef.current.isDragging = false;
+  console.log('Stopped dragging!');
+};
+
+    renderer.domElement.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
   
     // render the scene
     renderer.render(scene, camera);
@@ -112,6 +163,10 @@ const [currentDay, setCurrentDay] = useState(0);
 
     // cleanup
     return () => {
+        renderer.domElement.removeEventListener('mousedown', onMouseDown);
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+
     renderer.dispose();
     if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
         containerRef.current.removeChild(renderer.domElement);
