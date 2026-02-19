@@ -152,9 +152,35 @@ export function Main() {
       controlsRef.current.isDragging = false;
     };
 
+    const onWheel = (e) => {
+        e.preventDefault();
+  
+        // zoom based on scroll
+        controlsRef.current.zoom += e.deltaY * 0.05;
+    
+        controlsRef.current.zoom = Math.max(15, Math.min(200, controlsRef.current.zoom));
+    
+        // update camera position
+        const c = controlsRef.current;
+        camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
+        camera.position.y = Math.sin(c.rotX) * c.zoom;
+        camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
+        camera.lookAt(0, 0, 0);
+        
+        // ee-render
+        renderer.render(scene, camera);
+        
+        console.log('Zoom:', c.zoom);
+    };
+
     renderer.domElement.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+
+    renderer.domElement.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
 
     // render the scene
     renderer.render(scene, camera);
@@ -166,6 +192,7 @@ export function Main() {
       renderer.domElement.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+      renderer.domElement.removeEventListener('wheel', onWheel);
 
       renderer.dispose();
       if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
