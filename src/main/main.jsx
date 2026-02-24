@@ -37,6 +37,8 @@ export function Main() {
     rotY: 0, 
     zoom: 100 
   });
+  const isPlayingRef = useRef(false);  
+  const speedRef = useRef(1);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -53,7 +55,6 @@ export function Main() {
     // camera
     const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
     
-    // Set initial position from controlsRef
     const c = controlsRef.current;
     camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
     camera.position.y = Math.sin(c.rotX) * c.zoom;
@@ -116,9 +117,9 @@ export function Main() {
       const angle = Math.random() * Math.PI * 2;
 
       planet.position.set(
-      Math.cos(angle) * distance,
-      0,                            
-      Math.sin(angle) * distance 
+        Math.cos(angle) * distance,
+        0,                            
+        Math.sin(angle) * distance 
       );
       scene.add(planet);
       planetsRef.current[name] = planet;
@@ -129,10 +130,10 @@ export function Main() {
       for (let angle = 0; angle <= 360; angle += 5) {
         const rad = (angle * Math.PI) / 180;
         orbitPoints.push(new THREE.Vector3(
-        Math.cos(rad) * distance,
-        0,
-        Math.sin(rad) * distance
-      ));
+          Math.cos(rad) * distance,
+          0,
+          Math.sin(rad) * distance
+        ));
       }
       const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPoints);
       const orbitMat = new THREE.LineBasicMaterial({ 
@@ -142,7 +143,7 @@ export function Main() {
       });
       const orbitLine = new THREE.LineLoop(orbitGeo, orbitMat);
       scene.add(orbitLine);
-      });
+    });
 
     const onMouseDown = (e) => {
       controlsRef.current.isDragging = true;
@@ -178,29 +179,25 @@ export function Main() {
     };
 
     const onWheel = (e) => {
-        e.preventDefault();
-  
-        // zoom based on scroll
-        controlsRef.current.zoom += e.deltaY * 0.05;
-    
-        controlsRef.current.zoom = Math.max(15, Math.min(200, controlsRef.current.zoom));
-    
-        // update camera position
-        const c = controlsRef.current;
-        camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
-        camera.position.y = Math.sin(c.rotX) * c.zoom;
-        camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
-        camera.lookAt(0, 0, 0);
-        
-        // re-render
-        renderer.render(scene, camera);
-        
-        console.log('Zoom:', c.zoom);
-    };
+      e.preventDefault();
 
-    renderer.domElement.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+      // zoom based on scroll
+      controlsRef.current.zoom += e.deltaY * 0.05;
+  
+      controlsRef.current.zoom = Math.max(15, Math.min(200, controlsRef.current.zoom));
+  
+      // update camera position
+      const c = controlsRef.current;
+      camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
+      camera.position.y = Math.sin(c.rotX) * c.zoom;
+      camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
+      camera.lookAt(0, 0, 0);
+      
+      // re-render
+      renderer.render(scene, camera);
+      
+      console.log('Zoom:', c.zoom);
+    };
 
     renderer.domElement.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
@@ -210,7 +207,7 @@ export function Main() {
     // render the scene
     renderer.render(scene, camera);
 
-    console.log('3D scene created!');
+    console.log('3D scene created');
 
     // cleanup
     return () => {
@@ -226,43 +223,51 @@ export function Main() {
     };
   }, []);
 
+  // sync state to refs
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+    speedRef.current = speed;
+  }, [isPlaying, speed]);
+
   // planet animation
   useEffect(() => {
-  let animationId;
-  let time = 0;
-  
-  const animate = () => {
-    animationId = requestAnimationFrame(animate);
+    let animationId;
+    let time = 0;
     
-    time += 0; // animation speed
-    
-    // move each planet
-    Object.entries(PLANETS_DATA).forEach(([name, data]) => {
-      const planet = planetsRef.current[name];
-      if (planet) {
-        const distance = data.a * 5;
-        const speed = 1 / data.period;
-        const angle = time * speed * 100;
-        
-        planet.position.x = Math.cos(angle) * distance;
-        planet.position.z = Math.sin(angle) * distance;
+    const animate = () => {
+      animationId = requestAnimationFrame(animate);
+      
+      if (isPlayingRef.current) {
+        time += 0.001 * speedRef.current;
       }
-    });
+      
+      // move each planet
+      Object.entries(PLANETS_DATA).forEach(([name, data]) => {
+        const planet = planetsRef.current[name];
+        if (planet) {
+          const distance = data.a * 5;
+          const speed = 1 / data.period;
+          const angle = time * speed * 100;
+          
+          planet.position.x = Math.cos(angle) * distance;
+          planet.position.z = Math.sin(angle) * distance;
+        }
+      });
+      
+      // re-render the scene
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    };
     
-    // re-render the scene
-    if (rendererRef.current && sceneRef.current && cameraRef.current) {
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
-    }
-  };
-  
-  animate();
-  
-  return () => {
-    if (animationId) cancelAnimationFrame(animationId);
-  };
-}, []);
+    animate();
+    
+    return () => {
+      if (animationId) cancelAnimationFrame(animationId);
+    };
+  }, []);
 
-// END OF JAVASCRIPT
+  // END OF JAVASCRIPT
 
   return (
     <div>
@@ -338,11 +343,25 @@ export function Main() {
       </div>
 
       <section id="dateandcontrols">
-        <button id="playbutton" type="button">▶</button>
+        <button 
+          id="playbutton" 
+          type="button"
+          onClick={() => setIsPlaying(!isPlaying)}
+        >
+          {isPlaying ? '⏸' : '▶'}
+        </button>
         
         <div id="speedcontrols">
           <label htmlFor="speed">Speed:</label>
-          <input type="range" id="speed" value="1" step=".1" min=".1" max="5" onChange={() => {}} />
+          <input 
+            type="range" 
+            id="speed" 
+            value={speed} 
+            step=".1" 
+            min=".1" 
+            max="5" 
+            onChange={(e) => setSpeed(+e.target.value)} 
+          />
         </div>
       </section>
 
