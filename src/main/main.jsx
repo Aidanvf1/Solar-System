@@ -21,6 +21,7 @@ export function Main() {
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
   const cameraRef = useRef(null);
+  const planetsRef = useRef({});
 
   const [year, setYear] = useState(2026);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -118,9 +119,9 @@ export function Main() {
       Math.cos(angle) * distance,
       0,                            
       Math.sin(angle) * distance 
-);
-      
+      );
       scene.add(planet);
+      planetsRef.current[name] = planet;
 
       console.log(`Added ${name} at distance ${distance}, position:`, planet.position);
 
@@ -191,7 +192,7 @@ export function Main() {
         camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
         camera.lookAt(0, 0, 0);
         
-        // ee-render
+        // re-render
         renderer.render(scene, camera);
         
         console.log('Zoom:', c.zoom);
@@ -224,7 +225,44 @@ export function Main() {
       }
     };
   }, []);
-  // END OF JAVASCRIPT
+
+  // planet animation
+  useEffect(() => {
+  let animationId;
+  let time = 0;
+  
+  const animate = () => {
+    animationId = requestAnimationFrame(animate);
+    
+    time += 0; // animation speed
+    
+    // move each planet
+    Object.entries(PLANETS_DATA).forEach(([name, data]) => {
+      const planet = planetsRef.current[name];
+      if (planet) {
+        const distance = data.a * 5;
+        const speed = 1 / data.period;
+        const angle = time * speed * 100;
+        
+        planet.position.x = Math.cos(angle) * distance;
+        planet.position.z = Math.sin(angle) * distance;
+      }
+    });
+    
+    // re-render the scene
+    if (rendererRef.current && sceneRef.current && cameraRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+  };
+  
+  animate();
+  
+  return () => {
+    if (animationId) cancelAnimationFrame(animationId);
+  };
+}, []);
+
+// END OF JAVASCRIPT
 
   return (
     <div>
