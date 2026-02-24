@@ -99,7 +99,7 @@ export function Main() {
     scene.add(light);
     scene.add(new THREE.AmbientLight(0x333333));
 
-    const scale = 1; // Make orbits smaller
+    const scale = 5;
 
     Object.entries(PLANETS_DATA).forEach(([name, data]) => {
       // planets
@@ -112,12 +112,36 @@ export function Main() {
       planet.userData.name = name;
       
       const distance = data.a * scale;
-      planet.position.set(distance, 0, 0);
+      const angle = Math.random() * Math.PI * 2;
+
+      planet.position.set(
+      Math.cos(angle) * distance,
+      0,                            
+      Math.sin(angle) * distance 
+);
       
       scene.add(planet);
 
       console.log(`Added ${name} at distance ${distance}, position:`, planet.position);
-    });
+
+      const orbitPoints = [];
+      for (let angle = 0; angle <= 360; angle += 5) {
+        const rad = (angle * Math.PI) / 180;
+        orbitPoints.push(new THREE.Vector3(
+        Math.cos(rad) * distance,
+        0,
+        Math.sin(rad) * distance
+      ));
+      }
+      const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPoints);
+      const orbitMat = new THREE.LineBasicMaterial({ 
+        color: 0x334455, 
+        transparent: true, 
+        opacity: 0.4 
+      });
+      const orbitLine = new THREE.LineLoop(orbitGeo, orbitMat);
+      scene.add(orbitLine);
+      });
 
     const onMouseDown = (e) => {
       controlsRef.current.isDragging = true;
