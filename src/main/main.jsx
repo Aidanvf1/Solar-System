@@ -22,6 +22,7 @@ export function Main() {
   const rendererRef = useRef(null);
   const cameraRef = useRef(null);
   const planetsRef = useRef({});
+  const labelsRef = useRef({});
 
   const [year, setYear] = useState(2026);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -257,6 +258,23 @@ export function Main() {
       // re-render the scene
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
+
+        Object.entries(planetsRef.current).forEach(([name, planet]) => {
+          const el = labelsRef.current[name];
+          if (!el) return;
+          const vector = planet.position.clone();
+          vector.project(cameraRef.current);
+          const rect = rendererRef.current.domElement.getBoundingClientRect();
+          if (vector.z < 1) {
+            const x = (vector.x * 0.5 + 0.5) * rect.width;
+            const y = (-vector.y * 0.5 + 0.5) * rect.height;
+            el.style.left = x + 'px';
+            el.style.top = (y - 20) + 'px';
+            el.style.display = 'block';
+          } else {
+            el.style.display = 'none';
+          }
+        });
       }
     };
     
@@ -279,6 +297,25 @@ export function Main() {
       {/* application text */}
       <main id="solarsystem">
         <div id="scenearea" ref={containerRef}></div>
+        <div id="planetlabels" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+          {Object.keys(PLANETS_DATA).map(name => (
+            <div
+              key={name}
+              ref={el => labelsRef.current[name] = el}
+              style={{
+                position: 'absolute',
+                color: PLANETS_DATA[name].color,
+                fontSize: '11px',
+                fontFamily: 'monospace',
+                textShadow: '0 0 4px black',
+                whiteSpace: 'nowrap',
+                transform: 'translateX(-50%)',
+              }}
+            >
+              {name}
+            </div>
+          ))}
+        </div>
         <div id="instructions">Drag to move camera • Scroll to zoom.</div>
       </main>
 
