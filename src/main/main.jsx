@@ -168,6 +168,20 @@ export function Main() {
         Math.sin(angle) * distance 
       );
       scene.add(planet);
+
+      if (data.rings) {
+        const ringGeo = new THREE.RingGeometry(data.size * 3 * 1.4, data.size * 3 * 2.4, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ 
+          color: 0xc4a66a, 
+          side: THREE.DoubleSide, 
+          transparent: true, 
+          opacity: 0.7 
+        });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2.5;
+        planet.add(ring);
+      }
+
       planetsRef.current[name] = planet;
 
       console.log(`Added ${name} at distance ${distance}, position:`, planet.position);
