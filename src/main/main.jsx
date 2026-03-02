@@ -14,6 +14,18 @@ const PLANETS_DATA = {
   Neptune: { a: 30.07, e: 0.009, i: 1.77, color: '#4b70dd', size: 0.21, period: 60182, omega: 44.97, node: 131.72, M0: 256.23 }
 };
 
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function dateToDays(year, month, day) {
+  const j2000 = new Date(Date.UTC(2000, 0, 1, 12));
+  const target = new Date(Date.UTC(year, month - 1, day, 12));
+  return (target - j2000) / (1000 * 60 * 60 * 24);
+}
+
+function getDaysInMonth(year, month) {
+  return new Date(year, month, 0).getDate();
+}
+
 export function Main() {
   
   const navigate = useNavigate();
@@ -24,6 +36,8 @@ export function Main() {
   const planetsRef = useRef({});
   const labelsRef = useRef({});
 
+  const [day, setDay] = useState(1);
+  const [month, setMonth] = useState(1);
   const [year, setYear] = useState(2026);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
@@ -40,6 +54,34 @@ export function Main() {
   });
   const isPlayingRef = useRef(false);  
   const speedRef = useRef(1);
+  const daysRef = useRef(dateToDays(2026, 1, 1));
+
+  function changeDay(delta) {
+    setDay(prev => {
+      const max = getDaysInMonth(year, month);
+      const next = prev + delta;
+      if (next < 1) return max;
+      if (next > max) return 1;
+      return next;
+    });
+  }
+
+  function changeMonth(delta) {
+    setMonth(prev => {
+      const next = prev + delta;
+      if (next < 1) return 12;
+      if (next > 12) return 1;
+      return next;
+    });
+  }
+
+  function changeYear(delta) {
+    setYear(prev => prev + delta);
+  }
+
+  useEffect(() => {
+    daysRef.current = dateToDays(year, month, day);
+  }, [day, month, year]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -233,13 +275,12 @@ export function Main() {
   // planet animation
   useEffect(() => {
     let animationId;
-    let time = 0;
     
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       
       if (isPlayingRef.current) {
-        time += 0.001 * speedRef.current;
+        daysRef.current += 0.5 * speedRef.current;
       }
       
       // move each planet
@@ -247,8 +288,10 @@ export function Main() {
         const planet = planetsRef.current[name];
         if (planet) {
           const distance = data.a * 5;
-          const speed = 1 / data.period;
-          const angle = time * speed * 100;
+          const n = 360 / data.period;
+          let M = (data.M0 + n * daysRef.current) % 360;
+          if (M < 0) M += 360;
+          const angle = M * (Math.PI / 180);
           
           planet.position.x = Math.cos(angle) * distance;
           planet.position.z = Math.sin(angle) * distance;
@@ -355,26 +398,26 @@ export function Main() {
       <div id="datecontrolsgroup">
         <div id="daycontrol">
           <label htmlFor="day">Day:</label>
-          <input id="day" value="20" min="1" max="31" readOnly />
+          <input id="day" value={day} readOnly />
           <div className="buttongroup">
-            <button className="buttonleft">⋖</button>
-            <button className="buttonright">⋗</button>
+            <button className="buttonleft" onClick={() => changeDay(-1)}>⋖</button>
+            <button className="buttonright" onClick={() => changeDay(1)}>⋗</button>
           </div>
         </div>
         <div id="monthcontrol">
           <label htmlFor="month">Month:</label>
-          <input id="month" value="June" readOnly />
+          <input id="month" value={MONTH_NAMES[month - 1]} readOnly />
           <div className="buttongroup">
-            <button className="buttonleft">⋖</button>
-            <button className="buttonright">⋗</button>
+            <button className="buttonleft" onClick={() => changeMonth(-1)}>⋖</button>
+            <button className="buttonright" onClick={() => changeMonth(1)}>⋗</button>
           </div>
         </div>
         <div id="yearcontrol">
           <label htmlFor="year">Year:</label>
-          <input id="year" value="2004" min="0" max="2500" readOnly />
+          <input id="year" value={year} readOnly />
           <div className="buttongroup">
-            <button className="buttonleft">⋖</button>
-            <button className="buttonright">⋗</button>
+            <button className="buttonleft" onClick={() => changeYear(-1)}>⋖</button>
+            <button className="buttonright" onClick={() => changeYear(1)}>⋗</button>
           </div>
         </div>
       </div>
