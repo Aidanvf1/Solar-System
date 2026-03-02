@@ -14,6 +14,8 @@ const PLANETS_DATA = {
   Neptune: { a: 30.07, e: 0.009, i: 1.77, color: '#4b70dd', size: 0.21, period: 60182, omega: 44.97, node: 131.72, M0: 256.23 }
 };
 
+const SCALE = 5;
+
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function dateToDays(year, month, day) {
@@ -35,6 +37,7 @@ export function Main() {
   const cameraRef = useRef(null);
   const planetsRef = useRef({});
   const labelsRef = useRef({});
+  const asteroidsRef = useRef([]);
 
   const [day, setDay] = useState(1);
   const [month, setMonth] = useState(1);
@@ -144,19 +147,19 @@ export function Main() {
     scene.add(light);
     scene.add(new THREE.AmbientLight(0x333333));
 
-    const scale = 5;
-
     Object.entries(PLANETS_DATA).forEach(([name, data]) => {
       // planets
       const planetGeo = new THREE.SphereGeometry(data.size * 3, 24, 24);
       const planetMat = new THREE.MeshStandardMaterial({ 
-        color: data.color, 
+        color: data.color,
+        emissive: data.color,
+        emissiveIntensity: 0.3,
         roughness: 0.8 
       });
       const planet = new THREE.Mesh(planetGeo, planetMat);
       planet.userData.name = name;
       
-      const distance = data.a * scale;
+      const distance = data.a * SCALE;
       const angle = Math.random() * Math.PI * 2;
 
       planet.position.set(
@@ -187,6 +190,23 @@ export function Main() {
       const orbitLine = new THREE.LineLoop(orbitGeo, orbitMat);
       scene.add(orbitLine);
     });
+
+    const asteroidBeltGroup = new THREE.Group();
+    for (let i = 0; i < 1500; i++) {
+      const r = (2.2 + Math.random() * 1.3) * SCALE;
+      const angle = Math.random() * Math.PI * 2;
+      const y = (Math.random() - 0.5) * 0.5;
+      const geo = new THREE.SphereGeometry(0.03 + Math.random() * 0.04, 4, 4);
+      const brightness = 0.3 + Math.random() * 0.3;
+      const mat = new THREE.MeshBasicMaterial({ 
+        color: new THREE.Color(brightness, brightness * 0.9, brightness * 0.8) 
+      });
+      const asteroid = new THREE.Mesh(geo, mat);
+      asteroid.position.set(Math.cos(angle) * r, y, Math.sin(angle) * r);
+      asteroidBeltGroup.add(asteroid);
+      asteroidsRef.current.push({ mesh: asteroid, r, angle, y });
+    }
+    scene.add(asteroidBeltGroup);
 
     const onMouseDown = (e) => {
       controlsRef.current.isDragging = true;
@@ -287,7 +307,7 @@ export function Main() {
       Object.entries(PLANETS_DATA).forEach(([name, data]) => {
         const planet = planetsRef.current[name];
         if (planet) {
-          const distance = data.a * 5;
+          const distance = data.a * SCALE;
           const n = 360 / data.period;
           let M = (data.M0 + n * daysRef.current) % 360;
           if (M < 0) M += 360;
@@ -296,6 +316,15 @@ export function Main() {
           planet.position.x = Math.cos(angle) * distance;
           planet.position.z = Math.sin(angle) * distance;
         }
+      });
+
+      asteroidsRef.current.forEach(a => {
+        const orbitalPeriod = 365.25 * Math.pow(a.r / SCALE, 1.5);
+        const n = (2 * Math.PI) / orbitalPeriod;
+        const step = isPlayingRef.current ? n * 0.5 * speedRef.current : 0;
+        a.angle += step;
+        a.mesh.position.x = Math.cos(a.angle) * a.r;
+        a.mesh.position.z = Math.sin(a.angle) * a.r;
       });
       
       // re-render the scene
