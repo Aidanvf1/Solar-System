@@ -38,6 +38,7 @@ export function Main() {
   const planetsRef = useRef({});
   const labelsRef = useRef({});
   const asteroidsRef = useRef([]);
+  const orbitLinesRef = useRef([]);
 
   const [day, setDay] = useState(1);
   const [month, setMonth] = useState(1);
@@ -45,6 +46,7 @@ export function Main() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [currentDay, setCurrentDay] = useState(0);
+  const [showOrbits, setShowOrbits] = useState(true);
 
   // START OF JAVASCRIPT
   const controlsRef = useRef({ 
@@ -93,6 +95,12 @@ export function Main() {
   useEffect(() => {
     daysRef.current = dateToDays(year, month, day);
   }, [day, month, year]);
+
+  useEffect(() => {
+    orbitLinesRef.current.forEach(line => {
+      line.visible = showOrbits;
+    });
+  }, [showOrbits]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -214,6 +222,7 @@ export function Main() {
       });
       const orbitLine = new THREE.LineLoop(orbitGeo, orbitMat);
       scene.add(orbitLine);
+      orbitLinesRef.current.push(orbitLine);
     });
 
     const asteroidBeltGroup = new THREE.Group();
@@ -325,14 +334,14 @@ export function Main() {
       animationId = requestAnimationFrame(animate);
       
       if (isPlayingRef.current) {
-  daysRef.current += 0.5 * speedRef.current;
+        daysRef.current += 0.5 * speedRef.current;
 
-  const d = new Date(Date.UTC(2000, 0, 1, 12));
-  d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
-  setDay(d.getUTCDate());
-  setMonth(d.getUTCMonth() + 1);
-  setYear(d.getUTCFullYear());
-}
+        const d = new Date(Date.UTC(2000, 0, 1, 12));
+        d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
+        setDay(d.getUTCDate());
+        setMonth(d.getUTCMonth() + 1);
+        setYear(d.getUTCFullYear());
+      }
       
       // move each planet
       Object.entries(PLANETS_DATA).forEach(([name, data]) => {
@@ -507,6 +516,10 @@ export function Main() {
             onChange={(e) => setSpeed(+e.target.value)} 
           />
         </div>
+
+        <button type="button" className="orbit-toggle-btn" onClick={() => setShowOrbits(prev => !prev)}>
+          {showOrbits ? 'Hide Lines' : 'Show Lines'}
+        </button>
       </section>
 
       {/* database placeholder */}

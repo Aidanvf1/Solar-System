@@ -39,7 +39,8 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 #speed { width: 6px; height: 80px; writing-mode: vertical-lr; direction: rtl; background: #1e293b; border-radius: 4px; outline: none; }
 #speed::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 8px rgba(0,212,255,0.6); cursor: pointer; }
 
-
+.orbit-toggle-btn { background: transparent; border: none; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); font-size: 11px; cursor: pointer; transition: color 0.2s; font-family: inherit; }
+.orbit-toggle-btn:hover { color: #5ce1ff; }
 
 #saveddates { position: absolute; top: 10px; right: 10px; z-index: 20; display: flex; gap: 6px; }
 #savedatebutton, #saved { background: rgba(0,20,40,0.85); border: 1px solid rgba(100,200,255,0.4); color: #00d4ff; padding: 8px 12px; border-radius: 6px; font-size: 11px; transition: background 0.2s; }
