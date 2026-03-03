@@ -45,6 +45,9 @@ export function Main() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [showOrbits, setShowOrbits] = useState(true);
+  const [showUsersList, setShowUsersList] = useState(false);
+  const [showSavedDatesList, setShowSavedDatesList] = useState(false);
+  const [savedDates, setSavedDates] = useState([]);
 
   // START OF JAVASCRIPT
   const controlsRef = useRef({ 
@@ -88,6 +91,21 @@ export function Main() {
 
   function changeYear(delta) {
     setYear(prev => prev + delta);
+  }
+
+  function saveCurrentDate() {
+    const dateString = `${MONTH_NAMES[month - 1]} ${day}, ${year}`;
+    setSavedDates(prev => {
+      const newDates = [{ day, month, year, dateString }, ...prev];
+      return newDates.length > 5 ? newDates.slice(0, 5) : newDates;
+    });
+  }
+
+  function loadSavedDate(savedDate) {
+    setDay(savedDate.day);
+    setMonth(savedDate.month);
+    setYear(savedDate.year);
+    daysRef.current = dateToDays(savedDate.year, savedDate.month, savedDate.day);
   }
 
   useEffect(() => {
@@ -434,8 +452,17 @@ export function Main() {
         <h2>Online Users</h2>
         <p><span id="online-count">0</span> others online</p>
         <ul>
-          <li className="link-with-arrow">See Users<span className="arrow">←</span></li>
+          <li className="link-with-arrow" onClick={() => setShowUsersList(prev => !prev)} style={{ cursor: 'pointer' }}>
+            {showUsersList ? 'Hide Users' : 'See Users'}<span className="arrow">←</span>
+          </li>
         </ul>
+        {showUsersList && (
+          <ul className="user-placeholder-list" style={{ marginTop: '8px', fontSize: '10px' }}>
+            <li className="user-placeholder">User1 (placeholder)</li>
+            <li className="user-placeholder">User2 (placeholder)</li>
+            <li className="user-placeholder">User3 (placeholder)</li>
+          </ul>
+        )}
       </section>
 
       {/* login section */}
@@ -522,13 +549,31 @@ export function Main() {
 
       {/* database placeholder */}
       <section id="saveddates">
-        <button id="savedatebutton">Save Current Date</button>
-        <button id="saved">Saved Dates</button>
-        <div id="saveddateslist">
-          <ul>
-            <li>Placeholder</li>
-          </ul>
-        </div>
+        <button id="savedatebutton" onClick={saveCurrentDate} className="link-with-arrow">
+          Save Date + <span className="arrow">←</span>
+        </button>
+        <button id="saved" onClick={() => setShowSavedDatesList(prev => !prev)} className="link-with-arrow">
+          {showSavedDatesList ? 'Hide Dates' : 'Date Archive'} <span className="arrow">←</span>
+        </button>
+        {showSavedDatesList && (
+          <div id="saveddateslist">
+            <ul>
+              {savedDates.length > 0 ? (
+                savedDates.map((date, index) => (
+                  <li 
+                    key={index} 
+                    onClick={() => loadSavedDate(date)}
+                    className="link-with-arrow"
+                  >
+                    {date.dateString} <span className="arrow">←</span>
+                  </li>
+                ))
+              ) : (
+                <li className="no-dates-message">No saved dates yet</li>
+              )}
+            </ul>
+          </div>
+        )}
       </section>
 
       {/* footer for github and html cross links */}
