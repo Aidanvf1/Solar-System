@@ -59,6 +59,14 @@ export function Main() {
   const speedRef = useRef(1);
   const daysRef = useRef(dateToDays(2026, 1, 1));
 
+  function snapDateToRef() {
+    const d = new Date(Date.UTC(2000, 0, 1, 12));
+    d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
+    setDay(d.getUTCDate());
+    setMonth(d.getUTCMonth() + 1);
+    setYear(d.getUTCFullYear());
+  }
+
   function changeDay(delta) {
     setDay(prev => {
       const max = getDaysInMonth(year, month);
@@ -118,14 +126,17 @@ export function Main() {
     // stars
     const starsGeo = new THREE.BufferGeometry();
     const starPositions = [];
-    for (let i = 0; i < 2000; i++) {
-      const x = (Math.random() - 0.5) * 500;
-      const y = (Math.random() - 0.5) * 500;
-      const z = (Math.random() - 0.5) * 500;
+    for (let i = 0; i < 3000; i++) {
+      let x, y, z;
+      do {
+        x = (Math.random() - 0.5) * 800;
+        y = (Math.random() - 0.5) * 800;
+        z = (Math.random() - 0.5) * 800;
+      } while (Math.sqrt(x*x + y*y + z*z) < 200);
       starPositions.push(x, y, z);
     }
     starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
-    const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3 });
+    const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
     scene.add(new THREE.Points(starsGeo, starsMat));
 
     // sun
@@ -314,8 +325,14 @@ export function Main() {
       animationId = requestAnimationFrame(animate);
       
       if (isPlayingRef.current) {
-        daysRef.current += 0.5 * speedRef.current;
-      }
+  daysRef.current += 0.5 * speedRef.current;
+
+  const d = new Date(Date.UTC(2000, 0, 1, 12));
+  d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
+  setDay(d.getUTCDate());
+  setMonth(d.getUTCMonth() + 1);
+  setYear(d.getUTCFullYear());
+}
       
       // move each planet
       Object.entries(PLANETS_DATA).forEach(([name, data]) => {
@@ -469,7 +486,11 @@ export function Main() {
         <button 
           id="playbutton" 
           type="button"
-          onClick={() => setIsPlaying(!isPlaying)}
+          onClick={() => {
+            const newPlaying = !isPlaying;
+            setIsPlaying(newPlaying);
+            if (!newPlaying) snapDateToRef();
+          }}
         >
           {isPlaying ? '⏸' : '▶'}
         </button>
