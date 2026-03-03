@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 
@@ -30,7 +30,6 @@ function getDaysInMonth(year, month) {
 
 export function Main() {
   
-  const navigate = useNavigate();
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
@@ -45,7 +44,6 @@ export function Main() {
   const [year, setYear] = useState(2026);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const [currentDay, setCurrentDay] = useState(0);
   const [showOrbits, setShowOrbits] = useState(true);
 
   // START OF JAVASCRIPT
