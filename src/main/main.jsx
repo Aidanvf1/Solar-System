@@ -38,10 +38,12 @@ export function Main() {
   const labelsRef = useRef({});
   const asteroidsRef = useRef([]);
   const orbitLinesRef = useRef([]);
+  const [onlineCount, setOnlineCount] = useState(0);
 
-  const [day, setDay] = useState(1);
-  const [month, setMonth] = useState(1);
-  const [year, setYear] = useState(2026);
+  const today = new Date();
+  const [day, setDay] = useState(today.getDate());
+  const [month, setMonth] = useState(today.getMonth() + 1);
+  const [year, setYear] = useState(today.getFullYear());
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [showOrbits, setShowOrbits] = useState(true);
@@ -60,7 +62,7 @@ export function Main() {
   });
   const isPlayingRef = useRef(false);  
   const speedRef = useRef(1);
-  const daysRef = useRef(dateToDays(2026, 1, 1));
+  const daysRef = useRef(dateToDays(today.getFullYear(), today.getMonth() + 1, today.getDate()));
 
   function snapDateToRef() {
     const d = new Date(Date.UTC(2000, 0, 1, 12));
@@ -413,6 +415,14 @@ export function Main() {
     };
   }, []);
 
+  useEffect(() => {
+  setOnlineCount(Math.floor(Math.random() * 5) + 1);
+  const interval = setInterval(() => {
+    setOnlineCount(Math.floor(Math.random() * 10) + 1);
+  }, 5000);
+  return () => clearInterval(interval);
+}, []);
+
   // END OF JAVASCRIPT
 
   return (
@@ -450,7 +460,7 @@ export function Main() {
       {/* websocket placeholder */}
       <section id="onlineusers">
         <h2>Online Users</h2>
-        <p><span id="online-count">0</span> others online</p>
+        <p><span id="online-count">{onlineCount}</span> others online</p>
         <ul>
           <li className="link-with-arrow" onClick={() => setShowUsersList(prev => !prev)} style={{ cursor: 'pointer' }}>
             {showUsersList ? 'Hide Users' : 'See Users'}<span className="arrow">←</span>
