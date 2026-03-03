@@ -80,8 +80,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I did not complete this part of the deliverable.
+- [x] **All functionality implemented or mocked out** - Yeah I mean i spent a ton of time try to make sure all of these things where well written and mocked out for the parts that will need websocket or data base. such as online users, 3js animations, live date updating, speed configurations, and more.
+- [x] **Hooks** - I used lots of useState and useEffects for my animaions and ui controls.
 
 ## 🚀 Service deliverable
 

@@ -49,17 +49,43 @@ export function Main() {
   const [showOrbits, setShowOrbits] = useState(true);
   const [showUsersList, setShowUsersList] = useState(false);
   const [showSavedDatesList, setShowSavedDatesList] = useState(false);
-  const [savedDates, setSavedDates] = useState([]);
+  const [savedDates, setSavedDates] = useState(() => {
+    const stored = localStorage.getItem('savedDates');
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [username, setUsername] = useState(() => {
+    const session = localStorage.getItem('userSession');
+    return session ? JSON.parse(session).username : null;
+  });
+  const [showLoginModal, setShowLoginModal] = useState(() => !localStorage.getItem('userSession'));
+  const [loginInput, setLoginInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
 
   // START OF JAVASCRIPT
-  const controlsRef = useRef({ 
-    isDragging: false, 
-    prevX: 0, 
-    prevY: 0, 
-    rotX: 0.2, 
-    rotY: 0, 
-    zoom: 100 
-  });
+  const getInitialCameraState = () => {
+    const saved = localStorage.getItem('cameraState');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        isDragging: false,
+        prevX: 0,
+        prevY: 0,
+        rotX: parsed.rotX,
+        rotY: parsed.rotY,
+        zoom: parsed.zoom
+      };
+    }
+    return { 
+      isDragging: false, 
+      prevX: 0, 
+      prevY: 0, 
+      rotX: 0.2, 
+      rotY: 0, 
+      zoom: 100 
+    };
+  };
+  
+  const controlsRef = useRef(getInitialCameraState());
   const isPlayingRef = useRef(false);  
   const speedRef = useRef(1);
   const daysRef = useRef(dateToDays(today.getFullYear(), today.getMonth() + 1, today.getDate()));
@@ -275,6 +301,10 @@ export function Main() {
       controlsRef.current.rotY += dx * 0.005;
       controlsRef.current.rotX += dy * 0.005;
 
+      // save camera state
+      const { rotX, rotY, zoom } = controlsRef.current;
+      localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
+
       // update camera position
       const c = controlsRef.current;
       camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
@@ -300,6 +330,10 @@ export function Main() {
       controlsRef.current.zoom += e.deltaY * 0.05;
   
       controlsRef.current.zoom = Math.max(15, Math.min(200, controlsRef.current.zoom));
+
+      // save camera state
+      const { rotX, rotY, zoom } = controlsRef.current;
+      localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
   
       // update camera position
       const c = controlsRef.current;
@@ -416,12 +450,25 @@ export function Main() {
   }, []);
 
   useEffect(() => {
-  setOnlineCount(Math.floor(Math.random() * 5) + 1);
-  const interval = setInterval(() => {
-    setOnlineCount(Math.floor(Math.random() * 10) + 1);
-  }, 5000);
-  return () => clearInterval(interval);
-}, []);
+    setOnlineCount(Math.floor(Math.random() * 5) + 1);
+    const interval = setInterval(() => {
+      setOnlineCount(Math.floor(Math.random() * 10) + 1);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('savedDates', JSON.stringify(savedDates));
+  }, [savedDates]);
+
+  useEffect(() => {
+    if (username) {
+      const session = { username, timestamp: Date.now() };
+      localStorage.setItem('userSession', JSON.stringify(session));
+    } else {
+      localStorage.removeItem('userSession');
+    }
+  }, [username]);
 
   // END OF JAVASCRIPT
 
@@ -429,7 +476,27 @@ export function Main() {
     <div>
       <header id="mainheader">
         <h1>Eyes on Space</h1>
-        <p>Username: <span id="username-display">[Not logged in]</span></p>
+        <p>
+          Username: <span id="username-display">{username || '[Not logged in]'}</span>
+          {username ? (
+            <button 
+              className="logout-btn" 
+              onClick={() => {
+                setUsername(null);
+                setShowLoginModal(true);
+              }}
+            >
+              Logout
+            </button>
+          ) : (
+            <button 
+              className="login-btn" 
+              onClick={() => setShowLoginModal(true)}
+            >
+              Login
+            </button>
+          )}
+        </p>
       </header>
 
       {/* application text */}
@@ -487,7 +554,10 @@ export function Main() {
             <label htmlFor="password">Password:</label><br />
             <input type="password" id="password" name="password" placeholder="Enter password" />
           </p>
-          <button type="button">Login</button>
+          <button type="button" onClick={() => {
+            const u = document.getElementById('username').value.trim();
+            if (u) { setUsername(u); }
+          }}>Login</button>
           <button type="button">Create Account</button>
         </form>
       </section>
@@ -594,6 +664,46 @@ export function Main() {
         <a href="https://github.com/Aidanvf1/Solar-System" className="link-with-arrow">GitHub Repository <span className="arrow">←</span></a>
         <p>© 2026 Aidan Von Feldt</p>
       </footer>
+
+      {/* login modal */}
+      {showLoginModal && (
+        <div className="modal-backdrop" onClick={() => setShowLoginModal(false)}>
+          <div className="login-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Welcome to Eyes on Space</h2>
+            <p className="modal-subtitle">Login to explore the solar system</p>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const user = loginInput.trim();
+              const pass = passwordInput.trim();
+              if (user && pass) {
+                // mock authentication
+                setUsername(user);
+                setShowLoginModal(false);
+                setLoginInput('');
+                setPasswordInput('');
+              }
+            }}>
+              <input
+                type="text"
+                placeholder="Enter username"
+                value={loginInput}
+                onChange={(e) => setLoginInput(e.target.value)}
+                autoFocus
+              />
+              <input
+                type="password"
+                placeholder="Enter password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+              />
+              <div className="modal-buttons">
+                <button type="submit" className="btn-login">Login</button>
+                <button type="button" className="btn-skip" onClick={() => setShowLoginModal(false)}>Skip for now</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
