@@ -15,6 +15,19 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 
 #instructions{ pointer-events: none; position: absolute; transform: translateX(-50%); left: 50%; bottom: 0;  padding: 6px 12px; border-radius: 6px; color: #64748b; font-size: 12px; z-index: 5; }
 
+#apod { position: absolute; top: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 14px 12px 0px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 20; max-width: 300px; }
+#apod h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; pointer-events: none; }
+#apod ul { list-style: none; margin-top: 4px; padding: 0; cursor: pointer; }
+#apod li { font-size: 11px; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); text-decoration: none; }
+.apod-content { margin-top: 12px; padding-bottom: 12px; }
+.apod-image { width: 100%; max-width: 280px; height: auto; border-radius: 6px; border: 1px solid rgba(100,200,255,0.3); display: block; margin-bottom: 8px; }
+.apod-video { width: 100%; max-width: 280px; height: 160px; border-radius: 6px; border: 1px solid rgba(100,200,255,0.3); display: block; margin-bottom: 8px; }
+.apod-description { font-size: 10px; color: #94a3b8; margin: 0; line-height: 1.5; }
+.apod-loading { font-size: 10px; color: #94a3b8; font-style: italic; margin: 8px 0; }
+.apod-error { font-size: 10px; color: #ef4444; font-style: italic; margin: 8px 0; }
+.apod-link { color: #00d4ff; text-decoration: underline; text-shadow: 0 0 15px rgba(0,212,255,0.5); transition: color 0.2s; }
+.apod-link:hover { color: #5ce1ff; text-shadow: 0 0 20px rgba(0,212,255,0.7); }
+
 #onlineusers { position: absolute; bottom: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 14px 12px 0px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 15;}
 #onlineusers h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; pointer-events: none; }
 #onlineusers h2::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; pointer-events: none; }
@@ -48,7 +61,7 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 .orbit-toggle-btn { background: transparent; border: none; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); font-size: 11px; cursor: pointer; transition: color 0.2s; font-family: inherit; }
 .orbit-toggle-btn:hover { color: #5ce1ff; }
 
-#saveddates { position: absolute; top: 10px; right: 10px; z-index: 20; background: rgba(0,20,40,0.85); border: 1px solid rgba(100,200,255,0.4); padding: 8px 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 6px; }
+#saveddates { position: absolute; top: 10px; left: 300px; z-index: 25; background: rgba(0,20,40,0.85); border: 1px solid rgba(100,200,255,0.4); padding: 8px 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 6px; }
 #savedatebutton, #saved { background: transparent; border: none; color: #00d4ff; padding: 4px 0; font-size: 11px; transition: color 0.2s, text-shadow 0.2s; cursor: pointer; font-family: inherit; text-align: left; }
 #savedatebutton:hover { color: #22c55e; text-shadow: 0 0 15px rgba(34,197,94,0.5); }
 #saved:hover { color: #5ce1ff; }
@@ -90,6 +103,14 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
 @media (max-width: 768px) {
     #instructions {display: none;}
     
+    #apod { top: 10px; right: 10px; max-width: 200px; padding: 10px 8px 0px 8px; }
+    #apod h2 { font-size: 8px; }
+    #apod li { font-size: 9px; }
+    .apod-image { max-width: 180px; }
+    .apod-video { max-width: 180px; height: 100px; }
+    .apod-description { font-size: 9px; }
+    .apod-loading, .apod-error { font-size: 9px; }
+    
     #datecontrolsgroup {flex-direction: column;max-width: 120px;padding: 6px 8px;gap: 6px;}
     #daycontrol, #monthcontrol, #yearcontrol {gap: 2px;}
     #daycontrol label, #monthcontrol label, #yearcontrol label {font-size: 8px;}
@@ -97,7 +118,7 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
     #daycontrol button, #monthcontrol button, #yearcontrol button {font-size: 14px;width: 16px;height: 14px;}
     #dateandcontrols {padding: 8px 10px;}
 
-    #saveddates { padding: 6px 8px; }
+    #saveddates { top: 10px; left: 10px; padding: 6px 8px; max-width: 150px; }
     #savedatebutton, #saved { font-size: 9px; padding: 3px 0; }
     #saveddateslist { padding: 6px 0 0 0; }
     #saveddateslist li { font-size: 9px; }

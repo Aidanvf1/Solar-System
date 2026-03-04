@@ -49,6 +49,9 @@ export function Main() {
   const [showOrbits, setShowOrbits] = useState(true);
   const [showUsersList, setShowUsersList] = useState(false);
   const [showSavedDatesList, setShowSavedDatesList] = useState(false);
+  const [showApod, setShowApod] = useState(false);
+  const [apodData, setApodData] = useState(null);
+  const [apodLoading, setApodLoading] = useState(false);
   const [savedDates, setSavedDates] = useState(() => {
     const stored = localStorage.getItem('savedDates');
     return stored ? JSON.parse(stored) : [];
@@ -457,6 +460,27 @@ export function Main() {
     return () => clearInterval(interval);
   }, []);
 
+  // nasa api
+  useEffect(() => {
+    const fetchApod = async () => {
+      setApodLoading(true);
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      setApodData({
+        date: "2026-03-03",
+        hdurl: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80",
+        media_type: "image",
+        service_version: "v1",
+        title: "Mock Astronomy Picture of the Day",
+        url: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&q=80"
+      });
+      
+      setApodLoading(false);
+    };
+    fetchApod();
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('savedDates', JSON.stringify(savedDates));
   }, [savedDates]);
@@ -523,6 +547,47 @@ export function Main() {
         </div>
         <div id="instructions">Drag to move camera • Scroll to zoom.</div>
       </main>
+
+      {/* api placeholder */}
+      <section id="apod">
+        <h2>NASA APOD</h2>
+        <ul>
+          <li className="link-with-arrow" onClick={() => setShowApod(prev => !prev)} style={{ cursor: 'pointer' }}>
+            {showApod ? 'Hide Photo' : 'Show Photo'}<span className="arrow">←</span>
+          </li>
+        </ul>
+        {showApod && (
+          <div className="apod-content">
+            {apodLoading ? (
+              <p className="apod-loading">Loading...</p>
+            ) : apodData ? (
+              <>
+                {apodData.media_type === 'video' ? (
+                  <iframe
+                    src={apodData.url}
+                    className="apod-video"
+                    frameBorder="0"
+                    allow="encrypted-media"
+                    allowFullScreen
+                    title={apodData.title}
+                  />
+                ) : (
+                  <img 
+                    src={apodData.url} 
+                    alt={apodData.title || 'Astronomy Picture of the Day'} 
+                    className="apod-image"
+                  />
+                )}
+                <p className="apod-description">
+                  To learn more about NASA's photo of the day visit: <a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noopener noreferrer" className="apod-link">APOD</a>
+                </p>
+              </>
+            ) : (
+              <p className="apod-error">Failed to load APOD</p>
+            )}
+          </div>
+        )}
+      </section>
 
       {/* websocket placeholder */}
       <section id="onlineusers">
