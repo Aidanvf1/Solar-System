@@ -31,26 +31,4 @@ Okay, setting it up was literally pain, but ones I did it with simon doing it to
 
 ## React Part 2: Reactivity
 
-Need to remember that this makes or breaks the website. I think that having interactions and animations is whatwill make people look at my page and stay on my page.
-
-Handling the toggling of the checkboxes was particularly interesting.
-
-```jsx
-<div className="input-group sound-button-container">
-  {calmSoundTypes.map((sound, index) => (
-    <div key={index} className="form-check form-switch">
-      <input
-        className="form-check-input"
-        type="checkbox"
-        value={sound}
-        id={sound}
-        onChange={() => togglePlay(sound)}
-        checked={selectedSounds.includes(sound)}
-      ></input>
-      <label className="form-check-label" htmlFor={sound}>
-        {sound}
-      </label>
-    </div>
-  ))}
-</div>
-```
+Need to remember that this makes or breaks the website. I think that having interactions and animations is what will make people look at my page and stay on my page.
