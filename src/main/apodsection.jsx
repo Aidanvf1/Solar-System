@@ -1,5 +1,7 @@
+// imports
 import React from 'react';
 
+// nasa apod section
 export function ApodSection({ showApod, setShowApod, apodData, apodLoading }) {
   return (
     <section id="apod">

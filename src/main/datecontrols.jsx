@@ -1,7 +1,10 @@
+// imports
 import React from 'react';
 
+// month names
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+// date controls
 export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onChangeYear }) {
   return (
     <div id="datecontrolsgroup">

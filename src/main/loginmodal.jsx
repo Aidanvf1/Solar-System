@@ -1,5 +1,7 @@
+// imports
 import React from 'react';
 
+// login modal
 export function LoginModal({ 
   showLoginModal, 
   setShowLoginModal, 

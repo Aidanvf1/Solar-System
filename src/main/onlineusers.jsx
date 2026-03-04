@@ -1,5 +1,7 @@
+// imports
 import React from 'react';
 
+// online users display
 export function OnlineUsers({ onlineCount, showUsersList, setShowUsersList }) {
   return (
     <section id="onlineusers">

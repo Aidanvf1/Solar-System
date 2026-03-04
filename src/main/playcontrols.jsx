@@ -1,5 +1,7 @@
+// imports
 import React from 'react';
 
+// play controls
 export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, showOrbits, setShowOrbits, onPlayPause }) {
   return (
     <section id="dateandcontrols">

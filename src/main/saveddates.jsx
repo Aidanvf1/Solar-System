@@ -1,5 +1,7 @@
+// imports
 import React from 'react';
 
+// saved dates
 export function SavedDates({ savedDates, showSavedDatesList, setShowSavedDatesList, onSaveDate, onLoadDate }) {
   return (
     <section id="saveddates">

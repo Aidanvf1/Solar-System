@@ -1,5 +1,7 @@
+// imports
 import React from 'react';
 
+// planet colors
 const PLANETS_DATA = {
   Mercury: { color: '#8c8c8c' },
   Venus: { color: '#e6c87a' },
@@ -11,6 +13,7 @@ const PLANETS_DATA = {
   Neptune: { color: '#4b70dd' }
 };
 
+// planet labels
 export function PlanetLabels({ labelsRef }) {
   return (
     <div id="planetlabels" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>

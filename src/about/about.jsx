@@ -1,7 +1,9 @@
+// imports
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './about.css';
 
+// about page
 export function About() {
   const navigate = useNavigate();
 

@@ -1,3 +1,4 @@
+// imports
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
@@ -11,6 +12,7 @@ import { ApodSection } from './apodsection';
 import { PlanetLabels } from './planetlabels';
 import { MusicPlayer } from './musicplayer';
 
+// planetary data
 const PLANETS_DATA = {
   Mercury: { a: 0.387, e: 0.205, i: 7.0, color: '#8c8c8c', size: 0.08, period: 87.97, omega: 77.45, node: 48.33, M0: 174.79, axialTilt: 0.03 },
   Venus: { a: 0.723, e: 0.007, i: 3.4, color: '#e6c87a', size: 0.12, period: 224.7, omega: 131.53, node: 76.68, M0: 50.42, axialTilt: 177.4 },
@@ -22,21 +24,25 @@ const PLANETS_DATA = {
   Neptune: { a: 30.07, e: 0.009, i: 1.77, color: '#4b70dd', size: 0.21, period: 60182, omega: 44.97, node: 131.72, M0: 256.23, axialTilt: 28.32 }
 };
 
+// scale factor
 const SCALE = 6;
 
+// month names
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+// date to days
 function dateToDays(year, month, day) {
   const j2000 = new Date(Date.UTC(2000, 0, 1, 12));
   const target = new Date(Date.UTC(year, month - 1, day, 12));
   return (target - j2000) / (1000 * 60 * 60 * 24);
 }
 
+// days in month
 function getDaysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
 }
 
-// solve kepler's equation
+// kepler's equation
 function solveKeplersEquation(M, e, tolerance = 1e-6) {
   let E = M;
   let delta = 1;
@@ -52,9 +58,9 @@ function solveKeplersEquation(M, e, tolerance = 1e-6) {
   return E;
 }
 
-// calculate 3D position from orbital elements
+// orbital position
 function getOrbitalPosition(a, e, i, omega, node, M) {
-  // convert degrees to radians
+  // degrees to radians
   const iRad = i * Math.PI / 180;
   const omegaRad = omega * Math.PI / 180;
   const nodeRad = node * Math.PI / 180;
@@ -72,12 +78,12 @@ function getOrbitalPosition(a, e, i, omega, node, M) {
   // calculate distance from sun
   const r = a * (1 - e * Math.cos(E));
   
-  // position in orbital plane
+  // orbital plane position
   const xOrbital = r * Math.cos(nu);
   const yOrbital = r * Math.sin(nu);
   
-  // rotate to ecliptic coordinates
-  // apply argument of perihelion rotation
+  // rotate to ecliptic
+  // perihelion rotation
   const x1 = xOrbital * Math.cos(omegaRad) - yOrbital * Math.sin(omegaRad);
   const y1 = xOrbital * Math.sin(omegaRad) + yOrbital * Math.cos(omegaRad);
   
@@ -95,7 +101,7 @@ function getOrbitalPosition(a, e, i, omega, node, M) {
 }
 
 export function Main() {
-  
+  // scene refs
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
@@ -106,22 +112,31 @@ export function Main() {
   const orbitLinesRef = useRef([]);
   const [onlineCount, setOnlineCount] = useState(0);
 
+  // date state
   const today = new Date();
   const [day, setDay] = useState(today.getDate());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [year, setYear] = useState(today.getFullYear());
+  
+  // animation
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
+  
+  // ui toggles
   const [showOrbits, setShowOrbits] = useState(true);
   const [showUsersList, setShowUsersList] = useState(false);
   const [showSavedDatesList, setShowSavedDatesList] = useState(false);
   const [showApod, setShowApod] = useState(false);
   const [apodData, setApodData] = useState(null);
   const [apodLoading, setApodLoading] = useState(false);
+  
+  // saved dates
   const [savedDates, setSavedDates] = useState(() => {
     const stored = localStorage.getItem('savedDates');
     return stored ? JSON.parse(stored) : [];
   });
+  
+  // authentication
   const [username, setUsername] = useState(() => {
     const session = localStorage.getItem('userSession');
     return session ? JSON.parse(session).username : null;
@@ -129,9 +144,9 @@ export function Main() {
   const [showLoginModal, setShowLoginModal] = useState(() => !localStorage.getItem('userSession'));
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
-  const [isMuted, setIsMuted] = useState(true); // Music starts muted
+  const [isMuted, setIsMuted] = useState(true);
 
-  // START OF JAVASCRIPT
+  // camera init
   const getInitialCameraState = () => {
     const saved = localStorage.getItem('cameraState');
     if (saved) {
@@ -155,11 +170,13 @@ export function Main() {
     };
   };
   
+  // animation refs
   const controlsRef = useRef(getInitialCameraState());
-  const isPlayingRef = useRef(false);  
+  const isPlayingRef = useRef(false);
   const speedRef = useRef(1);
   const daysRef = useRef(dateToDays(today.getFullYear(), today.getMonth() + 1, today.getDate()));
 
+  // sync date
   function snapDateToRef() {
     const d = new Date(Date.UTC(2000, 0, 1, 12));
     d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
@@ -168,6 +185,7 @@ export function Main() {
     setYear(d.getUTCFullYear());
   }
 
+  // date changes
   function changeDay(delta) {
     setDay(prev => {
       const max = getDaysInMonth(year, month);
@@ -191,6 +209,7 @@ export function Main() {
     setYear(prev => prev + delta);
   }
 
+  // save date
   function saveCurrentDate() {
     const dateString = `${MONTH_NAMES[month - 1]} ${day}, ${year}`;
     setSavedDates(prev => {
@@ -199,6 +218,7 @@ export function Main() {
     });
   }
 
+  // load date
   function loadSavedDate(savedDate) {
     setDay(savedDate.day);
     setMonth(savedDate.month);
@@ -206,23 +226,24 @@ export function Main() {
     daysRef.current = dateToDays(savedDate.year, savedDate.month, savedDate.day);
   }
 
+  // sync days
   useEffect(() => {
     daysRef.current = dateToDays(year, month, day);
   }, [day, month, year]);
 
+  // orbit visibility
   useEffect(() => {
     orbitLinesRef.current.forEach(line => {
       line.visible = showOrbits;
     });
   }, [showOrbits]);
 
+  // scene init
   useEffect(() => {
     if (!containerRef.current) return;
 
     const w = containerRef.current.clientWidth;
     const h = containerRef.current.clientHeight;
-
-    console.log('Creating 3D scene...');
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000510);
@@ -236,7 +257,6 @@ export function Main() {
     camera.position.y = Math.sin(c.rotX) * c.zoom;
     camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
     camera.lookAt(0, 0, 0);
-    
     cameraRef.current = camera;
 
     // renderer
@@ -280,8 +300,8 @@ export function Main() {
     scene.add(light);
     scene.add(new THREE.AmbientLight(0x333333));
 
+    // planets
     Object.entries(PLANETS_DATA).forEach(([name, data]) => {
-      // planets
       const planetGeo = new THREE.SphereGeometry(data.size * 3, 24, 24);
       const planetMat = new THREE.MeshStandardMaterial({ 
         color: data.color,
@@ -292,11 +312,11 @@ export function Main() {
       const planet = new THREE.Mesh(planetGeo, planetMat);
       planet.userData.name = name;
       
-      // Apply axial tilt to planet rotation
+      // axial tilt
       const tiltRad = data.axialTilt * Math.PI / 180;
       planet.rotation.z = tiltRad;
       
-      // Initial position using orbital mechanics
+      // initial position
       const initialPos = getOrbitalPosition(
         data.a * SCALE, 
         data.e, 
@@ -308,6 +328,7 @@ export function Main() {
       planet.position.set(initialPos.x, initialPos.y, initialPos.z);
       scene.add(planet);
 
+      // rings
       if (data.rings) {
         const ringGeo = new THREE.RingGeometry(data.size * 3 * 1.4, data.size * 3 * 2.4, 64);
         const ringMat = new THREE.MeshBasicMaterial({ 
@@ -323,9 +344,7 @@ export function Main() {
 
       planetsRef.current[name] = planet;
 
-      console.log(`Added ${name} with inclination ${data.i}°, eccentricity ${data.e}, axial tilt ${data.axialTilt}°`);
-
-      // Draw elliptical orbit with inclination
+      // orbit path
       const orbitPoints = [];
       for (let M = 0; M <= 360; M += 2) {
         const pos = getOrbitalPosition(
@@ -349,6 +368,7 @@ export function Main() {
       orbitLinesRef.current.push(orbitLine);
     });
 
+    // asteroid belt
     const asteroidBeltGroup = new THREE.Group();
     for (let i = 0; i < 1500; i++) {
       const r = (2.2 + Math.random() * 1.3) * SCALE;
@@ -366,6 +386,7 @@ export function Main() {
     }
     scene.add(asteroidBeltGroup);
 
+    // mouse controls
     const onMouseDown = (e) => {
       controlsRef.current.isDragging = true;
       controlsRef.current.prevX = e.clientX;
@@ -381,8 +402,8 @@ export function Main() {
       controlsRef.current.rotY += dx * 0.005;
       controlsRef.current.rotX += dy * 0.005;
       
-      // camera lock at 90 degrees
-      const maxAngle = Math.PI / 2 - 0.1; //
+      // clamp rotation
+      const maxAngle = Math.PI / 2 - 0.1;
       controlsRef.current.rotX = Math.max(-maxAngle, Math.min(maxAngle, controlsRef.current.rotX));
 
       // save camera state
@@ -410,9 +431,8 @@ export function Main() {
     const onWheel = (e) => {
       e.preventDefault();
 
-      // zoom based on scroll
+      // zoom
       controlsRef.current.zoom += e.deltaY * 0.05;
-  
       controlsRef.current.zoom = Math.max(15, Math.min(200, controlsRef.current.zoom));
 
       // save camera state
@@ -426,21 +446,16 @@ export function Main() {
       camera.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
       camera.lookAt(0, 0, 0);
       
-      // re-render
       renderer.render(scene, camera);
-      
-      console.log('Zoom:', c.zoom);
     };
 
+    // event listeners
     renderer.domElement.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
 
-    // render the scene
     renderer.render(scene, camera);
-
-    console.log('3D scene created');
 
     // cleanup
     return () => {
@@ -456,19 +471,20 @@ export function Main() {
     };
   }, []);
 
-  // sync state to refs
+  // sync refs
   useEffect(() => {
     isPlayingRef.current = isPlaying;
     speedRef.current = speed;
   }, [isPlaying, speed]);
 
-  // planet animation
+  // animation loop
   useEffect(() => {
     let animationId;
     
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       
+      // advance time
       if (isPlayingRef.current) {
         daysRef.current += 0.5 * speedRef.current;
 
@@ -479,7 +495,7 @@ export function Main() {
         setYear(d.getUTCFullYear());
       }
       
-      // move each planet using elliptical orbits
+      // update planets
       Object.entries(PLANETS_DATA).forEach(([name, data]) => {
         const planet = planetsRef.current[name];
         if (planet) {
@@ -500,6 +516,7 @@ export function Main() {
         }
       });
 
+      // asteroids
       asteroidsRef.current.forEach(a => {
         const orbitalPeriod = 365.25 * Math.pow(a.r / SCALE, 1.5);
         const n = (2 * Math.PI) / orbitalPeriod;
@@ -509,10 +526,11 @@ export function Main() {
         a.mesh.position.z = Math.sin(a.angle) * a.r;
       });
       
-      // re-render the scene
+      // render scene
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
-        rendererRef.current.render(sceneRef.current, cameraRef.current);
+          rendererRef.current.render(sceneRef.current, cameraRef.current);
 
+        // position labels
         Object.entries(planetsRef.current).forEach(([name, planet]) => {
           const el = labelsRef.current[name];
           if (!el) return;
@@ -539,6 +557,7 @@ export function Main() {
     };
   }, []);
 
+  // online users
   useEffect(() => {
     setOnlineCount(Math.floor(Math.random() * 5) + 1);
     const interval = setInterval(() => {
@@ -547,7 +566,7 @@ export function Main() {
     return () => clearInterval(interval);
   }, []);
 
-  // nasa api
+  // nasa apod
   useEffect(() => {
     const fetchApod = async () => {
       setApodLoading(true);
@@ -568,10 +587,12 @@ export function Main() {
     fetchApod();
   }, []);
 
+  // persist dates
   useEffect(() => {
     localStorage.setItem('savedDates', JSON.stringify(savedDates));
   }, [savedDates]);
 
+  // persist session
   useEffect(() => {
     if (username) {
       const session = { username, timestamp: Date.now() };
@@ -580,8 +601,6 @@ export function Main() {
       localStorage.removeItem('userSession');
     }
   }, [username]);
-
-  // END OF JAVASCRIPT
 
   return (
     <div>
@@ -610,7 +629,6 @@ export function Main() {
         </p>
       </header>
 
-      {/* application text */}
       <main id="solarsystem">
         <div id="scenearea" ref={containerRef}></div>
         <PlanetLabels labelsRef={labelsRef} />
@@ -629,32 +647,6 @@ export function Main() {
         showUsersList={showUsersList} 
         setShowUsersList={setShowUsersList} 
       />
-
-      {/* login section */}
-      <section id="loginsection">   
-        <h2>Login(will be a popup)</h2>
-        <form>
-          <p>
-            <label htmlFor="username">Username:</label><br />
-            <input type="text" id="username" name="username" placeholder="Enter username" />
-          </p>
-          <p>
-            <label htmlFor="password">Password:</label><br />
-            <input type="password" id="password" name="password" placeholder="Enter password" />
-          </p>
-          <button type="button" onClick={() => {
-            const u = document.getElementById('username').value.trim();
-            if (u) { setUsername(u); }
-          }}>Login</button>
-          <button type="button">Create Account</button>
-        </form>
-      </section>
-
-      {/* 3rd party api stuff */}
-      <section id="nasaapi">
-        <h2> Nasa API Holder</h2>
-        <p>Will check to make sure positions are correct from nasas api</p>
-      </section>
 
       <DateControls 
         day={day} 
@@ -687,7 +679,6 @@ export function Main() {
         onLoadDate={loadSavedDate} 
       />
 
-      {/* footer for github and html cross links */}
       <footer>
         <nav>
           <Link to="/about" className="link-with-arrow">About <span className="arrow">←</span></Link>
