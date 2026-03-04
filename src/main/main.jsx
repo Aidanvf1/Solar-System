@@ -12,17 +12,17 @@ import { PlanetLabels } from './planetlabels';
 import { MusicPlayer } from './musicplayer';
 
 const PLANETS_DATA = {
-  Mercury: { a: 0.387, e: 0.205, i: 7.0, color: '#8c8c8c', size: 0.08, period: 87.97, omega: 77.45, node: 48.33, M0: 174.79 },
-  Venus: { a: 0.723, e: 0.007, i: 3.4, color: '#e6c87a', size: 0.12, period: 224.7, omega: 131.53, node: 76.68, M0: 50.42 },
-  Earth: { a: 1.0, e: 0.017, i: 0.0, color: '#4a90d9', size: 0.13, period: 365.25, omega: 102.94, node: -11.26, M0: 357.53 },
-  Mars: { a: 1.524, e: 0.093, i: 1.85, color: '#c1440e', size: 0.1, period: 686.98, omega: 336.04, node: 49.58, M0: 19.41 },
-  Jupiter: { a: 5.203, e: 0.048, i: 1.3, color: '#d4a574', size: 0.35, period: 4332.59, omega: 14.75, node: 100.56, M0: 20.02 },
-  Saturn: { a: 9.537, e: 0.054, i: 2.49, color: '#e6d4a3', size: 0.3, period: 10759.22, omega: 92.43, node: 113.72, M0: 317.02, rings: true },
-  Uranus: { a: 19.19, e: 0.047, i: 0.77, color: '#7de3f4', size: 0.22, period: 30688.5, omega: 170.96, node: 74.23, M0: 142.24 },
-  Neptune: { a: 30.07, e: 0.009, i: 1.77, color: '#4b70dd', size: 0.21, period: 60182, omega: 44.97, node: 131.72, M0: 256.23 }
+  Mercury: { a: 0.387, e: 0.205, i: 7.0, color: '#8c8c8c', size: 0.08, period: 87.97, omega: 77.45, node: 48.33, M0: 174.79, axialTilt: 0.03 },
+  Venus: { a: 0.723, e: 0.007, i: 3.4, color: '#e6c87a', size: 0.12, period: 224.7, omega: 131.53, node: 76.68, M0: 50.42, axialTilt: 177.4 },
+  Earth: { a: 1.0, e: 0.017, i: 0.0, color: '#4a90d9', size: 0.13, period: 365.25, omega: 102.94, node: -11.26, M0: 357.53, axialTilt: 23.44 },
+  Mars: { a: 1.524, e: 0.093, i: 1.85, color: '#c1440e', size: 0.1, period: 686.98, omega: 336.04, node: 49.58, M0: 19.41, axialTilt: 25.19 },
+  Jupiter: { a: 5.203, e: 0.048, i: 1.3, color: '#d4a574', size: 0.35, period: 4332.59, omega: 14.75, node: 100.56, M0: 20.02, axialTilt: 3.13 },
+  Saturn: { a: 9.537, e: 0.054, i: 2.49, color: '#e6d4a3', size: 0.3, period: 10759.22, omega: 92.43, node: 113.72, M0: 317.02, rings: true, axialTilt: 26.73 },
+  Uranus: { a: 19.19, e: 0.047, i: 0.77, color: '#7de3f4', size: 0.22, period: 30688.5, omega: 170.96, node: 74.23, M0: 142.24, axialTilt: 97.77 },
+  Neptune: { a: 30.07, e: 0.009, i: 1.77, color: '#4b70dd', size: 0.21, period: 60182, omega: 44.97, node: 131.72, M0: 256.23, axialTilt: 28.32 }
 };
 
-const SCALE = 5;
+const SCALE = 6;
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -34,6 +34,64 @@ function dateToDays(year, month, day) {
 
 function getDaysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
+}
+
+// solve kepler's equation
+function solveKeplersEquation(M, e, tolerance = 1e-6) {
+  let E = M;
+  let delta = 1;
+  let iterations = 0;
+  const maxIterations = 30;
+  
+  while (Math.abs(delta) > tolerance && iterations < maxIterations) {
+    delta = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+    E = E - delta;
+    iterations++;
+  }
+  
+  return E;
+}
+
+// calculate 3D position from orbital elements
+function getOrbitalPosition(a, e, i, omega, node, M) {
+  // convert degrees to radians
+  const iRad = i * Math.PI / 180;
+  const omegaRad = omega * Math.PI / 180;
+  const nodeRad = node * Math.PI / 180;
+  const MRad = M * Math.PI / 180;
+  
+  // solve Kepler's equation for eccentric anomaly
+  const E = solveKeplersEquation(MRad, e);
+  
+  // calculate true anomaly
+  const nu = 2 * Math.atan2(
+    Math.sqrt(1 + e) * Math.sin(E / 2),
+    Math.sqrt(1 - e) * Math.cos(E / 2)
+  );
+  
+  // calculate distance from sun
+  const r = a * (1 - e * Math.cos(E));
+  
+  // position in orbital plane
+  const xOrbital = r * Math.cos(nu);
+  const yOrbital = r * Math.sin(nu);
+  
+  // rotate to ecliptic coordinates
+  // apply argument of perihelion rotation
+  const x1 = xOrbital * Math.cos(omegaRad) - yOrbital * Math.sin(omegaRad);
+  const y1 = xOrbital * Math.sin(omegaRad) + yOrbital * Math.cos(omegaRad);
+  
+  // apply inclination
+  const x2 = x1;
+  const y2 = y1 * Math.cos(iRad);
+  const z2 = y1 * Math.sin(iRad);
+  
+  // apply longitude of ascending node
+  const x3 = x2 * Math.cos(nodeRad) - y2 * Math.sin(nodeRad);
+  const y3 = x2 * Math.sin(nodeRad) + y2 * Math.cos(nodeRad);
+  const z3 = z2;
+  
+  return { x: x3, y: z3, z: y3 };
 }
 
 export function Main() {
@@ -234,14 +292,20 @@ export function Main() {
       const planet = new THREE.Mesh(planetGeo, planetMat);
       planet.userData.name = name;
       
-      const distance = data.a * SCALE;
-      const angle = Math.random() * Math.PI * 2;
-
-      planet.position.set(
-        Math.cos(angle) * distance,
-        0,                            
-        Math.sin(angle) * distance 
+      // Apply axial tilt to planet rotation
+      const tiltRad = data.axialTilt * Math.PI / 180;
+      planet.rotation.z = tiltRad;
+      
+      // Initial position using orbital mechanics
+      const initialPos = getOrbitalPosition(
+        data.a * SCALE, 
+        data.e, 
+        data.i, 
+        data.omega, 
+        data.node, 
+        data.M0
       );
+      planet.position.set(initialPos.x, initialPos.y, initialPos.z);
       scene.add(planet);
 
       if (data.rings) {
@@ -253,22 +317,26 @@ export function Main() {
           opacity: 0.7 
         });
         const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.rotation.x = Math.PI / 2.5;
+        ring.rotation.x = Math.PI / 2;
         planet.add(ring);
       }
 
       planetsRef.current[name] = planet;
 
-      console.log(`Added ${name} at distance ${distance}, position:`, planet.position);
+      console.log(`Added ${name} with inclination ${data.i}°, eccentricity ${data.e}, axial tilt ${data.axialTilt}°`);
 
+      // Draw elliptical orbit with inclination
       const orbitPoints = [];
-      for (let angle = 0; angle <= 360; angle += 5) {
-        const rad = (angle * Math.PI) / 180;
-        orbitPoints.push(new THREE.Vector3(
-          Math.cos(rad) * distance,
-          0,
-          Math.sin(rad) * distance
-        ));
+      for (let M = 0; M <= 360; M += 2) {
+        const pos = getOrbitalPosition(
+          data.a * SCALE,
+          data.e,
+          data.i,
+          data.omega,
+          data.node,
+          M
+        );
+        orbitPoints.push(new THREE.Vector3(pos.x, pos.y, pos.z));
       }
       const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPoints);
       const orbitMat = new THREE.LineBasicMaterial({ 
@@ -407,18 +475,24 @@ export function Main() {
         setYear(d.getUTCFullYear());
       }
       
-      // move each planet
+      // move each planet using elliptical orbits
       Object.entries(PLANETS_DATA).forEach(([name, data]) => {
         const planet = planetsRef.current[name];
         if (planet) {
-          const distance = data.a * SCALE;
           const n = 360 / data.period;
           let M = (data.M0 + n * daysRef.current) % 360;
           if (M < 0) M += 360;
-          const angle = M * (Math.PI / 180);
           
-          planet.position.x = Math.cos(angle) * distance;
-          planet.position.z = Math.sin(angle) * distance;
+          const pos = getOrbitalPosition(
+            data.a * SCALE,
+            data.e,
+            data.i,
+            data.omega,
+            data.node,
+            M
+          );
+          
+          planet.position.set(pos.x, pos.y, pos.z);
         }
       });
 
