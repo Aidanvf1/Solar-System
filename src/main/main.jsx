@@ -9,6 +9,7 @@ import { SavedDates } from './saveddates';
 import { OnlineUsers } from './onlineusers';
 import { ApodSection } from './apodsection';
 import { PlanetLabels } from './planetlabels';
+import { MusicPlayer } from './musicplayer';
 
 const PLANETS_DATA = {
   Mercury: { a: 0.387, e: 0.205, i: 7.0, color: '#8c8c8c', size: 0.08, period: 87.97, omega: 77.45, node: 48.33, M0: 174.79 },
@@ -70,6 +71,7 @@ export function Main() {
   const [showLoginModal, setShowLoginModal] = useState(() => !localStorage.getItem('userSession'));
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [isMuted, setIsMuted] = useState(true); // Music starts muted
 
   // START OF JAVASCRIPT
   const getInitialCameraState = () => {
@@ -625,6 +627,8 @@ export function Main() {
         setPasswordInput={setPasswordInput} 
         setUsername={setUsername} 
       />
+
+      <MusicPlayer isMuted={isMuted} setIsMuted={setIsMuted} />
     </div>
   );
 }
