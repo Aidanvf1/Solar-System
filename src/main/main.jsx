@@ -2,6 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
+import { LoginModal } from './loginmodal';
+import { DateControls } from './datecontrols';
+import { PlayControls } from './playcontrols';
+import { SavedDates } from './saveddates';
+import { OnlineUsers } from './onlineusers';
+import { ApodSection } from './apodsection';
+import { PlanetLabels } from './planetlabels';
 
 const PLANETS_DATA = {
   Mercury: { a: 0.387, e: 0.205, i: 7.0, color: '#8c8c8c', size: 0.08, period: 87.97, omega: 77.45, node: 48.33, M0: 174.79 },
@@ -526,86 +533,22 @@ export function Main() {
       {/* application text */}
       <main id="solarsystem">
         <div id="scenearea" ref={containerRef}></div>
-        <div id="planetlabels" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
-          {Object.keys(PLANETS_DATA).map(name => (
-            <div
-              key={name}
-              ref={el => labelsRef.current[name] = el}
-              style={{
-                position: 'absolute',
-                color: PLANETS_DATA[name].color,
-                fontSize: '11px',
-                fontFamily: 'monospace',
-                textShadow: '0 0 4px black',
-                whiteSpace: 'nowrap',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              {name}
-            </div>
-          ))}
-        </div>
+        <PlanetLabels labelsRef={labelsRef} />
         <div id="instructions">Drag to move camera • Scroll to zoom.</div>
       </main>
 
-      {/* api placeholder */}
-      <section id="apod">
-        <h2>NASA APOD</h2>
-        <ul>
-          <li className="link-with-arrow" onClick={() => setShowApod(prev => !prev)} style={{ cursor: 'pointer' }}>
-            {showApod ? 'Hide Photo' : 'Show Photo'}<span className="arrow">←</span>
-          </li>
-        </ul>
-        {showApod && (
-          <div className="apod-content">
-            {apodLoading ? (
-              <p className="apod-loading">Loading...</p>
-            ) : apodData ? (
-              <>
-                {apodData.media_type === 'video' ? (
-                  <iframe
-                    src={apodData.url}
-                    className="apod-video"
-                    frameBorder="0"
-                    allow="encrypted-media"
-                    allowFullScreen
-                    title={apodData.title}
-                  />
-                ) : (
-                  <img 
-                    src={apodData.url} 
-                    alt={apodData.title || 'Astronomy Picture of the Day'} 
-                    className="apod-image"
-                  />
-                )}
-                <p className="apod-description">
-                  To learn more about NASA's photo of the day visit: <a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noopener noreferrer" className="apod-link">APOD</a>
-                </p>
-              </>
-            ) : (
-              <p className="apod-error">Failed to load APOD</p>
-            )}
-          </div>
-        )}
-      </section>
+      <ApodSection 
+        showApod={showApod} 
+        setShowApod={setShowApod} 
+        apodData={apodData} 
+        apodLoading={apodLoading} 
+      />
 
-      {/* websocket placeholder */}
-      <section id="onlineusers">
-        <h2>Online Users</h2>
-        <p><span id="online-count">{onlineCount}</span> others online</p>
-        <ul>
-          <li className="link-with-arrow" onClick={() => setShowUsersList(prev => !prev)} style={{ cursor: 'pointer' }}>
-            {showUsersList ? 'Hide Users' : 'See Users'}<span className="arrow">←</span>
-          </li>
-        </ul>
-        {showUsersList && (
-          <ul className="user-placeholder-list" style={{ marginTop: '8px', fontSize: '10px' }}>
-            <li className="user-placeholder">User1 (placeholder)</li>
-            <li className="user-placeholder">User2 (placeholder)</li>
-            <li className="user-placeholder">User3 (placeholder)</li>
-          </ul>
-        )}
-      </section>
+      <OnlineUsers 
+        onlineCount={onlineCount} 
+        showUsersList={showUsersList} 
+        setShowUsersList={setShowUsersList} 
+      />
 
       {/* login section */}
       <section id="loginsection">   
@@ -633,93 +576,36 @@ export function Main() {
         <p>Will check to make sure positions are correct from nasas api</p>
       </section>
 
-      {/* controls */}
-      <div id="datecontrolsgroup">
-        <div id="daycontrol">
-          <label htmlFor="day">Day:</label>
-          <input id="day" value={day} readOnly />
-          <div className="buttongroup">
-            <button className="buttonleft" onClick={() => changeDay(-1)}>⋖</button>
-            <button className="buttonright" onClick={() => changeDay(1)}>⋗</button>
-          </div>
-        </div>
-        <div id="monthcontrol">
-          <label htmlFor="month">Month:</label>
-          <input id="month" value={MONTH_NAMES[month - 1]} readOnly />
-          <div className="buttongroup">
-            <button className="buttonleft" onClick={() => changeMonth(-1)}>⋖</button>
-            <button className="buttonright" onClick={() => changeMonth(1)}>⋗</button>
-          </div>
-        </div>
-        <div id="yearcontrol">
-          <label htmlFor="year">Year:</label>
-          <input id="year" value={year} readOnly />
-          <div className="buttongroup">
-            <button className="buttonleft" onClick={() => changeYear(-1)}>⋖</button>
-            <button className="buttonright" onClick={() => changeYear(1)}>⋗</button>
-          </div>
-        </div>
-      </div>
+      <DateControls 
+        day={day} 
+        month={month} 
+        year={year} 
+        onChangeDay={changeDay} 
+        onChangeMonth={changeMonth} 
+        onChangeYear={changeYear} 
+      />
 
-      <section id="dateandcontrols">
-        <button 
-          id="playbutton" 
-          type="button"
-          onClick={() => {
-            const newPlaying = !isPlaying;
-            setIsPlaying(newPlaying);
-            if (!newPlaying) snapDateToRef();
-          }}
-        >
-          {isPlaying ? '⏸' : '▶'}
-        </button>
-        
-        <div id="speedcontrols">
-          <label htmlFor="speed">Speed:</label>
-          <input 
-            type="range" 
-            id="speed" 
-            value={speed} 
-            step=".1" 
-            min=".1" 
-            max="5" 
-            onChange={(e) => setSpeed(+e.target.value)} 
-          />
-        </div>
+      <PlayControls 
+        isPlaying={isPlaying} 
+        setIsPlaying={setIsPlaying} 
+        speed={speed} 
+        setSpeed={setSpeed} 
+        showOrbits={showOrbits} 
+        setShowOrbits={setShowOrbits} 
+        onPlayPause={() => {
+          const newPlaying = !isPlaying;
+          setIsPlaying(newPlaying);
+          if (!newPlaying) snapDateToRef();
+        }} 
+      />
 
-        <button type="button" className="orbit-toggle-btn" onClick={() => setShowOrbits(prev => !prev)}>
-          {showOrbits ? 'Hide Lines' : 'Show Lines'}
-        </button>
-      </section>
-
-      {/* database placeholder */}
-      <section id="saveddates">
-        <button id="savedatebutton" onClick={saveCurrentDate} className="link-with-arrow">
-          Save Date + <span className="arrow">←</span>
-        </button>
-        <button id="saved" onClick={() => setShowSavedDatesList(prev => !prev)} className="link-with-arrow">
-          {showSavedDatesList ? 'Hide Dates' : 'Date Archive'} <span className="arrow">←</span>
-        </button>
-        {showSavedDatesList && (
-          <div id="saveddateslist">
-            <ul>
-              {savedDates.length > 0 ? (
-                savedDates.map((date, index) => (
-                  <li 
-                    key={index} 
-                    onClick={() => loadSavedDate(date)}
-                    className="link-with-arrow"
-                  >
-                    {date.dateString} <span className="arrow">←</span>
-                  </li>
-                ))
-              ) : (
-                <li className="no-dates-message">No saved dates yet</li>
-              )}
-            </ul>
-          </div>
-        )}
-      </section>
+      <SavedDates 
+        savedDates={savedDates} 
+        showSavedDatesList={showSavedDatesList} 
+        setShowSavedDatesList={setShowSavedDatesList} 
+        onSaveDate={saveCurrentDate} 
+        onLoadDate={loadSavedDate} 
+      />
 
       {/* footer for github and html cross links */}
       <footer>
@@ -730,45 +616,15 @@ export function Main() {
         <p>© 2026 Aidan Von Feldt</p>
       </footer>
 
-      {/* login modal */}
-      {showLoginModal && (
-        <div className="modal-backdrop" onClick={() => setShowLoginModal(false)}>
-          <div className="login-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Welcome to Eyes on Space</h2>
-            <p className="modal-subtitle">Login to explore the solar system</p>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const user = loginInput.trim();
-              const pass = passwordInput.trim();
-              if (user && pass) {
-                // mock authentication
-                setUsername(user);
-                setShowLoginModal(false);
-                setLoginInput('');
-                setPasswordInput('');
-              }
-            }}>
-              <input
-                type="text"
-                placeholder="Enter username"
-                value={loginInput}
-                onChange={(e) => setLoginInput(e.target.value)}
-                autoFocus
-              />
-              <input
-                type="password"
-                placeholder="Enter password"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-              />
-              <div className="modal-buttons">
-                <button type="submit" className="btn-login">Login</button>
-                <button type="button" className="btn-skip" onClick={() => setShowLoginModal(false)}>Skip for now</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <LoginModal 
+        showLoginModal={showLoginModal} 
+        setShowLoginModal={setShowLoginModal} 
+        loginInput={loginInput} 
+        setLoginInput={setLoginInput} 
+        passwordInput={passwordInput} 
+        setPasswordInput={setPasswordInput} 
+        setUsername={setUsername} 
+      />
     </div>
   );
 }
