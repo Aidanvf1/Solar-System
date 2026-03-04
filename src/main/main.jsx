@@ -380,6 +380,10 @@ export function Main() {
 
       controlsRef.current.rotY += dx * 0.005;
       controlsRef.current.rotX += dy * 0.005;
+      
+      // camera lock at 90 degrees
+      const maxAngle = Math.PI / 2 - 0.1; //
+      controlsRef.current.rotX = Math.max(-maxAngle, Math.min(maxAngle, controlsRef.current.rotX));
 
       // save camera state
       const { rotX, rotY, zoom } = controlsRef.current;
