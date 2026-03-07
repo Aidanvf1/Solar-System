@@ -24,7 +24,7 @@ const PLANETS_DATA = {
   Neptune: { a: 30.07, e: 0.009, i: 1.77, color: '#4b70dd', size: 0.21, period: 60182, omega: 44.97, node: 131.72, M0: 256.23, axialTilt: 28.32 }
 };
 
-// scale factor
+// scale
 const SCALE = 6;
 
 // month names
@@ -66,7 +66,7 @@ function getOrbitalPosition(a, e, i, omega, node, M) {
   const nodeRad = node * Math.PI / 180;
   const MRad = M * Math.PI / 180;
   
-  // solve Kepler's equation for eccentric anomaly
+  // solve kepler's equation for eccentric anomaly
   const E = solveKeplersEquation(MRad, e);
   
   // calculate true anomaly
