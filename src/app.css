@@ -129,7 +129,7 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
     #daycontrol button, #monthcontrol button, #yearcontrol button {font-size: 14px;width: 16px;height: 14px;}
     #dateandcontrols {padding: 8px 10px;}
 
-    #saveddates { top: 150px; left: 10px; padding: 6px 8px; max-width: 150px; }
+    #saveddates { top: 239px; left: 10px; padding: 6px 8px; max-width: 150px; }
     #savedatebutton, #saved { font-size: 9px; padding: 3px 0; }
     #saveddateslist { padding: 6px 0 0 0; }
     #saveddateslist li { font-size: 9px; }
@@ -141,7 +141,7 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
     .login-modal input { padding: 10px 12px; font-size: 13px; margin-bottom: 12px; }
     .btn-login, .btn-skip { padding: 10px; font-size: 12px; }
     
-    #musicplayer { bottom: 10px; right: 10px; }
-    #onlineusers { bottom: 70px; }
+    #musicplayer { bottom: 10px; right: 150px; }
+    #onlineusers { bottom: 10px; right: 10px; }
     .music-toggle-btn { width: 36px; height: 36px; font-size: 16px; }
 }

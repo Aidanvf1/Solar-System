@@ -449,11 +449,23 @@ export function Main() {
       renderer.render(scene, camera);
     };
 
+    // handle window resize
+    const onResize = () => {
+      if (!containerRef.current) return;
+      const w = containerRef.current.clientWidth;
+      const h = containerRef.current.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      renderer.render(scene, camera);
+    };
+
     // event listeners
     renderer.domElement.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('resize', onResize);
 
     renderer.render(scene, camera);
 
@@ -463,6 +475,7 @@ export function Main() {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
       renderer.domElement.removeEventListener('wheel', onWheel);
+      window.removeEventListener('resize', onResize);
       renderer.dispose();
       if (containerRef.current?.contains(renderer.domElement)) containerRef.current.removeChild(renderer.domElement);
     };
@@ -557,7 +570,7 @@ export function Main() {
       <main id="solarsystem">
         <div id="scenearea" ref={containerRef}></div>
         <PlanetLabels labelsRef={labelsRef} />
-        <div id="instructions">Drag to move camera • Scroll to zoom.</div>
+        <div id="instructions">Drag to move camera • Scroll to zoom</div>
       </main>
 
       <ApodSection showApod={showApod} setShowApod={setShowApod} apodData={apodData} apodLoading={apodLoading} />
