@@ -55,20 +55,20 @@ export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onC
       {isPlaying && speed === 1 && (
         <div style={{ marginTop: '3px', textAlign: 'center' }}>
           <div style={{
-            fontSize: '0.4rem',
+            fontSize: '0.5rem',
             color: '#888',
             marginBottom: '1px',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '1px'
           }}>
             Real-Time Clock
           </div>
           <div id="realtimeclock" style={{
-            fontSize: '0.65rem',
+            fontSize: '0.9rem',
             color: '#aaa',
             textAlign: 'center',
             fontFamily: 'monospace',
-            letterSpacing: '0.5px'
+            letterSpacing: '1.5px'
           }}>
             {formatTime(currentTime)}
           </div>
