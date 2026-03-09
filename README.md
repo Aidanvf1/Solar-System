@@ -87,12 +87,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
+- [x] **Node.js/Express HTTP service** - Set up Express server on port 4000 with all the middleware needed.
+- [x] **Static middleware for frontend** - Used express.static('public') to serve up the React frontend.
+- [x] **Calls to third party endpoints** - Backend calls NASA's APOD API to get the astronomy picture of the day.
+- [x] **Backend service endpoints** - Created endpoints for auth (register/login/logout/me), saved dates (get/post), online users count, and NASA APOD proxy.
+- [x] **Frontend calls service endpoints** - Frontend makes fetch calls to all the backend endpoints from main.jsx and loginmodal.jsx.
+- [x] **Supports registration, login, logout, and restricted endpoint** - Full auth system with bcrypt password hashing, cookie-based sessions, and requireAuth middleware protecting the /api/dates endpoints.
 
 ## 🚀 DB deliverable
 

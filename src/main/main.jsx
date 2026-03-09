@@ -58,8 +58,10 @@ function solveKeplersEquation(M, e, tolerance = 1e-6) {
 // orbital position
 function getOrbitalPosition(a, e, i, omega, node, M) {
   // degrees to radians
+  // omega in PLANETS_DATA is longitude of perihelion (ω̃ = ω + Ω).
+  // The argument of perihelion needed for the rotation is ω = ω̃ − Ω.
   const iRad = i * Math.PI / 180;
-  const omegaRad = omega * Math.PI / 180;
+  const argPeriRad = (omega - node) * Math.PI / 180;
   const nodeRad = node * Math.PI / 180;
   const MRad = M * Math.PI / 180;
 
@@ -77,9 +79,9 @@ function getOrbitalPosition(a, e, i, omega, node, M) {
   const yOrb = r * Math.sin(nu);
 
   // rotate to ecliptic
-  // perihelion rotation
-  const x1 = xOrb * Math.cos(omegaRad) - yOrb * Math.sin(omegaRad);
-  const y1 = xOrb * Math.sin(omegaRad) + yOrb * Math.cos(omegaRad);
+  // perihelion rotation (argument of perihelion)
+  const x1 = xOrb * Math.cos(argPeriRad) - yOrb * Math.sin(argPeriRad);
+  const y1 = xOrb * Math.sin(argPeriRad) + yOrb * Math.cos(argPeriRad);
 
   // apply inclination
   const x2 = x1;
@@ -90,7 +92,10 @@ function getOrbitalPosition(a, e, i, omega, node, M) {
   const x3 = x2 * Math.cos(nodeRad) - y2 * Math.sin(nodeRad);
   const y3 = x2 * Math.sin(nodeRad) + y2 * Math.cos(nodeRad);
 
-  return { x: x3, y: z2, z: y3 };
+  // negate x to match Three.js left-hand screen convention
+  // (ecliptic X increases eastward; Three.js scene X increases rightward when viewed from above,
+  //  which is the opposite handedness — negating corrects the left/right mirror)
+  return { x: -x3, y: z2, z: y3 };
 }
 
 export function Main() {

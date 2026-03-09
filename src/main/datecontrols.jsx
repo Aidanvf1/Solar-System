@@ -8,15 +8,19 @@ const MONTH_NAMES = ['January','February','March','April','May','June','July','A
 export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onChangeYear, isPlaying, speed }) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // check if current date is today
+  const today = new Date();
+  const isToday = day === today.getDate() && month === (today.getMonth() + 1) && year === today.getFullYear();
+
   // update clock every 50ms when visible
   useEffect(() => {
-    if (isPlaying && speed === 1) {
+    if (isPlaying && speed === 1 && isToday) {
       const interval = setInterval(() => {
         setCurrentTime(new Date());
       }, 50);
       return () => clearInterval(interval);
     }
-  }, [isPlaying, speed]);
+  }, [isPlaying, speed, isToday]);
 
   // format time as HH:MM:SS.mmm
   const formatTime = (date) => {
@@ -26,6 +30,7 @@ export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onC
     const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
     return `${hours}:${minutes}:${seconds}.${milliseconds}`;
   };
+
   return (
     <div id="datecontrolsgroup">
       <div id="daycontrol">
@@ -52,7 +57,7 @@ export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onC
           <button className="buttonright" onClick={() => onChangeYear(1)}>⋗</button>
         </div>
       </div>
-      {isPlaying && speed === 1 && (
+      {isPlaying && speed === 1 && isToday && (
         <div style={{ marginTop: '3px', textAlign: 'center' }}>
           <div style={{
             fontSize: '0.5rem',
