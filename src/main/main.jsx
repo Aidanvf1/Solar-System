@@ -111,7 +111,7 @@ export function Main() {
   const [year, setYear] = useState(today.getFullYear());
 
   // animation
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
 
   // ui toggles
@@ -482,7 +482,7 @@ export function Main() {
 
       // advance time
       if (isPlayingRef.current) {
-        daysRef.current += 0.5 * speedRef.current;
+        daysRef.current += ((1/60) / 86400) * speedRef.current;
         const d = new Date(Date.UTC(2000, 0, 1, 12));
         d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
         setDay(d.getUTCDate());
@@ -505,9 +505,9 @@ export function Main() {
       asteroidsRef.current.forEach(a => {
         const orbitalPeriod = 365.25 * Math.pow(a.r / SCALE, 1.5);
         const n = (2 * Math.PI) / orbitalPeriod;
-        a.angle += isPlayingRef.current ? n * 0.5 * speedRef.current : 0;
-        a.mesh.position.x = Math.cos(a.angle) * a.r;
-        a.mesh.position.z = Math.sin(a.angle) * a.r;
+        const angle = a.angle + n * daysRef.current;
+        a.mesh.position.x = Math.cos(angle) * a.r;
+        a.mesh.position.z = Math.sin(angle) * a.r;
       });
 
       // render scene
@@ -562,7 +562,23 @@ export function Main() {
 
       <ApodSection showApod={showApod} setShowApod={setShowApod} apodData={apodData} apodLoading={apodLoading} />
       <OnlineUsers onlineCount={onlineCount} showUsersList={showUsersList} setShowUsersList={setShowUsersList} />
-      <DateControls day={day} month={month} year={year} onChangeDay={changeDay} onChangeMonth={changeMonth} onChangeYear={changeYear} />
+      <DateControls 
+        day={day} 
+        month={month} 
+        year={year} 
+        onChangeDay={changeDay} 
+        onChangeMonth={changeMonth} 
+        onChangeYear={changeYear}
+        isPlaying={isPlaying}
+        speed={speed}
+      />
+      <SavedDates
+        savedDates={savedDates}
+        showSavedDatesList={showSavedDatesList}
+        setShowSavedDatesList={setShowSavedDatesList}
+        onSaveDate={saveCurrentDate}
+        onLoadDate={loadSavedDate}
+      />
       <PlayControls
         isPlaying={isPlaying}
         setIsPlaying={setIsPlaying}
@@ -571,13 +587,6 @@ export function Main() {
         showOrbits={showOrbits}
         setShowOrbits={setShowOrbits}
         onPlayPause={() => { const n = !isPlaying; setIsPlaying(n); if (!n) snapDateToRef(); }}
-      />
-      <SavedDates
-        savedDates={savedDates}
-        showSavedDatesList={showSavedDatesList}
-        setShowSavedDatesList={setShowSavedDatesList}
-        onSaveDate={saveCurrentDate}
-        onLoadDate={loadSavedDate}
       />
 
       <footer>
