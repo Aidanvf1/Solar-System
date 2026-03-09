@@ -9,8 +9,9 @@ export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, showOrb
         id="playbutton" 
         type="button"
         onClick={onPlayPause}
+        style={{ letterSpacing: isPlaying ? '0px' : '0', fontSize: isPlaying ? '14px' : '16px' }}
       >
-        {isPlaying ? '⏸' : '▶'}
+        {isPlaying ? '❚❚' : '▶'}
       </button>
       
       <div id="speedcontrols">

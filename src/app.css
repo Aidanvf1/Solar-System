@@ -127,7 +127,8 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
     #daycontrol input, #monthcontrol input, #yearcontrol input {width: 50px;font-size: 11px;padding: 4px 2px;}
     #monthcontrol input {width: 80px;}
     #daycontrol button, #monthcontrol button, #yearcontrol button {font-size: 14px;width: 16px;height: 14px;}
-    #dateandcontrols {padding: 8px 10px;}
+    
+    #dateandcontrols { top: 300px; padding: 8px 10px; }
 
     #saveddates { top: 239px; left: 10px; padding: 6px 8px; max-width: 150px; }
     #savedatebutton, #saved { font-size: 9px; padding: 3px 0; }

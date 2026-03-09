@@ -122,6 +122,7 @@ export function Main() {
   const [showApod, setShowApod] = useState(false);
   const [apodData, setApodData] = useState(null);
   const [apodLoading, setApodLoading] = useState(false);
+  const [hideHub, setHideHub] = useState(false);
 
   // saved dates
   const [savedDates, setSavedDates] = useState([]);
@@ -449,6 +450,80 @@ export function Main() {
       renderer.render(scene, camera);
     };
 
+    // touch controls for mobile
+    let lastTouchDistance = 0;
+    const onTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        // single finger drag
+        controlsRef.current.isDragging = true;
+        controlsRef.current.prevX = e.touches[0].clientX;
+        controlsRef.current.prevY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        // two finger pinch zoom
+        controlsRef.current.isDragging = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+      }
+    };
+
+    const onTouchMove = (e) => {
+      e.preventDefault();
+      
+      if (e.touches.length === 1 && controlsRef.current.isDragging) {
+        // single finger drag to rotate
+        controlsRef.current.rotY += (e.touches[0].clientX - controlsRef.current.prevX) * 0.005;
+        controlsRef.current.rotX += (e.touches[0].clientY - controlsRef.current.prevY) * 0.005;
+
+        // clamp rotation
+        const maxAngle = Math.PI / 2 - 0.1;
+        controlsRef.current.rotX = Math.max(-maxAngle, Math.min(maxAngle, controlsRef.current.rotX));
+
+        // save camera state
+        const { rotX, rotY, zoom } = controlsRef.current;
+        localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
+
+        // update camera position
+        camera.position.x = Math.sin(rotY) * Math.cos(rotX) * zoom;
+        camera.position.y = Math.sin(rotX) * zoom;
+        camera.position.z = Math.cos(rotY) * Math.cos(rotX) * zoom;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+        controlsRef.current.prevX = e.touches[0].clientX;
+        controlsRef.current.prevY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        // two finger pinch to zoom
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (lastTouchDistance > 0) {
+          const delta = lastTouchDistance - distance;
+          controlsRef.current.zoom = Math.max(15, Math.min(200, controlsRef.current.zoom + delta * 0.1));
+
+          // save camera state
+          const { rotX, rotY, zoom } = controlsRef.current;
+          localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
+
+          // update camera position
+          camera.position.x = Math.sin(rotY) * Math.cos(rotX) * zoom;
+          camera.position.y = Math.sin(rotX) * zoom;
+          camera.position.z = Math.cos(rotY) * Math.cos(rotX) * zoom;
+          camera.lookAt(0, 0, 0);
+
+          renderer.render(scene, camera);
+        }
+        
+        lastTouchDistance = distance;
+      }
+    };
+
+    const onTouchEnd = () => {
+      controlsRef.current.isDragging = false;
+      lastTouchDistance = 0;
+    };
+
     // handle window resize
     const onResize = () => {
       if (!containerRef.current) return;
@@ -465,6 +540,9 @@ export function Main() {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
+    renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
+    renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: false });
+    renderer.domElement.addEventListener('touchend', onTouchEnd);
     window.addEventListener('resize', onResize);
 
     renderer.render(scene, camera);
@@ -475,6 +553,9 @@ export function Main() {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
       renderer.domElement.removeEventListener('wheel', onWheel);
+      renderer.domElement.removeEventListener('touchstart', onTouchStart);
+      renderer.domElement.removeEventListener('touchmove', onTouchMove);
+      renderer.domElement.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('resize', onResize);
       renderer.dispose();
       if (containerRef.current?.contains(renderer.domElement)) containerRef.current.removeChild(renderer.domElement);
@@ -565,17 +646,22 @@ export function Main() {
             <button className="login-btn" onClick={() => setShowLoginModal(true)}>Login</button>
           )}
         </p>
+        <p style={{ marginTop: '-10px' }}>
+          <button className="login-btn" onClick={() => setHideHub(!hideHub)}>
+            {hideHub ? 'Show Hud' : 'Hide Hud'}
+          </button>
+        </p>
       </header>
 
       <main id="solarsystem">
         <div id="scenearea" ref={containerRef}></div>
         <PlanetLabels labelsRef={labelsRef} />
-        <div id="instructions">Drag to move camera • Scroll to zoom</div>
+        {!hideHub && <div id="instructions">Drag to move camera • Scroll to zoom</div>}
       </main>
 
-      <ApodSection showApod={showApod} setShowApod={setShowApod} apodData={apodData} apodLoading={apodLoading} />
-      <OnlineUsers onlineCount={onlineCount} showUsersList={showUsersList} setShowUsersList={setShowUsersList} />
-      <DateControls 
+      {!hideHub && <ApodSection showApod={showApod} setShowApod={setShowApod} apodData={apodData} apodLoading={apodLoading} />}
+      {!hideHub && <OnlineUsers onlineCount={onlineCount} showUsersList={showUsersList} setShowUsersList={setShowUsersList} />}
+      {!hideHub && <DateControls 
         day={day} 
         month={month} 
         year={year} 
@@ -584,15 +670,15 @@ export function Main() {
         onChangeYear={changeYear}
         isPlaying={isPlaying}
         speed={speed}
-      />
-      <SavedDates
+      />}
+      {!hideHub && <SavedDates
         savedDates={savedDates}
         showSavedDatesList={showSavedDatesList}
         setShowSavedDatesList={setShowSavedDatesList}
         onSaveDate={saveCurrentDate}
         onLoadDate={loadSavedDate}
-      />
-      <PlayControls
+      />}
+      {!hideHub && <PlayControls
         isPlaying={isPlaying}
         setIsPlaying={setIsPlaying}
         speed={speed}
@@ -600,10 +686,10 @@ export function Main() {
         showOrbits={showOrbits}
         setShowOrbits={setShowOrbits}
         onPlayPause={() => { const n = !isPlaying; setIsPlaying(n); if (!n) snapDateToRef(); }}
-      />
+      />}
 
       <footer>
-        <nav>
+        <nav style={{ marginBottom: '-2px' }}>
           <Link to="/about" className="link-with-arrow">About <span className="arrow">←</span></Link>
         </nav>
         <a href="https://github.com/Aidanvf1/Solar-System" className="link-with-arrow">GitHub Repository <span className="arrow">←</span></a>
@@ -625,7 +711,7 @@ export function Main() {
         }}
       />
 
-      <MusicPlayer isMuted={isMuted} setIsMuted={setIsMuted} />
+      {!hideHub && <MusicPlayer isMuted={isMuted} setIsMuted={setIsMuted} />}
     </div>
   );
 }
