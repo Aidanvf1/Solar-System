@@ -144,9 +144,9 @@ export function Main() {
     const saved = localStorage.getItem('cameraState');
     if (saved) {
       const { rotX, rotY, zoom } = JSON.parse(saved);
-      return { isDragging: false, prevX: 0, prevY: 0, rotX, rotY, zoom };
+      return { isDragging: false, prevX: 0, prevY: 0, rotX, rotY, zoom, velX: 0, velY: 0 };
     }
-    return { isDragging: false, prevX: 0, prevY: 0, rotX: 0.2, rotY: 0, zoom: 100 };
+    return { isDragging: false, prevX: 0, prevY: 0, rotX: 0.2, rotY: 0, zoom: 100, velX: 0, velY: 0 };
   };
 
   // animation refs
@@ -410,12 +410,22 @@ export function Main() {
     scene.add(asteroidBeltGroup);
 
     // mouse controls
-    const onMouseDown = (e) => { controlsRef.current.isDragging = true; controlsRef.current.prevX = e.clientX; controlsRef.current.prevY = e.clientY; };
+    const onMouseDown = (e) => {
+      controlsRef.current.isDragging = true;
+      controlsRef.current.prevX = e.clientX;
+      controlsRef.current.prevY = e.clientY;
+      controlsRef.current.velX = 0;
+      controlsRef.current.velY = 0;
+    };
     const onMouseUp = () => { controlsRef.current.isDragging = false; };
     const onMouseMove = (e) => {
       if (!controlsRef.current.isDragging) return;
-      controlsRef.current.rotY += (e.clientX - controlsRef.current.prevX) * 0.005;
-      controlsRef.current.rotX += (e.clientY - controlsRef.current.prevY) * 0.005;
+      const dx = (e.clientX - controlsRef.current.prevX) * 0.005;
+      const dy = (e.clientY - controlsRef.current.prevY) * 0.005;
+      controlsRef.current.velY = dx;
+      controlsRef.current.velX = dy;
+      controlsRef.current.rotY += dx;
+      controlsRef.current.rotX += dy;
 
       // clamp rotation
       const maxAngle = Math.PI / 2 - 0.1;
@@ -463,6 +473,8 @@ export function Main() {
         controlsRef.current.isDragging = true;
         controlsRef.current.prevX = e.touches[0].clientX;
         controlsRef.current.prevY = e.touches[0].clientY;
+        controlsRef.current.velX = 0;
+        controlsRef.current.velY = 0;
       } else if (e.touches.length === 2) {
         // two finger pinch zoom
         controlsRef.current.isDragging = false;
@@ -477,8 +489,12 @@ export function Main() {
       
       if (e.touches.length === 1 && controlsRef.current.isDragging) {
         // single finger drag to rotate
-        controlsRef.current.rotY += (e.touches[0].clientX - controlsRef.current.prevX) * 0.005;
-        controlsRef.current.rotX += (e.touches[0].clientY - controlsRef.current.prevY) * 0.005;
+        const dx = (e.touches[0].clientX - controlsRef.current.prevX) * 0.005;
+        const dy = (e.touches[0].clientY - controlsRef.current.prevY) * 0.005;
+        controlsRef.current.velY = dx;
+        controlsRef.current.velX = dy;
+        controlsRef.current.rotY += dx;
+        controlsRef.current.rotX += dy;
 
         // clamp rotation
         const maxAngle = Math.PI / 2 - 0.1;
@@ -599,6 +615,24 @@ export function Main() {
         const pos = getOrbitalPosition(data.a * SCALE, data.e, data.i, data.omega, data.node, M);
         planet.position.set(pos.x, pos.y, pos.z);
       });
+
+      // camera inertia
+      const c = controlsRef.current;
+      if (!c.isDragging && (Math.abs(c.velX) > 0.0001 || Math.abs(c.velY) > 0.0001)) {
+        c.rotY += c.velY;
+        c.rotX += c.velX;
+        const maxAngle = Math.PI / 2 - 0.1;
+        c.rotX = Math.max(-maxAngle, Math.min(maxAngle, c.rotX));
+        c.velX *= 0.88;
+        c.velY *= 0.88;
+        const cam = cameraRef.current;
+        if (cam) {
+          cam.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
+          cam.position.y = Math.sin(c.rotX) * c.zoom;
+          cam.position.z = Math.cos(c.rotY) * Math.cos(c.rotX) * c.zoom;
+          cam.lookAt(0, 0, 0);
+        }
+      }
 
       // asteroids
       asteroidsRef.current.forEach(a => {
