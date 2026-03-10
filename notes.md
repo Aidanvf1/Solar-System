@@ -32,3 +32,12 @@ Okay, setting it up was literally pain, but ones I did it with simon doing it to
 ## React Part 2: Reactivity
 
 Need to remember that this makes or breaks the website. I think that having interactions and animations is what will make people look at my page and stay on my page.
+
+## web service
+
+Okay! I think that wasnt so bad but it's important to keep in mind that the backend and frontend are separate now. Setting up Express endpoints was actually pretty straightforward once I got the hang of it. The biggest things to remember:
+
+- Make sure your service index.js is in the right directory and package.json has the right scripts
+- Testing endpoints with curl or in the browser before connecting the frontend saves SO much debugging time- Always return proper HTTP status codes (200, 404, 500, etc.)
+
+The connection between frontend fetch calls and backend endpoints is actually really satisfying when it works. Just need to make sure the URLs match exactly and you're handling promises correctly.
