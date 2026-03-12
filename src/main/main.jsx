@@ -254,18 +254,11 @@ export function Main() {
           const data = await res.json();
           setApodData(data);
         } else {
-          throw new Error('APOD fetch failed');
+          setApodData({ unavailable: true });
         }
       } catch (err) {
         console.error('APOD error:', err);
-        setApodData({
-          date: new Date().toISOString().split('T')[0],
-          title: 'Astronomy Picture of the Day',
-          media_type: 'image',
-          url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&q=80',
-          hdurl: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1600&q=90',
-          explanation: 'Could not reach backend. Real NASA APOD loads via /api/apod when the service is running.'
-        });
+        setApodData({ unavailable: true });
       } finally {
         setApodLoading(false);
       }

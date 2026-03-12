@@ -8,13 +8,15 @@ export function ApodSection({ showApod, setShowApod, apodData, apodLoading }) {
       <h2>NASA APOD</h2>
       <ul>
         <li className="link-with-arrow" onClick={() => setShowApod(prev => !prev)} style={{ cursor: 'pointer' }}>
-          {showApod ? 'Hide Photo' : 'Show Photo'}<span className="arrow">←</span>
+          {showApod ? 'Hide Media' : 'Show Media'}<span className="arrow">←</span>
         </li>
       </ul>
       {showApod && (
         <div className="apod-content">
           {apodLoading ? (
             <p className="apod-loading">Loading...</p>
+          ) : apodData?.unavailable ? (
+            <p className="apod-error">APOD unavailable for today, sorry :/</p>
           ) : apodData ? (
             <>
               {apodData.media_type === 'video' ? (

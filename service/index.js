@@ -90,16 +90,33 @@ app.get('/api/users/online', (req, res) => {
 // nasa api
 
 app.get('/api/apod', async (req, res) => {
-  try {
-    const NASA_KEY = process.env.NASA_API_KEY || 'wpSuJeAR9FRyHcUYeaDCJwKjreFAwEaCqwmq39Ne';
-    const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${NASA_KEY}`);
-    if (!response.ok) throw new Error(`NASA API error: ${response.status}`);
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    console.error('APOD fetch error:', err);
-    res.status(500).json({ msg: 'Failed to fetch APOD' });
+  const keys = [process.env.NASA_API_KEY, 'wpSuJeAR9FRyHcUYeaDCJwKjreFAwEaCqwmq39Ne', 'DEMO_KEY'].filter(Boolean);
+  let lastErr;
+  for (const key of keys) {
+    try {
+      const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${key}`);
+      if (!response.ok) {
+        const body = await response.text();
+        lastErr = new Error(`NASA API error: ${response.status}`);
+        console.warn(`APOD key attempt failed (${response.status}): ${body.slice(0, 300)}`);
+        continue;
+      }
+      const data = await response.json();
+      // Normalize YouTube watch URLs to embed URLs so they render in an iframe
+      if (data.media_type === 'video' && data.url) {
+        const ytMatch = data.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        if (ytMatch) {
+          data.url = `https://www.youtube.com/embed/${ytMatch[1]}`;
+        }
+      }
+      return res.json(data);
+    } catch (err) {
+      lastErr = err;
+      console.warn(`APOD fetch attempt failed: ${err.message}`);
+    }
   }
+  console.error('All APOD key attempts failed:', lastErr);
+  res.status(500).json({ msg: 'Failed to fetch APOD' });
 });
 
 // start server
