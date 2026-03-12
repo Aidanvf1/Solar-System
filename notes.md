@@ -41,3 +41,7 @@ Okay! I think that wasnt so bad but it's important to keep in mind that the back
 - Testing endpoints with curl or in the browser before connecting the frontend saves SO much debugging time- Always return proper HTTP status codes (200, 404, 500, etc.)
 
 The connection between frontend fetch calls and backend endpoints is actually really satisfying when it works. Just need to make sure the URLs match exactly and you're handling promises correctly.
+
+## DB
+
+will do notes later

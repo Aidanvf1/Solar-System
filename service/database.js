@@ -2,12 +2,13 @@ const { MongoClient } = require('mongodb');
 const config = require('./dbConfig.json');
 
 const url = `mongodb+srv://${config.userName}:${config.password}@${config.hostname}`;
+
 const client = new MongoClient(url);
 const db = client.db('solarSystem');
 const userCollection = db.collection('user');
 const dateCollection = db.collection('savedDate');
 
-// test the connection on startup and exit if it fails
+// test the connection on startup
 (async function testConnection() {
   try {
     await db.command({ ping: 1 });
@@ -19,7 +20,6 @@ const dateCollection = db.collection('savedDate');
 })();
 
 // user functions
-
 function getUser(username) {
   return userCollection.findOne({ username });
 }
@@ -41,7 +41,6 @@ async function removeUserToken(token) {
 }
 
 // saved dates functions
-
 async function getSavedDates(username) {
   const cursor = dateCollection.find({ username }, { sort: { _id: -1 }, limit: 5 });
   return cursor.toArray();
