@@ -16,7 +16,12 @@ export function ApodSection({ showApod, setShowApod, apodData, apodLoading }) {
           {apodLoading ? (
             <p className="apod-loading">Loading...</p>
           ) : apodData?.unavailable ? (
-            <p className="apod-error">APOD unavailable for today, sorry :/</p>
+            <>
+              <p className="apod-error">APOD unavailable for today, sorry :/</p>
+              <p className="apod-description">
+                You can still visit it directly: <a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noopener noreferrer" className="apod-link">APOD</a>
+              </p>
+            </>
           ) : apodData ? (
             <>
               {apodData.media_type === 'video' ? (
