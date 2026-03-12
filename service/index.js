@@ -98,7 +98,7 @@ app.get('/api/users/online', (req, res) => {
 
 app.get('/api/apod', async (req, res) => {
   try {
-    const NASA_KEY = 'wpSuJeAR9FRyHcUYeaDCJwKjreFAwEaCqwmq39Ne';
+    const NASA_KEY = process.env.NASA_API_KEY || 'wpSuJeAR9FRyHcUYeaDCJwKjreFAwEaCqwmq39Ne';
     const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${NASA_KEY}`);
     if (!response.ok) throw new Error(`NASA API error: ${response.status}`);
     const data = await response.json();
