@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
+const DB = require('./database.js');
 
 const app = express();
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
@@ -10,23 +11,17 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('public'));
 
-// in-memory storage — will be replaced with database in DB deliverable
-let users = {};
-let sessions = {};
-let savedDatesByUser = {};
-
 // register
 app.post('/api/auth/register', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ msg: 'Username and password required' });
-  if (users[username]) return res.status(409).json({ msg: 'Username already taken' });
+
+  const existing = await DB.getUser(username);
+  if (existing) return res.status(409).json({ msg: 'Username already taken' });
 
   const hashed = await bcrypt.hash(password, 10);
-  users[username] = { username, password: hashed };
-  savedDatesByUser[username] = [];
-
   const token = uuid.v4();
-  sessions[token] = username;
+  await DB.addUser({ username, password: hashed, token });
   res.cookie('token', token, { sameSite: 'strict', httpOnly: true });
   res.json({ username });
 });
@@ -34,64 +29,62 @@ app.post('/api/auth/register', async (req, res) => {
 // login
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
-  const user = users[username];
+  const user = await DB.getUser(username);
   if (!user) return res.status(401).json({ msg: 'Invalid credentials' });
 
   const match = await bcrypt.compare(password, user.password);
   if (!match) return res.status(401).json({ msg: 'Invalid credentials' });
 
   const token = uuid.v4();
-  sessions[token] = username;
+  await DB.updateUserToken(username, token);
   res.cookie('token', token, { sameSite: 'strict', httpOnly: true });
   res.json({ username });
 });
 
 // logout
-app.delete('/api/auth/logout', (req, res) => {
+app.delete('/api/auth/logout', async (req, res) => {
   const token = req.cookies.token;
-  if (token) delete sessions[token];
+  if (token) await DB.removeUserToken(token);
   res.clearCookie('token');
   res.json({ msg: 'Logged out' });
 });
 
 // get current user
-app.get('/api/auth/me', (req, res) => {
+app.get('/api/auth/me', async (req, res) => {
   const token = req.cookies.token;
-  const username = sessions[token];
-  if (!username) return res.status(401).json({ msg: 'Not logged in' });
-  res.json({ username });
+  const user = token ? await DB.getUserByToken(token) : null;
+  if (!user) return res.status(401).json({ msg: 'Not logged in' });
+  res.json({ username: user.username });
 });
 
 // auth middleware
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const token = req.cookies.token;
-  const username = sessions[token];
-  if (!username) return res.status(401).json({ msg: 'Not authenticated' });
-  req.username = username;
+  const user = token ? await DB.getUserByToken(token) : null;
+  if (!user) return res.status(401).json({ msg: 'Not authenticated' });
+  req.username = user.username;
   next();
 }
 
 // saved dates endpoints
 
-app.get('/api/dates', requireAuth, (req, res) => {
-  res.json(savedDatesByUser[req.username] || []);
+app.get('/api/dates', requireAuth, async (req, res) => {
+  const dates = await DB.getSavedDates(req.username);
+  res.json(dates);
 });
 
-app.post('/api/dates', requireAuth, (req, res) => {
+app.post('/api/dates', requireAuth, async (req, res) => {
   const { day, month, year, dateString } = req.body;
   if (!day || !month || !year || !dateString) return res.status(400).json({ msg: 'Missing date fields' });
 
-  const dates = savedDatesByUser[req.username] || [];
-  const newDates = [{ day, month, year, dateString }, ...dates];
-  savedDatesByUser[req.username] = newDates.length > 5 ? newDates.slice(0, 5) : newDates;
-  res.json(savedDatesByUser[req.username]);
+  const dates = await DB.addSavedDate(req.username, { day, month, year, dateString });
+  res.json(dates);
 });
 
 // online users endpoint
-
 app.get('/api/users/online', (req, res) => {
-  res.json({ count: Object.keys(sessions).length || Math.floor(Math.random() * 10) + 1 });
+  res.json({ count: Math.floor(Math.random() * 10) + 1 });
 });
 
 // nasa api
