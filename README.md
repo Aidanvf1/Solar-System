@@ -93,6 +93,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Backend service endpoints** - Created endpoints for auth (register/login/logout/me), saved dates (get/post), online users count, and NASA APOD proxy.
 - [x] **Frontend calls service endpoints** - Frontend makes fetch calls to all the backend endpoints from main.jsx and loginmodal.jsx.
 - [x] **Supports registration, login, logout, and restricted endpoint** - Full auth system with bcrypt password hashing, cookie-based sessions, and requireAuth middleware protecting the /api/dates endpoints.
+- [x] **Uses BCrypt to hash passwords** - a JavaScript implementation of BCrypt to hash passwords. const bcrypt = require('bcryptjs');
+
+
 
 ## 🚀 DB deliverable
 
