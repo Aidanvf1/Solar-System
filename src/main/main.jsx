@@ -43,6 +43,31 @@ const MOON_DATA = {
 // moon distance from earth
 const MOON_DISTANCE_VISUAL_BOOST = 45;
 
+const ASTEROID_BELT_DATA = {
+  innerAU: 2.2,
+  widthAU: 1.3,
+  count: 1500,
+  ySpread: 0.5,
+  minSize: 0.03,
+  maxSize: 0.07,
+  scatterChance: 0.32,
+  scatterAU: 0.75,
+};
+
+const KUIPER_BELT_DATA = {
+  innerAU: 32.5,
+  widthAU: 2.6,
+  ySpread: 1.1,
+  minSize: 0.18,
+  maxSize: 0.42,
+  scatterChance: 0.4,
+  scatterAU: 2.6,
+};
+
+KUIPER_BELT_DATA.count = Math.round(
+  ASTEROID_BELT_DATA.count * (KUIPER_BELT_DATA.widthAU / ASTEROID_BELT_DATA.widthAU)
+);
+
 // month names
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -112,6 +137,31 @@ function getOrbitalPosition(a, e, i, omega, node, M) {
   // (ecliptic X increases eastward; Three.js scene X increases rightward when viewed from above,
   //  which is the opposite handedness — negating corrects the left/right mirror)
   return { x: -x3, y: z2, z: y3 };
+}
+
+function createBeltBody(minSize, maxSize) {
+  const brightness = 0.3 + Math.random() * 0.3;
+  return new THREE.Mesh(
+    new THREE.SphereGeometry(minSize + Math.random() * (maxSize - minSize), 4, 4),
+    new THREE.MeshBasicMaterial({ color: new THREE.Color(brightness, brightness * 0.9, brightness * 0.8) })
+  );
+}
+
+function populateBelt(group, store, beltData) {
+  for (let index = 0; index < beltData.count; index += 1) {
+    const baseRadius = beltData.innerAU + Math.random() * beltData.widthAU;
+    const scatterOffset = Math.random() < (beltData.scatterChance || 0)
+      ? (Math.random() - 0.5) * 2 * (beltData.scatterAU || 0)
+      : 0;
+    const radius = (baseRadius + scatterOffset) * SCALE;
+    const angle = Math.random() * Math.PI * 2;
+    const y = (Math.random() - 0.5) * beltData.ySpread;
+    const body = createBeltBody(beltData.minSize, beltData.maxSize);
+
+    body.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
+    group.add(body);
+    store.push({ mesh: body, r: radius, angle, y });
+  }
 }
 
 export function Main() {
@@ -432,20 +482,13 @@ export function Main() {
 
     // asteroid belt
     const asteroidBeltGroup = new THREE.Group();
-    for (let i = 0; i < 1500; i++) {
-      const r = (2.2 + Math.random() * 1.3) * SCALE;
-      const angle = Math.random() * Math.PI * 2;
-      const y = (Math.random() - 0.5) * 0.5;
-      const b = 0.3 + Math.random() * 0.3;
-      const asteroid = new THREE.Mesh(
-        new THREE.SphereGeometry(0.03 + Math.random() * 0.04, 4, 4),
-        new THREE.MeshBasicMaterial({ color: new THREE.Color(b, b * 0.9, b * 0.8) })
-      );
-      asteroid.position.set(Math.cos(angle) * r, y, Math.sin(angle) * r);
-      asteroidBeltGroup.add(asteroid);
-      asteroidsRef.current.push({ mesh: asteroid, r, angle, y });
-    }
+    populateBelt(asteroidBeltGroup, asteroidsRef.current, ASTEROID_BELT_DATA);
     scene.add(asteroidBeltGroup);
+
+    // kuiper belt
+    const kuiperBeltGroup = new THREE.Group();
+    populateBelt(kuiperBeltGroup, asteroidsRef.current, KUIPER_BELT_DATA);
+    scene.add(kuiperBeltGroup);
 
     // mouse controls
     const onMouseDown = (e) => {
@@ -699,7 +742,7 @@ export function Main() {
         const orbitalPeriod = 365.25 * Math.pow(a.r / SCALE, 1.5);
         const n = (2 * Math.PI) / orbitalPeriod;
         const angle = a.angle + n * daysRef.current;
-        a.mesh.position.x = Math.cos(angle) * a.r;
+        a.mesh.position.x = -Math.cos(angle) * a.r;
         a.mesh.position.z = Math.sin(angle) * a.r;
       });
 
