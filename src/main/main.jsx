@@ -27,6 +27,22 @@ const PLANETS_DATA = {
 // scale
 const SCALE = 6;
 
+// moon orbital elements around earth (J2000-era approximations)
+const MOON_DATA = {
+  a: 0.00257,
+  e: 0.0549,
+  i: -4.5,
+  period: 27.321661, // sidereal days
+  omega: 318.15,
+  node: 125.08,
+  M0: 115.3654,
+  size: 0.035,
+  color: '#cfcfcf'
+};
+
+// moon distance from earth
+const MOON_DISTANCE_VISUAL_BOOST = 45;
+
 // month names
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -108,6 +124,7 @@ export function Main() {
   const labelsRef = useRef({});
   const asteroidsRef = useRef([]);
   const orbitLinesRef = useRef([]);
+  const moonRef = useRef(null);
 
   // date state
   const today = new Date();
@@ -379,11 +396,39 @@ export function Main() {
       }
       const orbitLine = new THREE.LineLoop(
         new THREE.BufferGeometry().setFromPoints(orbitPoints),
-        new THREE.LineBasicMaterial({ color: 0x334455, transparent: true, opacity: 0.4 })
+        new THREE.LineBasicMaterial({ color: 0x334455, transparent: true, opacity: 0.7 })
       );
       scene.add(orbitLine);
       orbitLinesRef.current.push(orbitLine);
     });
+
+    // moon (attached to earth so it follows earth's translation)
+    const earth = planetsRef.current.Earth;
+    if (earth) {
+      const moon = new THREE.Mesh(
+        new THREE.SphereGeometry(MOON_DATA.size * 3, 16, 16),
+        new THREE.MeshStandardMaterial({ color: MOON_DATA.color, emissive: 0x333333, emissiveIntensity: 0.2, roughness: 0.95 })
+      );
+
+      let moonM = MOON_DATA.M0 % 360;
+      if (moonM < 0) moonM += 360;
+      const moonInitialPos = getOrbitalPosition(
+        MOON_DATA.a * SCALE * MOON_DISTANCE_VISUAL_BOOST,
+        MOON_DATA.e,
+        MOON_DATA.i,
+        MOON_DATA.omega,
+        MOON_DATA.node,
+        moonM
+      );
+      moon.position.set(
+        earth.position.x + moonInitialPos.x,
+        earth.position.y + moonInitialPos.y,
+        earth.position.z + moonInitialPos.z
+      );
+      scene.add(moon);
+      moonRef.current = moon;
+      planetsRef.current.Moon = moon;
+    }
 
     // asteroid belt
     const asteroidBeltGroup = new THREE.Group();
@@ -608,6 +653,28 @@ export function Main() {
         const pos = getOrbitalPosition(data.a * SCALE, data.e, data.i, data.omega, data.node, M);
         planet.position.set(pos.x, pos.y, pos.z);
       });
+
+      // update moon around earth
+      if (moonRef.current && planetsRef.current.Earth) {
+        const earth = planetsRef.current.Earth;
+        const nMoon = 360 / MOON_DATA.period;
+        let moonM = (MOON_DATA.M0 + nMoon * daysRef.current) % 360;
+        if (moonM < 0) moonM += 360;
+        const moonPos = getOrbitalPosition(
+          MOON_DATA.a * SCALE * MOON_DISTANCE_VISUAL_BOOST,
+          MOON_DATA.e,
+          MOON_DATA.i,
+          MOON_DATA.omega,
+          MOON_DATA.node,
+          moonM
+        );
+        moonRef.current.position.set(
+          earth.position.x + moonPos.x,
+          earth.position.y + moonPos.y,
+          earth.position.z + moonPos.z
+        );
+        moonRef.current.lookAt(earth.position);
+      }
 
       // camera inertia
       const c = controlsRef.current;

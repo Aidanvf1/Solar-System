@@ -6,6 +6,7 @@ const PLANETS_DATA = {
   Mercury: { color: '#8c8c8c' },
   Venus: { color: '#e6c87a' },
   Earth: { color: '#4a90d9' },
+  Moon: { color: '#cfcfcf' },
   Mars: { color: '#c1440e' },
   Jupiter: { color: '#d4a574' },
   Saturn: { color: '#e6d4a3' },
