@@ -40,15 +40,15 @@ function SpeakerOffIcon() {
 }
 
 // music player
-export function MusicPlayer({ isMuted, setIsMuted, showOrbits, setShowOrbits, hideHub, setHideHub }) {
+export function MusicPlayer({ isMuted, setIsMuted, volume, showOrbits, setShowOrbits, hideHub, setHideHub }) {
   const audioRef = useRef(null);
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.3;
+      audioRef.current.volume = volume / 100;
       audioRef.current.loop = true;
     }
-  }, []);
+  }, [volume]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -65,13 +65,6 @@ export function MusicPlayer({ isMuted, setIsMuted, showOrbits, setShowOrbits, hi
       {/* dune 2 soundtrack */}
       <audio ref={audioRef} src="/Dune： Part Two Soundtrack ｜ A Time of Quiet Between the Storms - Hans Zimmer ｜ WaterTower [igtwOdqboT0].mp3" />
       <button
-        className="music-toggle-btn side-control-btn line-toggle-btn"
-        onClick={() => setShowOrbits(prev => !prev)}
-        title={showOrbits ? 'Hide Orbit Lines' : 'Show Orbit Lines'}
-      >
-        {showOrbits ? 'Hide Lines' : 'Show Lines'}
-      </button>
-      <button
         className="music-toggle-btn side-control-btn"
         onClick={() => setHideHub(prev => !prev)}
         title={hideHub ? 'Show HUD' : 'Hide HUD'}
@@ -84,6 +77,13 @@ export function MusicPlayer({ isMuted, setIsMuted, showOrbits, setShowOrbits, hi
         title={isMuted ? 'Play Music' : 'Mute Music'}
       >
         {isMuted ? <SpeakerOffIcon /> : <SpeakerIcon />}
+      </button>
+      <button
+        className="music-toggle-btn side-control-btn line-toggle-btn"
+        onClick={() => setShowOrbits(prev => !prev)}
+        title={showOrbits ? 'Hide Orbit Lines' : 'Show Orbit Lines'}
+      >
+        {showOrbits ? 'Hide Lines' : 'Show Lines'}
       </button>
     </div>
   );

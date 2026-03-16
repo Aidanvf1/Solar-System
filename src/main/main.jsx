@@ -191,9 +191,7 @@ export function Main() {
   // ui toggles
   const [showOrbits, setShowOrbits] = useState(true);
   const [onlineCount, setOnlineCount] = useState(0);
-  const [showUsersList, setShowUsersList] = useState(false);
   const [showSavedDatesList, setShowSavedDatesList] = useState(false);
-  const [showApod, setShowApod] = useState(false);
   const [apodData, setApodData] = useState(null);
   const [apodLoading, setApodLoading] = useState(false);
   const [hideHub, setHideHub] = useState(false);
@@ -207,6 +205,8 @@ export function Main() {
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [isMuted, setIsMuted] = useState(true);
+  const [volume, setVolume] = useState(30);
+  const [activePanel, setActivePanel] = useState(null);
 
   // camera init
   const getInitialCameraState = () => {
@@ -807,16 +807,22 @@ export function Main() {
             <button className="login-btn" onClick={() => setShowLoginModal(true)}>Login</button>
           )}
         </p>
-
-        <MusicPlayer
-          isMuted={isMuted}
-          setIsMuted={setIsMuted}
-          showOrbits={showOrbits}
-          setShowOrbits={setShowOrbits}
-          hideHub={hideHub}
-          setHideHub={setHideHub}
-        />
       </header>
+
+      <div id="panel-links" className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
+        <button type="button" className="panel-link-btn" onClick={() => setActivePanel('users')}>
+          <span className="panel-link-arrow">→</span>
+          <span>Online Users</span>
+        </button>
+        <button type="button" className="panel-link-btn" onClick={() => setActivePanel('apod')}>
+          <span className="panel-link-arrow">→</span>
+          <span>NASA APOD</span>
+        </button>
+        <button type="button" className="panel-link-btn" onClick={() => setActivePanel('settings')}>
+          <span className="panel-link-arrow">→</span>
+          <span>Settings</span>
+        </button>
+      </div>
 
       <main id="solarsystem">
         <div id="scenearea" ref={containerRef}></div>
@@ -826,12 +832,6 @@ export function Main() {
         </div>
       </main>
 
-      <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
-        <ApodSection showApod={showApod} setShowApod={setShowApod} apodData={apodData} apodLoading={apodLoading} />
-      </div>
-      <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
-        <OnlineUsers onlineCount={onlineCount} showUsersList={showUsersList} setShowUsersList={setShowUsersList} />
-      </div>
       <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
         <DateControls 
           day={day} 
@@ -884,6 +884,60 @@ export function Main() {
           setShowLoginModal(false);
           loadUserDates();
         }}
+      />
+
+      {activePanel && (
+        <div className="ui-panel-backdrop" onClick={() => setActivePanel(null)}>
+          <div className="ui-panel-modal" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="ui-panel-close" onClick={() => setActivePanel(null)} aria-label="Close panel">
+              ×
+            </button>
+
+            {activePanel === 'settings' && (
+              <section id="settingspanel">
+                <h2>Settings</h2>
+                <div className="settings-row">
+                  <label htmlFor="volume-slider">Volume</label>
+                  <div className="settings-volume-wrap">
+                    <input
+                      id="volume-slider"
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={volume}
+                      onChange={(e) => setVolume(+e.target.value)}
+                    />
+                    <span>{volume}%</span>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {activePanel === 'apod' && (
+              <ApodSection
+                apodData={apodData}
+                apodLoading={apodLoading}
+              />
+            )}
+
+            {activePanel === 'users' && (
+              <OnlineUsers
+                onlineCount={onlineCount}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      <MusicPlayer
+        isMuted={isMuted}
+        setIsMuted={setIsMuted}
+        volume={volume}
+        showOrbits={showOrbits}
+        setShowOrbits={setShowOrbits}
+        hideHub={hideHub}
+        setHideHub={setHideHub}
       />
 
     </div>
