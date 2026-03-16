@@ -15,6 +15,21 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 
 #instructions{ pointer-events: none; position: absolute; transform: translateX(-50%); left: 50%; bottom: 0;  padding: 6px 12px; border-radius: 6px; color: #64748b; font-size: 12px; z-index: 5; }
 
+.hud-fade {
+    opacity: 1;
+    transition: opacity 0.45s ease-in-out;
+}
+
+.hud-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hud-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
 #apod { position: absolute; top: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 14px 12px 0px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 20; max-width: 300px; }
 #apod h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; pointer-events: none; }
 #apod ul { list-style: none; margin-top: 4px; padding: 0; cursor: pointer; }
@@ -51,8 +66,8 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 
 
 #datecontrolsgroup {position: absolute;top: 10px;left: 10px; z-index: 25;background: rgba(0,20,40,0.85);border: 1px solid rgba(100,200,255,0.4);backdrop-filter: blur(10px);box-shadow: 0 0 20px rgba(0,150,255,0.25);padding: 12px 14px;border-radius: 8px;display: flex;flex-wrap: wrap;justify-content: center;align-items: center;gap: 16px;font-size: 11px;max-width: 320px;}
-#playbutton { width: 44px; height: 44px; border-radius: 50%; background: rgba(34,197,94,0.8); border: 2px solid rgba(100,200,255,0.6); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0,150,255,0.4); transition: background 0.2s; }
-#playbutton:hover { background: rgba(34,197,94,1); }
+#playbutton { width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 20, 40, 0.85); border: 1px solid rgba(100, 200, 255, 0.5); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0, 150, 255, 0.3); }
+#playbutton:hover { background: rgba(0, 20, 40, 0.95); border-color: #00d4ff; box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); transform: scale(1.05); }
 
 #speedcontrols { display: flex; flex-direction: column; align-items: center; gap: 6px;}
 #speedcontrols label { font-size: 10px; text-transform: uppercase; color: #94a3b8; }
@@ -106,9 +121,12 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
 .modal-toggle-link { color: #7de3f4; cursor: pointer; text-decoration: underline; }
 
 /* music player */
-#musicplayer { position: absolute; bottom: 10px; right: 150px; z-index: 20; }
+#musicplayer { position: relative; margin-top: 6px; z-index: 20; display: inline-flex; align-items: center; justify-content: center; gap: 10px; pointer-events: auto; }
 .music-toggle-btn { width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 20, 40, 0.85); border: 1px solid rgba(100, 200, 255, 0.5); color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0, 150, 255, 0.3); }
 .music-toggle-btn:hover { background: rgba(0, 20, 40, 0.95); border-color: #00d4ff; box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); transform: scale(1.05); }
+.side-control-btn { font-size: 18px; }
+.line-toggle-btn { width: auto; min-width: 44px; padding: 0 12px; border-radius: 999px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+.hud-icon { width: 20px; height: 20px; display: block; }
 
 @media (max-width: 768px) {
     #instructions {display: none;}
@@ -142,7 +160,11 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
     .login-modal input { padding: 10px 12px; font-size: 13px; margin-bottom: 12px; }
     .btn-login, .btn-skip { padding: 10px; font-size: 12px; }
     
-    #musicplayer { bottom: 10px; right: 150px; }
+    #musicplayer { margin-top: 6px; gap: 8px; }
     #onlineusers { bottom: 10px; right: 10px; }
     .music-toggle-btn { width: 36px; height: 36px; font-size: 16px; }
+    #playbutton { width: 36px; height: 36px; font-size: 14px; }
+    .side-control-btn { font-size: 15px; }
+    .line-toggle-btn { min-width: 36px; padding: 0 10px; font-size: 8px; }
+    .hud-icon { width: 16px; height: 16px; }
 }

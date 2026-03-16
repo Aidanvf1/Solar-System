@@ -2,7 +2,7 @@
 import React from 'react';
 
 // play controls
-export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, showOrbits, setShowOrbits, onPlayPause }) {
+export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, onPlayPause }) {
   return (
     <section id="dateandcontrols">
       <button 
@@ -48,10 +48,6 @@ export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, showOrb
           </div>
         </div>
       </div>
-
-      <button type="button" className="orbit-toggle-btn" onClick={() => setShowOrbits(prev => !prev)}>
-        {showOrbits ? 'Hide Lines' : 'Show Lines'}
-      </button>
     </section>
   );
 }

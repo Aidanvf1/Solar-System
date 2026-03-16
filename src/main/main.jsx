@@ -70,6 +70,7 @@ KUIPER_BELT_DATA.count = Math.round(
 
 // month names
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const ORBIT_LINE_MAX_OPACITY = 0.7;
 
 // date to days
 function dateToDays(year, month, day) {
@@ -174,6 +175,7 @@ export function Main() {
   const labelsRef = useRef({});
   const asteroidsRef = useRef([]);
   const orbitLinesRef = useRef([]);
+  const orbitTargetOpacityRef = useRef(ORBIT_LINE_MAX_OPACITY);
   const moonRef = useRef(null);
 
   // date state
@@ -358,7 +360,7 @@ export function Main() {
 
   // orbit visibility
   useEffect(() => {
-    orbitLinesRef.current.forEach(line => { line.visible = showOrbits; });
+    orbitTargetOpacityRef.current = showOrbits ? ORBIT_LINE_MAX_OPACITY : 0;
   }, [showOrbits]);
 
   // scene init
@@ -446,7 +448,7 @@ export function Main() {
       }
       const orbitLine = new THREE.LineLoop(
         new THREE.BufferGeometry().setFromPoints(orbitPoints),
-        new THREE.LineBasicMaterial({ color: 0x334455, transparent: true, opacity: 0.7 })
+        new THREE.LineBasicMaterial({ color: 0x334455, transparent: true, opacity: ORBIT_LINE_MAX_OPACITY })
       );
       scene.add(orbitLine);
       orbitLinesRef.current.push(orbitLine);
@@ -746,6 +748,23 @@ export function Main() {
         a.mesh.position.z = Math.sin(angle) * a.r;
       });
 
+      // smoothly fade orbit lines in/out
+      orbitLinesRef.current.forEach(line => {
+        const material = line.material;
+        if (!material || !('opacity' in material)) return;
+
+        if (orbitTargetOpacityRef.current > 0) line.visible = true;
+
+        const currentOpacity = material.opacity;
+        const nextOpacity = THREE.MathUtils.lerp(currentOpacity, orbitTargetOpacityRef.current, 0.08);
+        material.opacity = nextOpacity;
+
+        if (orbitTargetOpacityRef.current === 0 && nextOpacity < 0.01) {
+          material.opacity = 0;
+          line.visible = false;
+        }
+      });
+
       // render scene
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -788,47 +807,61 @@ export function Main() {
             <button className="login-btn" onClick={() => setShowLoginModal(true)}>Login</button>
           )}
         </p>
-        <p style={{ marginTop: '-10px' }}>
-          <button className="login-btn" onClick={() => setHideHub(!hideHub)}>
-            {hideHub ? 'Show Hud' : 'Hide Hud'}
-          </button>
-        </p>
+
+        <MusicPlayer
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
+          showOrbits={showOrbits}
+          setShowOrbits={setShowOrbits}
+          hideHub={hideHub}
+          setHideHub={setHideHub}
+        />
       </header>
 
       <main id="solarsystem">
         <div id="scenearea" ref={containerRef}></div>
         <PlanetLabels labelsRef={labelsRef} />
-        {!hideHub && <div id="instructions">Drag to move camera • Scroll to zoom</div>}
+        <div id="instructions" className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
+          Drag to move camera • Scroll to zoom
+        </div>
       </main>
 
-      {!hideHub && <ApodSection showApod={showApod} setShowApod={setShowApod} apodData={apodData} apodLoading={apodLoading} />}
-      {!hideHub && <OnlineUsers onlineCount={onlineCount} showUsersList={showUsersList} setShowUsersList={setShowUsersList} />}
-      {!hideHub && <DateControls 
-        day={day} 
-        month={month} 
-        year={year} 
-        onChangeDay={changeDay} 
-        onChangeMonth={changeMonth} 
-        onChangeYear={changeYear}
-        isPlaying={isPlaying}
-        speed={speed}
-      />}
-      {!hideHub && <SavedDates
-        savedDates={savedDates}
-        showSavedDatesList={showSavedDatesList}
-        setShowSavedDatesList={setShowSavedDatesList}
-        onSaveDate={saveCurrentDate}
-        onLoadDate={loadSavedDate}
-      />}
-      {!hideHub && <PlayControls
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-        speed={speed}
-        setSpeed={setSpeed}
-        showOrbits={showOrbits}
-        setShowOrbits={setShowOrbits}
-        onPlayPause={() => { const n = !isPlaying; setIsPlaying(n); if (!n) snapDateToRef(); }}
-      />}
+      <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
+        <ApodSection showApod={showApod} setShowApod={setShowApod} apodData={apodData} apodLoading={apodLoading} />
+      </div>
+      <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
+        <OnlineUsers onlineCount={onlineCount} showUsersList={showUsersList} setShowUsersList={setShowUsersList} />
+      </div>
+      <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
+        <DateControls 
+          day={day} 
+          month={month} 
+          year={year} 
+          onChangeDay={changeDay} 
+          onChangeMonth={changeMonth} 
+          onChangeYear={changeYear}
+          isPlaying={isPlaying}
+          speed={speed}
+        />
+      </div>
+      <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
+        <SavedDates
+          savedDates={savedDates}
+          showSavedDatesList={showSavedDatesList}
+          setShowSavedDatesList={setShowSavedDatesList}
+          onSaveDate={saveCurrentDate}
+          onLoadDate={loadSavedDate}
+        />
+      </div>
+      <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
+        <PlayControls
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          speed={speed}
+          setSpeed={setSpeed}
+          onPlayPause={() => { const n = !isPlaying; setIsPlaying(n); if (!n) snapDateToRef(); }}
+        />
+      </div>
 
       <footer>
         <nav style={{ marginBottom: '-2px' }}>
@@ -853,7 +886,6 @@ export function Main() {
         }}
       />
 
-      {!hideHub && <MusicPlayer isMuted={isMuted} setIsMuted={setIsMuted} />}
     </div>
   );
 }
