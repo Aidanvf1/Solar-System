@@ -44,4 +44,10 @@ The connection between frontend fetch calls and backend endpoints is actually re
 
 ## DB
 
-will do notes later
+MongoDB setup took me a minute, but once `dbConfig.json` was wired up it made the app feel real instead of mocked. Biggest things I learned:
+
+- Keep auth and app data in separate collections (`user` and `savedDate`) to keep queries simple.
+- Always hash passwords with bcrypt before writing to DB. Never store plaintext.
+- Token lookup from cookies is straightforward for protected endpoints; middleware keeps route code cleaner.
+- For "recent items" style data, insert first then trim old records (I cap saved dates to 5 per user).
+- Debugging was way easier when I tested backend endpoints first, then connected frontend fetch calls.

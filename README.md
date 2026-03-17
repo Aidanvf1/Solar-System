@@ -101,8 +101,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Stores data in MongoDB** - I did not complete this part of the deliverable.
-- [ ] **Stores credentials in MongoDB** - I did not complete this part of the deliverable.
+- [x] **Stores data in MongoDB** - Saved dates are persisted in MongoDB using the `savedDate` collection through `service/database.js` and exposed with authenticated `/api/dates` endpoints.
+- [x] **Stores credentials in MongoDB** - User credentials are stored in MongoDB in the `user` collection with BCrypt-hashed passwords and token-based session lookup.
 
 ## 🚀 WebSocket deliverable
 
