@@ -11,6 +11,7 @@ import { OnlineUsers } from './onlineusers';
 import { ApodSection } from './apodsection';
 import { PlanetLabels } from './planetlabels';
 import { MusicPlayer } from './musicplayer';
+import { PLANET_INFO } from './planetInfo';
 
 // planetary data
 const PLANETS_DATA = {
@@ -207,6 +208,16 @@ export function Main() {
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(30);
   const [activePanel, setActivePanel] = useState(null);
+  const [activePlanet, setActivePlanet] = useState(null);
+  const [displayedPlanet, setDisplayedPlanet] = useState(null);
+  const setActivePlanetAndRef = (val) => {
+    activePlanetRef.current = val;
+    if (val) setDisplayedPlanet(val);
+    setActivePlanet(val);
+  };
+  const hoveredPlanetRef = useRef(null);
+  const activePlanetRef = useRef(null);
+  const outlineRefs = useRef({});
 
   // camera init
   const getInitialCameraState = () => {
@@ -313,6 +324,18 @@ export function Main() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (activePlanet) {
+      return undefined;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setDisplayedPlanet(null);
+    }, 350);
+
+    return () => clearTimeout(timeoutId);
+  }, [activePlanet]);
+
   // nasa apod — fetches from backend proxy (no CORS issues)
   useEffect(() => {
     const fetchApod = async () => {
@@ -405,8 +428,27 @@ export function Main() {
     scene.add(new THREE.Points(starsGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 })));
 
     // sun
-    scene.add(new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffdd44 })));
-    scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.5, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffaa33, transparent: true, opacity: 0.15 })));
+    const sun = new THREE.Mesh(
+      new THREE.SphereGeometry(0.8, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0xffdd44 })
+    );
+    sun.userData.name = 'Sun';
+    scene.add(sun);
+    planetsRef.current.Sun = sun;
+
+    const sunOutline = new THREE.Mesh(
+      new THREE.SphereGeometry(0.8 * 1.14, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.BackSide, transparent: true, opacity: 0.85 })
+    );
+    sunOutline.visible = false;
+    sun.add(sunOutline);
+    outlineRefs.current.Sun = sunOutline;
+
+    const sunGlow = new THREE.Mesh(
+      new THREE.SphereGeometry(1.5, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0xffaa33, transparent: true, opacity: 0.15 })
+    );
+    scene.add(sunGlow);
 
     // lights
     scene.add(new THREE.PointLight(0xffffff, 2, 200));
@@ -440,6 +482,15 @@ export function Main() {
 
       planetsRef.current[name] = planet;
 
+      // outline mesh for hover effect (visible only on hover)
+      const outlineMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(data.size * 3 * 1.18, 24, 24),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.BackSide, transparent: true, opacity: 0.85 })
+      );
+      outlineMesh.visible = false;
+      planet.add(outlineMesh);
+      outlineRefs.current[name] = outlineMesh;
+
       // orbit path
       const orbitPoints = [];
       for (let M = 0; M <= 360; M += 2) {
@@ -461,6 +512,7 @@ export function Main() {
         new THREE.SphereGeometry(MOON_DATA.size * 3, 16, 16),
         new THREE.MeshStandardMaterial({ color: MOON_DATA.color, emissive: 0x333333, emissiveIntensity: 0.2, roughness: 0.95 })
       );
+      moon.userData.name = 'Moon';
 
       let moonM = MOON_DATA.M0 % 360;
       if (moonM < 0) moonM += 360;
@@ -478,8 +530,17 @@ export function Main() {
         earth.position.z + moonInitialPos.z
       );
       scene.add(moon);
+
+      const moonOutline = new THREE.Mesh(
+        new THREE.SphereGeometry(MOON_DATA.size * 3 * 1.3, 16, 16),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.BackSide, transparent: true, opacity: 0.85 })
+      );
+      moonOutline.visible = false;
+      moon.add(moonOutline);
+
       moonRef.current = moon;
       planetsRef.current.Moon = moon;
+      outlineRefs.current.Moon = moonOutline;
     }
 
     // asteroid belt
@@ -493,41 +554,85 @@ export function Main() {
     scene.add(kuiperBeltGroup);
 
     // mouse controls
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const mouseDownPos = { x: 0, y: 0 };
+
     const onMouseDown = (e) => {
       controlsRef.current.isDragging = true;
       controlsRef.current.prevX = e.clientX;
       controlsRef.current.prevY = e.clientY;
       controlsRef.current.velX = 0;
       controlsRef.current.velY = 0;
+      mouseDownPos.x = e.clientX;
+      mouseDownPos.y = e.clientY;
     };
     const onMouseUp = () => { controlsRef.current.isDragging = false; };
     const onMouseMove = (e) => {
-      if (!controlsRef.current.isDragging) return;
-      const dx = (e.clientX - controlsRef.current.prevX) * 0.005;
-      const dy = (e.clientY - controlsRef.current.prevY) * 0.005;
-      controlsRef.current.velY = dx;
-      controlsRef.current.velX = dy;
-      controlsRef.current.rotY += dx;
-      controlsRef.current.rotX += dy;
+      if (controlsRef.current.isDragging) {
+        const dx = (e.clientX - controlsRef.current.prevX) * 0.005;
+        const dy = (e.clientY - controlsRef.current.prevY) * 0.005;
+        controlsRef.current.velY = dx;
+        controlsRef.current.velX = dy;
+        controlsRef.current.rotY += dx;
+        controlsRef.current.rotX += dy;
 
-      // clamp rotation
-      const maxAngle = Math.PI / 2 - 0.1;
-      controlsRef.current.rotX = Math.max(-maxAngle, Math.min(maxAngle, controlsRef.current.rotX));
+        // clamp rotation
+        const maxAngle = Math.PI / 2 - 0.1;
+        controlsRef.current.rotX = Math.max(-maxAngle, Math.min(maxAngle, controlsRef.current.rotX));
 
-      // save camera state
-      const { rotX, rotY, zoom } = controlsRef.current;
-      localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
+        // save camera state
+        const { rotX, rotY, zoom } = controlsRef.current;
+        localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
 
-      // update camera position
-      camera.position.x = Math.sin(rotY) * Math.cos(rotX) * zoom;
-      camera.position.y = Math.sin(rotX) * zoom;
-      camera.position.z = Math.cos(rotY) * Math.cos(rotX) * zoom;
-      camera.lookAt(0, 0, 0);
+        // update camera position
+        camera.position.x = Math.sin(rotY) * Math.cos(rotX) * zoom;
+        camera.position.y = Math.sin(rotX) * zoom;
+        camera.position.z = Math.cos(rotY) * Math.cos(rotX) * zoom;
+        camera.lookAt(0, 0, 0);
 
-      // re-render
-      renderer.render(scene, camera);
-      controlsRef.current.prevX = e.clientX;
-      controlsRef.current.prevY = e.clientY;
+        // re-render
+        renderer.render(scene, camera);
+        controlsRef.current.prevX = e.clientX;
+        controlsRef.current.prevY = e.clientY;
+      } else {
+        // hover detection
+        const rect = renderer.domElement.getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+          if (hoveredPlanetRef.current) {
+            if (outlineRefs.current[hoveredPlanetRef.current]) outlineRefs.current[hoveredPlanetRef.current].visible = false;
+            hoveredPlanetRef.current = null;
+            renderer.domElement.style.cursor = '';
+          }
+          return;
+        }
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObjects(Object.values(planetsRef.current), false);
+        const hitName = hits.length > 0 ? hits[0].object.userData.name : null;
+        const validHit = hitName && PLANET_INFO[hitName] ? hitName : null;
+        if (validHit !== hoveredPlanetRef.current) {
+          if (hoveredPlanetRef.current && outlineRefs.current[hoveredPlanetRef.current]) {
+            outlineRefs.current[hoveredPlanetRef.current].visible = false;
+          }
+          hoveredPlanetRef.current = validHit;
+          if (validHit && outlineRefs.current[validHit]) {
+            outlineRefs.current[validHit].visible = true;
+          }
+          renderer.domElement.style.cursor = validHit ? 'pointer' : '';
+        }
+      }
+    };
+    const onClick = (e) => {
+      const dx = e.clientX - mouseDownPos.x;
+      const dy = e.clientY - mouseDownPos.y;
+      if (Math.sqrt(dx * dx + dy * dy) > 5) return;
+      if (hoveredPlanetRef.current && PLANET_INFO[hoveredPlanetRef.current]) {
+        setActivePlanetAndRef(
+          activePlanetRef.current === hoveredPlanetRef.current ? null : hoveredPlanetRef.current
+        );
+      }
     };
     const onWheel = (e) => {
       e.preventDefault();
@@ -643,6 +748,7 @@ export function Main() {
     renderer.domElement.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+    renderer.domElement.addEventListener('click', onClick);
     renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
     renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
     renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -656,6 +762,7 @@ export function Main() {
       renderer.domElement.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+      renderer.domElement.removeEventListener('click', onClick);
       renderer.domElement.removeEventListener('wheel', onWheel);
       renderer.domElement.removeEventListener('touchstart', onTouchStart);
       renderer.domElement.removeEventListener('touchmove', onTouchMove);
@@ -929,6 +1036,40 @@ export function Main() {
           </div>
         </div>
       )}
+
+      <div className={`planet-info-panel${activePlanet ? ' open' : ''}`}>
+        {displayedPlanet && PLANET_INFO[displayedPlanet] && (
+          <>
+            <button type="button" className="planet-info-close" onClick={() => setActivePlanetAndRef(null)} aria-label="Close">×</button>
+            <img
+              className="planet-info-image"
+              src={PLANET_INFO[displayedPlanet].image}
+              alt={displayedPlanet}
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                const fallbackImage = PLANET_INFO[displayedPlanet].fallbackImage;
+                if (fallbackImage && e.currentTarget.src !== fallbackImage) {
+                  e.currentTarget.src = fallbackImage;
+                }
+              }}
+            />
+            <h2 className="planet-info-name">{displayedPlanet}</h2>
+            <div className="planet-info-facts">
+              <div className="fact-row"><span>Diameter</span><span>{PLANET_INFO[displayedPlanet].diameter}</span></div>
+              <div className="fact-row"><span>Day Length</span><span>{PLANET_INFO[displayedPlanet].dayLength}</span></div>
+              <div className="fact-row"><span>Year Length</span><span>{PLANET_INFO[displayedPlanet].yearLength}</span></div>
+              {!PLANET_INFO[displayedPlanet].hideMoons && (
+                <div className="fact-row"><span>Moons</span><span>{PLANET_INFO[displayedPlanet].moons}</span></div>
+              )}
+              <div className="fact-row"><span>Avg. Temperature</span><span>{PLANET_INFO[displayedPlanet].avgTemp}</span></div>
+              {!PLANET_INFO[displayedPlanet].hideDistanceFromSun && (
+                <div className="fact-row"><span>Distance from Sun</span><span>{PLANET_INFO[displayedPlanet].distanceFromSun}</span></div>
+              )}
+            </div>
+            <p className="planet-info-description">{PLANET_INFO[displayedPlanet].description}</p>
+          </>
+        )}
+      </div>
 
       <MusicPlayer
         isMuted={isMuted}
