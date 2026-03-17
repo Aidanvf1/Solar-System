@@ -99,6 +99,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ## 🚀 DB deliverable
 
+pretty much you can save dates using the save dates button and then you can view your dates. thats whats being stored. you can click them and it will take you to that date.
+
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] **Stores data in MongoDB** - Saved dates are persisted in MongoDB using the `savedDate` collection through `service/database.js` and exposed with authenticated `/api/dates` endpoints.
