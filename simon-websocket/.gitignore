@@ -12,4 +12,6 @@ node_modules
 
 npm-debug.log*
 .vscode
+# Ignore Atlas credentials files anywhere in this project
 dbConfig.json
+service/dbConfig.json
