@@ -75,6 +75,7 @@ const MONTH_NAMES = ['January','February','March','April','May','June','July','A
 const ORBIT_LINE_MAX_OPACITY = 0.7;
 const SIMULATION_END = { year: 3000, month: 12, day: 31 };
 const SIMULATION_END_NOTICE = 'You have reached the end of the simulation';
+const DAY_FLOOR_EPSILON = 1e-9;
 
 function makeUTCDate(year, monthIndex, day, hour = 12) {
   const d = new Date(Date.UTC(0, monthIndex, day, hour));
@@ -102,6 +103,11 @@ function dateToDays(year, month, day) {
 // days in month
 function getDaysInMonth(year, month) {
   return makeUTCDate(year, month, 0, 12).getUTCDate();
+}
+
+function dayIndexFromRef(days) {
+  // Protect against rare floating-point drift like N.999999999 becoming the previous day.
+  return Math.floor(days + DAY_FLOOR_EPSILON);
 }
 
 // kepler's equation
@@ -291,7 +297,7 @@ export function Main() {
   // sync date
   function snapDateToRef() {
     const d = new Date(Date.UTC(2000, 0, 1, 12));
-    d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
+    d.setUTCDate(d.getUTCDate() + dayIndexFromRef(daysRef.current));
     setDay(d.getUTCDate());
     setMonth(d.getUTCMonth() + 1);
     setYear(d.getUTCFullYear());
@@ -643,7 +649,8 @@ export function Main() {
     const onMouseUp = () => { controlsRef.current.isDragging = false; };
     const onMouseMove = (e) => {
       if (controlsRef.current.isDragging) {
-        const dx = (e.clientX - controlsRef.current.prevX) * 0.005;
+        const yawDirection = controlsRef.current.rotX >= 0 ? 1 : -1;
+        const dx = (e.clientX - controlsRef.current.prevX) * 0.005 * yawDirection;
         const dy = (e.clientY - controlsRef.current.prevY) * 0.005;
         controlsRef.current.velY = dx;
         controlsRef.current.velX = dy;
@@ -750,7 +757,8 @@ export function Main() {
       
       if (e.touches.length === 1 && controlsRef.current.isDragging) {
         // single finger drag to rotate
-        const dx = (e.touches[0].clientX - controlsRef.current.prevX) * 0.005;
+        const yawDirection = controlsRef.current.rotX >= 0 ? 1 : -1;
+        const dx = (e.touches[0].clientX - controlsRef.current.prevX) * 0.005 * yawDirection;
         const dy = (e.touches[0].clientY - controlsRef.current.prevY) * 0.005;
         controlsRef.current.velY = dx;
         controlsRef.current.velX = dy;
@@ -872,7 +880,7 @@ export function Main() {
       if (isPlayingRef.current) {
         daysRef.current += (deltaSeconds / 86400) * speedRef.current;
         const d = new Date(Date.UTC(2000, 0, 1, 12));
-        d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
+        d.setUTCDate(d.getUTCDate() + dayIndexFromRef(daysRef.current));
         const nextDay = d.getUTCDate();
         const nextMonth = d.getUTCMonth() + 1;
         const nextYear = d.getUTCFullYear();
