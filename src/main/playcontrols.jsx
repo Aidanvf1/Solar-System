@@ -9,7 +9,11 @@ export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, onPlayP
         id="playbutton" 
         type="button"
         onClick={onPlayPause}
-        style={{ letterSpacing: isPlaying ? '0px' : '0', fontSize: isPlaying ? '14px' : '16px' }}
+        style={{
+          letterSpacing: isPlaying ? '0px' : '0',
+          fontSize: isPlaying ? '14px' : '16px',
+          color: isPlaying ? '#ef4444' : '#22c55e',
+        }}
       >
         {isPlaying ? '❚❚' : '▶'}
       </button>
