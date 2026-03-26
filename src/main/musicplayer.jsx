@@ -43,6 +43,16 @@ function SpeakerOffIcon() {
 export function MusicPlayer({ isMuted, setIsMuted, volume, showOrbits, setShowOrbits, hideHub, setHideHub }) {
   const audioRef = useRef(null);
 
+  const tryPlay = () => {
+    if (!audioRef.current || isMuted) {
+      return;
+    }
+
+    audioRef.current.play().catch(() => {
+      // autoplay can be blocked until user interaction
+    });
+  };
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume / 100;
@@ -55,15 +65,29 @@ export function MusicPlayer({ isMuted, setIsMuted, volume, showOrbits, setShowOr
       if (isMuted) {
         audioRef.current.pause();
       } else {
-        audioRef.current.play().catch(err => {});
+        tryPlay();
       }
     }
+  }, [isMuted]);
+
+  useEffect(() => {
+    const resumeOnFirstInteraction = () => {
+      tryPlay();
+    };
+
+    window.addEventListener('pointerdown', resumeOnFirstInteraction, { once: true });
+    window.addEventListener('keydown', resumeOnFirstInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', resumeOnFirstInteraction);
+      window.removeEventListener('keydown', resumeOnFirstInteraction);
+    };
   }, [isMuted]);
 
   return (
     <div id="musicplayer">
       {/* dune 2 soundtrack */}
-      <audio ref={audioRef} src="/Dune： Part Two Soundtrack ｜ A Time of Quiet Between the Storms - Hans Zimmer ｜ WaterTower [igtwOdqboT0].mp3" />
+      <audio ref={audioRef} autoPlay src="/Dune： Part Two Soundtrack ｜ A Time of Quiet Between the Storms - Hans Zimmer ｜ WaterTower [igtwOdqboT0].mp3" />
       <button
         className="music-toggle-btn side-control-btn"
         onClick={() => setHideHub(prev => !prev)}

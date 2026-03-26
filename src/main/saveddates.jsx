@@ -25,7 +25,7 @@ export function SavedDates({ savedDates, showSavedDatesList, setShowSavedDatesLi
                 </li>
               ))
             ) : (
-              <li className="no-dates-message">No saved dates yet</li>
+              <li className="no-dates-message">No saved dates</li>
             )}
           </ul>
         </div>

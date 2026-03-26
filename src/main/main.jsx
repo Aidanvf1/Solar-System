@@ -228,7 +228,7 @@ export function Main() {
   // more authentication
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(30);
   const [activePanel, setActivePanel] = useState(null);
   const [activePlanet, setActivePlanet] = useState(null);
@@ -284,6 +284,18 @@ export function Main() {
 
   function changeYear(delta) {
     setYear(prev => prev + delta);
+  }
+
+  function returnToToday() {
+    const now = new Date();
+    const todayDay = now.getDate();
+    const todayMonth = now.getMonth() + 1;
+    const todayYear = now.getFullYear();
+
+    setDay(todayDay);
+    setMonth(todayMonth);
+    setYear(todayYear);
+    daysRef.current = dateToDays(todayYear, todayMonth, todayDay);
   }
 
   // save date — posts to backend if logged in
@@ -957,6 +969,7 @@ export function Main() {
           onChangeYear={changeYear}
           isPlaying={isPlaying}
           speed={speed}
+          onReturnToToday={returnToToday}
         />
       </div>
       <div className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>

@@ -16,7 +16,7 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 .panel-link-btn.users-link { position: relative; padding-left: 14px; }
 .panel-link-btn.users-link .panel-link-arrow {
   position: absolute;
-  left: -8px;
+  left: -12px;
   margin-right: 0;
 }
 .panel-link-btn.users-link:hover .panel-link-arrow {
@@ -78,7 +78,7 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 .users-pagination button:disabled { opacity: 0.4; cursor: default; }
 .users-pagination span { font-size: 10px; color: #94a3b8; }
 
-#dateandcontrols{ position: absolute; top: 40%; left: 10px; background: rgba(0,20,40,0.85); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 8px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#dateandcontrols{ position: absolute; bottom: 42px; left: 50%; transform: translateX(-50%); background: rgba(0,20,40,0.85); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.4); backdrop-filter: blur(10px); font-size: 8px; box-shadow: 0 0 20px rgba(0,150,255,0.25); z-index: 15; display: flex; flex-direction: row; align-items: center; gap: 12px; }
 
 #daycontrol, #monthcontrol, #yearcontrol { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 #daycontrol label, #monthcontrol label, #yearcontrol label { font-size: 10px; color: #64748b; text-transform: uppercase; }
@@ -88,16 +88,69 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 #daycontrol input, #monthcontrol input, #yearcontrol input { background: #1e293b; padding: 6px 2px; border-radius: 4px; font-size: 14px; font-weight: bold; color: #fff; text-align: center; border: none; width: 70px; font-family: inherit; pointer-events: none; }
 #monthcontrol input { width: 100px; }
 #buttonleft, #buttonright { flex-direction: row; }
+.return-today-btn {
+  background: transparent;
+  border: none;
+  color: #00d4ff;
+  text-shadow: 0 0 15px rgba(0,212,255,0.5);
+  padding: 0;
+  margin-top: 4px;
+  font-size: 9px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+.return-today-btn:hover {
+  color: #5ce1ff;
+  text-shadow: 0 0 16px rgba(92,225,255,0.65);
+}
+.clock-status-block {
+  min-height: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.clock-title,
+#realtimeclock,
+.speed-range-labels,
+.speed-range-labels span {
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
 
 
 #datecontrolsgroup {position: absolute;top: 10px;left: 10px; z-index: 25;background: rgba(0,20,40,0.85);border: 1px solid rgba(100,200,255,0.4);backdrop-filter: blur(10px);box-shadow: 0 0 20px rgba(0,150,255,0.25);padding: 12px 14px;border-radius: 8px;display: flex;flex-wrap: wrap;justify-content: center;align-items: center;gap: 16px;font-size: 11px;max-width: 320px;}
 #playbutton { width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 20, 40, 0.85); border: 1px solid rgba(100, 200, 255, 0.5); color: #22c55e; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0, 150, 255, 0.3); }
 #playbutton:hover { background: rgba(0, 20, 40, 0.95); border-color: #00d4ff; box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); transform: scale(1.05); }
 
-#speedcontrols { display: flex; flex-direction: column; align-items: center; gap: 6px;}
-#speedcontrols label { font-size: 10px; text-transform: uppercase; color: #94a3b8; }
-#speed { width: 6px; height: 80px; writing-mode: vertical-lr; direction: rtl; background: #1e293b; border-radius: 4px; outline: none; }
+#speedcontrols { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+#speedcontrols label {
+  font-size: 10px;
+  color: #94a3b8;
+  width: 13ch;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+.speed-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.speed-label-title {
+  text-transform: uppercase;
+}
+.speed-value {
+  display: inline-block;
+  width: 6ch;
+  text-align: left;
+  text-transform: none;
+}
+#speed { width: 128px; height: 6px; background: #1e293b; border-radius: 4px; outline: none; }
 #speed::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 8px rgba(0,212,255,0.6); cursor: pointer; }
+.speed-range-wrap { width: 128px; }
+.speed-range-labels { display: flex; justify-content: space-between; margin-top: 3px; font-size: 0.62rem; color: #888; }
 
 .orbit-toggle-btn { background: transparent; border: none; color: #00d4ff; text-shadow: 0 0 15px rgba(0,212,255,0.5); font-size: 11px; cursor: pointer; transition: color 0.2s; font-family: inherit; }
 .orbit-toggle-btn:hover { color: #5ce1ff; }

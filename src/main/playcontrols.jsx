@@ -1,6 +1,20 @@
 // imports
 import React from 'react';
 
+function formatSpeed(speed) {
+  if (speed < 1000) {
+    return `${speed}x`;
+  }
+
+  if (speed < 1000000) {
+    const value = speed / 1000;
+    return `${Number.isInteger(value) ? value : value.toFixed(1)}Kx`;
+  }
+
+  const value = speed / 1000000;
+  return `${Number.isInteger(value) ? value : value.toFixed(1)}Mx`;
+}
+
 // play controls
 export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, onPlayPause }) {
   return (
@@ -19,18 +33,11 @@ export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, onPlayP
       </button>
       
       <div id="speedcontrols">
-        <label htmlFor="speed">Speed: {speed}x</label>
-        <div style={{ position: 'relative', display: 'inline-block' }}>
-          <div style={{
-            position: 'absolute',
-            right: '100%',
-            top: '-5px',
-            fontSize: '0.7rem',
-            color: '#888',
-            marginRight: '8px'
-          }}>
-            10Mx
-          </div>
+        <label htmlFor="speed" className="speed-label">
+          <span className="speed-label-title">SPEED:</span>
+          <span className="speed-value">{formatSpeed(speed)}</span>
+        </label>
+        <div className="speed-range-wrap">
           <input 
             type="range" 
             id="speed" 
@@ -40,15 +47,9 @@ export function PlayControls({ isPlaying, setIsPlaying, speed, setSpeed, onPlayP
             max="10000000" 
             onChange={(e) => setSpeed(+e.target.value)} 
           />
-          <div style={{
-            position: 'absolute',
-            right: '100%',
-            bottom: '-1px',
-            fontSize: '0.7rem',
-            color: '#888',
-            marginRight: '10px'
-          }}>
-            1x
+          <div className="speed-range-labels">
+            <span>1x</span>
+            <span>10Mx</span>
           </div>
         </div>
       </div>

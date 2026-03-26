@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 // date controls
-export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onChangeYear, isPlaying, speed }) {
+export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onChangeYear, isPlaying, speed, onReturnToToday }) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // check if current date is today
@@ -57,28 +57,31 @@ export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onC
           <button className="buttonright" onClick={() => onChangeYear(1)}>⋗</button>
         </div>
       </div>
-      {isPlaying && speed === 1 && isToday && (
-        <div style={{ marginTop: '3px', textAlign: 'center' }}>
-          <div style={{
-            fontSize: '0.5rem',
-            color: '#888',
-            marginBottom: '1px',
-            textTransform: 'uppercase',
-            letterSpacing: '1px'
-          }}>
-            Real-Time Clock
-          </div>
-          <div id="realtimeclock" style={{
-            fontSize: '0.9rem',
-            color: '#aaa',
-            textAlign: 'center',
-            fontFamily: 'monospace',
-            letterSpacing: '1.5px'
-          }}>
-            {formatTime(currentTime)}
-          </div>
+      <div className="clock-status-block" style={{ marginTop: '3px', textAlign: 'center' }}>
+        <div className="clock-title" style={{
+          fontSize: '0.5rem',
+          color: '#888',
+          marginBottom: '1px',
+          textTransform: 'uppercase',
+          letterSpacing: '1px'
+        }}>
+          Real-Time Clock
         </div>
-      )}
+        <div id="realtimeclock" style={{
+          fontSize: isToday ? '0.9rem' : '0.72rem',
+          color: '#aaa',
+          textAlign: 'center',
+          fontFamily: 'monospace',
+          letterSpacing: isToday ? '1.5px' : '0.5px'
+        }}>
+          {isToday ? formatTime(currentTime) : "Not on today's date"}
+        </div>
+        {!isToday && (
+          <button type="button" className="return-today-btn" onClick={onReturnToToday}>
+            Return to Today
+          </button>
+        )}
+      </div>
     </div>
   );
 }
