@@ -5,6 +5,15 @@
   cursor: url('/cursor-space.svg') 16 16, auto !important;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
   font-family: 'Space Mono', monospace;
   overflow: hidden;
@@ -109,7 +118,7 @@ a *,
 .panel-link-arrow { display: inline-block; margin-right: 2px; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease; }
 .panel-link-btn:hover .panel-link-arrow { opacity: 1; transform: translateX(0); }
 
-#solarsystem { width: 100%; height: 100vh; position: relative; }
+#solarsystem { width: 100%; height: 100svh; height: 100dvh; position: relative; }
 #scenearea { width: 100%; height: 100%; background: radial-gradient(ellipse at center, #0a1628 0%, #000510 100%); }
 
 #instructions{ pointer-events: none; position: absolute; transform: translateX(-50%); left: 50%; bottom: 0;  padding: 6px 12px; border-radius: 6px; color: #64748b; font-size: 12px; z-index: 5; }
@@ -187,14 +196,36 @@ a *,
   text-shadow: 0 0 15px rgba(0,212,255,0.5);
   padding: 0;
   margin-top: 4px;
+  margin-left: -1px; /* Shift button right */
   font-size: 9px;
   font-family: inherit;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: color 0.2s, text-shadow 0.2s;
+}
+.return-today-arrow {
+  display: inline-block;
+  opacity: 0;
+  color: #00d4ff;
+  transition: all 0.3s ease;
+}
+.return-today-arrow.left {
+  margin-right: 2px;
+  transform: translateX(-10px);
+}
+.return-today-arrow.right {
+  margin-left: 2px;
+  transform: translateX(10px);
 }
 .return-today-btn:hover {
   color: #5ce1ff;
   text-shadow: 0 0 16px rgba(92,225,255,0.65);
+}
+.return-today-btn:hover .return-today-arrow {
+  opacity: 1;
+  transform: translateX(0);
 }
 .clock-status-block {
   min-height: 38px;
@@ -337,7 +368,7 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
 .settings-volume-wrap input[type="range"] { flex: 1; accent-color: #00d4ff; }
 
 /* music player */
-#musicplayer { position: absolute; right: 10px; bottom: 28px; z-index: 20; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 10px; pointer-events: auto; }
+#musicplayer { position: absolute; right: 10px; bottom: 12px; z-index: 20; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 10px; pointer-events: auto; }
 .music-toggle-btn { width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 20, 40, 0.85); border: 1px solid rgba(100, 200, 255, 0.5); color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(0, 150, 255, 0.3); }
 .music-toggle-btn:hover { background: rgba(0, 20, 40, 0.95); border-color: #00d4ff; box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); transform: scale(1.05); }
 .side-control-btn { font-size: 18px; }
@@ -346,8 +377,8 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
 
 @media (max-width: 768px) {
     #instructions {display: none;}
-    #panel-links { top: 72px; right: 10px; gap: 8px; max-width: 220px; }
-    .panel-link-btn { font-size: 9px; }
+  #panel-links { top: 14px; right: 10px; gap: 6px; max-width: 220px; }
+  .panel-link-btn { font-size: 8px; }
     
     #apod { top: 10px; right: 10px; max-width: 200px; padding: 10px 8px 0px 8px; }
     #apod h2 { font-size: 8px; }
@@ -357,32 +388,38 @@ footer p { pointer-events: none; color: #64748b; font-size: 12px; margin: 0; }
     .apod-description { font-size: 9px; }
     .apod-loading, .apod-error { font-size: 9px; }
     
-    #datecontrolsgroup {flex-direction: column;max-width: 120px;padding: 6px 8px;gap: 6px;}
+    #datecontrolsgroup {flex-direction: column;max-width: 100px;padding: 5px 6px;gap: 4px;}
     #daycontrol, #monthcontrol, #yearcontrol {gap: 2px;}
-    #daycontrol label, #monthcontrol label, #yearcontrol label {font-size: 8px;}
-    #daycontrol input, #monthcontrol input, #yearcontrol input {width: 50px;font-size: 11px;padding: 4px 2px;}
-    #monthcontrol input {width: 44px;}
-    #daycontrol button, #monthcontrol button, #yearcontrol button {font-size: 14px;width: 16px;height: 14px;}
+    #daycontrol label, #monthcontrol label, #yearcontrol label {font-size: 7px;}
+    #daycontrol input, #monthcontrol input, #yearcontrol input {width: 44px;font-size: 10px;padding: 3px 2px;}
+    #monthcontrol input {width: 40px;}
+    #daycontrol button, #monthcontrol button, #yearcontrol button {font-size: 12px;width: 14px;height: 12px;}
     
-    #dateandcontrols { top: 300px; padding: 8px 10px; }
+    #dateandcontrols { top: 605px; left: 66%; bottom: auto; padding: 6px 8px; gap: 8px; max-width: 240px; }
+    #speedcontrols label { font-size: 9px; width: 11ch; }
+    #speed { width: 92px; }
+    .speed-range-wrap { width: 92px; }
+    .speed-range-labels { font-size: 0.54rem; }
+    #realtimeclock { font-size: 0.52rem !important; letter-spacing: 0.1px !important; }
 
-    #saveddates { top: 239px; left: 10px; padding: 6px 8px; max-width: 150px; }
+    #saveddates { top: 300px; left: 10px; padding: 6px 8px; max-width: 138px; }
     #savedatebutton, #saved { font-size: 9px; padding: 3px 0; }
     #saveddateslist { padding: 6px 0 0 0; }
     #saveddateslist li { font-size: 9px; }
     
     .logout-btn, .login-btn { font-size: 7px; padding: 2px 6px; }
-    .login-modal { padding: 24px 20px; max-width: 340px; }
+    .modal-backdrop { align-items: flex-start; padding-top: 34px; }
+    .login-modal { padding: 24px 20px; max-width: 340px; margin-top: 0; }
     .login-modal h2 { font-size: 20px; margin-bottom: 6px; }
     .modal-subtitle { font-size: 11px; margin-bottom: 20px; }
-    .login-modal input { padding: 10px 12px; font-size: 13px; margin-bottom: 12px; }
+    .login-modal input { padding: 10px 12px; font-size: 16px; margin-bottom: 12px; }
     .btn-login, .btn-skip { padding: 10px; font-size: 12px; }
     
     .ui-panel-modal { width: min(92vw, 360px); padding: 24px 20px 20px; }
     #musicplayer { right: 8px; bottom: 22px; gap: 8px; }
     #onlineusers { bottom: 10px; right: 10px; }
     .music-toggle-btn { width: 36px; height: 36px; font-size: 16px; }
-    #playbutton { width: 36px; height: 36px; font-size: 14px; }
+    #playbutton { width: 32px; height: 32px; font-size: 12px; }
     .side-control-btn { font-size: 15px; }
     .line-toggle-btn { min-width: 36px; padding: 0 10px; font-size: 8px; }
     .hud-icon { width: 16px; height: 16px; }

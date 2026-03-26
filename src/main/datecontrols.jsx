@@ -15,20 +15,10 @@ function formatDayOrMonth(value) {
 }
 
 function clampDate(day, month, year) {
-  const now = new Date();
-  const fallbackYear = now.getFullYear();
-  const fallbackMonth = now.getMonth() + 1;
-  const fallbackDay = now.getDate();
-
-  const rawYear = Number.isFinite(year) ? Math.trunc(year) : fallbackYear;
-  const safeYear = Math.max(0, Math.min(3000, rawYear));
-
-  const rawMonth = Number.isFinite(month) ? Math.trunc(month) : fallbackMonth;
-  const safeMonth = Math.max(1, Math.min(12, rawMonth));
-
+  const safeYear = Math.max(0, Math.min(3000, year));
+  const safeMonth = Math.max(1, Math.min(12, month));
   const maxDay = getDaysInMonth(safeYear, safeMonth);
-  const rawDay = Number.isFinite(day) ? Math.trunc(day) : fallbackDay;
-  const safeDay = Math.max(1, Math.min(maxDay, rawDay));
+  const safeDay = Math.max(1, Math.min(maxDay, day));
 
   return { day: safeDay, month: safeMonth, year: safeYear };
 }
@@ -169,7 +159,9 @@ export function DateControls({ day, month, year, onChangeDay, onChangeMonth, onC
         </div>
         {!isToday && (
           <button type="button" className="return-today-btn" onClick={onReturnToToday}>
-            Return to Today
+            <span className="return-today-arrow left">→</span>
+            <span style={{ marginLeft: '16px', marginRight: '16px' }}>Return to Today</span>
+            <span className="return-today-arrow right">←</span>
           </button>
         )}
       </div>

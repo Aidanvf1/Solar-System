@@ -13,6 +13,22 @@ export function LoginModal({
   const [loading, setLoading] = useState(false);
   const [showEmptyError, setShowEmptyError] = useState(false);
 
+  const resetViewportAfterInput = () => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
+    window.requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 80);
+  };
+
   if (!showLoginModal) return null;
 
   async function handleSubmit(e) {
@@ -63,6 +79,7 @@ export function LoginModal({
 
       setLoginInput('');
       setPasswordInput('');
+      resetViewportAfterInput();
       onLoginSuccess(data.username);
     } catch (err) {
       setErrorMsg('Could not reach server. Try again.');
@@ -74,7 +91,10 @@ export function LoginModal({
   return (
     <div 
       className="modal-backdrop" 
-      onClick={() => setShowLoginModal(false)}
+      onClick={() => {
+        resetViewportAfterInput();
+        setShowLoginModal(false);
+      }}
       style={{
         backdropFilter: 'blur(10px)',
         backgroundColor: 'rgba(0, 0, 0, 0.5)'
@@ -137,7 +157,14 @@ export function LoginModal({
             <button type="submit" className="btn-login" disabled={loading}>
               {loading ? 'Please wait...' : 'Continue'}
             </button>
-            <button type="button" className="btn-skip" onClick={() => setShowLoginModal(false)}>
+            <button
+              type="button"
+              className="btn-skip"
+              onClick={() => {
+                resetViewportAfterInput();
+                setShowLoginModal(false);
+              }}
+            >
               Skip for now
             </button>
           </div>

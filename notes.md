@@ -51,3 +51,17 @@ MongoDB setup took me a minute, but once `dbConfig.json` was wired up it made th
 - Token lookup from cookies is straightforward for protected endpoints; middleware keeps route code cleaner.
 - For "recent items" style data, insert first then trim old records (I cap saved dates to 5 per user).
 - Debugging was way easier when I tested backend endpoints first, then connected frontend fetch calls.
+
+## websocket
+
+Yay im glad thats over. notes:
+
+    Keep frontend/backend in sync
+    - WebSocket and API work only if message formats, endpoint paths, and ports all match. Tiny mismatches like wrong URL or missing message type can break everything.
+
+    Handle connection edge cases
+    - Users refresh, disconnect, or lose internet. Make sure disconnect cleanup runs, reconnects are handled, and online user lists don’t keep stale “ghost” users.
+
+    Browser behavior can block expected features
+    - Autoplay audio and auth cookies can behave differently across browsers/environments. Always test login/session + music behavior in real browser conditions, not just ideal local runs.
+

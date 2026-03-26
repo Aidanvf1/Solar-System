@@ -46,12 +46,12 @@ const MOON_DATA = {
 const MOON_DISTANCE_VISUAL_BOOST = 45;
 
 const ASTEROID_BELT_DATA = {
-  innerAU: 2.2,
+  innerAU: 2.5, // Move inner edge closer to Mars' orbit (Mars a = 1.524)
   widthAU: 1.3,
   count: 1500,
-  ySpread: 0.5,
-  minSize: 0.03,
-  maxSize: 0.07,
+  ySpread: 0.7, // Slightly increase vertical spread for more distinction
+  minSize: 0.02, // Match Kuiper belt min size for larger rocks
+  maxSize: 0.15, // Match Kuiper belt max size for larger rocks
   scatterChance: 0.32,
   scatterAU: 0.75,
 };
@@ -76,6 +76,10 @@ const ORBIT_LINE_MAX_OPACITY = 0.7;
 const SIMULATION_END = { year: 3000, month: 12, day: 31 };
 const SIMULATION_END_NOTICE = 'You have reached the end of the simulation';
 const DAY_FLOOR_EPSILON = 1e-9;
+const MIN_CAMERA_ZOOM = 15;
+const MAX_CAMERA_ZOOM = 320;
+const STARFIELD_MIN_RADIUS = 900;
+const STARFIELD_HALF_SPAN = 2600;
 
 function makeUTCDate(year, monthIndex, day, hour = 12) {
   const d = new Date(Date.UTC(0, monthIndex, day, hour));
@@ -471,7 +475,7 @@ export function Main() {
     sceneRef.current = scene;
 
     // camera
-    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 4500);
     const c = controlsRef.current;
     camera.position.x = Math.sin(c.rotY) * Math.cos(c.rotX) * c.zoom;
     camera.position.y = Math.sin(c.rotX) * c.zoom;
@@ -490,10 +494,10 @@ export function Main() {
     for (let i = 0; i < 3000; i++) {
       let x, y, z;
       do {
-        x = (Math.random() - 0.5) * 800;
-        y = (Math.random() - 0.5) * 800;
-        z = (Math.random() - 0.5) * 800;
-      } while (Math.sqrt(x*x + y*y + z*z) < 200);
+        x = (Math.random() - 0.5) * STARFIELD_HALF_SPAN * 2;
+        y = (Math.random() - 0.5) * STARFIELD_HALF_SPAN * 2;
+        z = (Math.random() - 0.5) * STARFIELD_HALF_SPAN * 2;
+      } while (Math.sqrt(x*x + y*y + z*z) < STARFIELD_MIN_RADIUS);
       starPositions.push(x, y, z);
     }
     const starsGeo = new THREE.BufferGeometry();
@@ -718,7 +722,7 @@ export function Main() {
       e.preventDefault();
 
       // zoom
-      controlsRef.current.zoom = Math.max(15, Math.min(200, controlsRef.current.zoom + e.deltaY * 0.05));
+      controlsRef.current.zoom = Math.max(MIN_CAMERA_ZOOM, Math.min(MAX_CAMERA_ZOOM, controlsRef.current.zoom + e.deltaY * 0.05));
 
       // save camera state
       const { rotX, rotY, zoom } = controlsRef.current;
@@ -790,7 +794,7 @@ export function Main() {
         
         if (lastTouchDistance > 0) {
           const delta = lastTouchDistance - distance;
-          controlsRef.current.zoom = Math.max(15, Math.min(200, controlsRef.current.zoom + delta * 0.1));
+          controlsRef.current.zoom = Math.max(MIN_CAMERA_ZOOM, Math.min(MAX_CAMERA_ZOOM, controlsRef.current.zoom + delta * 0.1));
 
           // save camera state
           const { rotX, rotY, zoom } = controlsRef.current;
