@@ -166,7 +166,7 @@ function populateBelt(group, store, beltData) {
   }
 }
 
-export function Main() {
+export function Main({ userCount }) {
   // scene refs
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
@@ -191,7 +191,6 @@ export function Main() {
 
   // ui toggles
   const [showOrbits, setShowOrbits] = useState(true);
-  const [onlineCount, setOnlineCount] = useState(0);
   const [showSavedDatesList, setShowSavedDatesList] = useState(false);
   const [apodData, setApodData] = useState(null);
   const [apodLoading, setApodLoading] = useState(false);
@@ -358,23 +357,7 @@ export function Main() {
     fetchApod();
   }, []);
 
-  // online users from backend
-  useEffect(() => {
-    const fetchOnline = async () => {
-      try {
-        const res = await fetch('/api/users/online');
-        if (res.ok) {
-          const data = await res.json();
-          setOnlineCount(data.count);
-        }
-      } catch {
-        setOnlineCount(Math.floor(Math.random() * 10) + 1);
-      }
-    };
-    fetchOnline();
-    const interval = setInterval(fetchOnline, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  // online users count received from websocket via props
 
   // sync days
   useEffect(() => {
@@ -1030,7 +1013,7 @@ export function Main() {
 
             {activePanel === 'users' && (
               <OnlineUsers
-                onlineCount={onlineCount}
+                onlineCount={userCount}
               />
             )}
           </div>

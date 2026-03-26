@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
+const { WebSocketServer } = require('ws');
 const DB = require('./database.js');
 
 const app = express();
@@ -121,6 +122,39 @@ app.get('/api/apod', async (req, res) => {
 
 // start server
 
-app.listen(port, () => {
+const httpServer = app.listen(port, () => {
   console.log(`Service running on port ${port}`);
+});
+
+// webSocket server
+const wss = new WebSocketServer({ server: httpServer });
+
+wss.on('connection', (ws) => {
+  console.log('[WebSocket] Client connected. Total clients:', wss.clients.size);
+
+  // send current user count to the new client
+  const userCountMsg = JSON.stringify({ type: 'userCount', count: wss.clients.size });
+  ws.send(userCountMsg);
+
+  wss.clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send(userCountMsg);
+    }
+  });
+
+  ws.on('close', () => {
+    console.log('[WebSocket] Client disconnected. Total clients:', wss.clients.size - 1);
+
+
+    const updatedMsg = JSON.stringify({ type: 'userCount', count: wss.clients.size - 1 });
+    wss.clients.forEach((client) => {
+      if (client.readyState === 1) {
+        client.send(updatedMsg);
+      }
+    });
+  });
+
+  ws.on('error', (err) => {
+    console.log('[WebSocket] Error:', err.message);
+  });
 });
