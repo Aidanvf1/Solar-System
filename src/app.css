@@ -13,6 +13,19 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 #panel-links { position: absolute; top: 10px; right: 10px; z-index: 20; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 .panel-link-btn { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: none; color: #00d4ff; font-family: inherit; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; text-shadow: 0 0 15px rgba(0,212,255,0.45); transition: color 0.2s, text-shadow 0.2s, transform 0.2s; }
 .panel-link-btn:hover { color: #5ce1ff; text-shadow: 0 0 20px rgba(0,212,255,0.7); }
+.panel-link-btn.users-link { position: relative; padding-left: 14px; }
+.panel-link-btn.users-link .panel-link-arrow {
+  position: absolute;
+  left: -8px;
+  margin-right: 0;
+}
+.panel-link-btn.users-link:hover .panel-link-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+.users-online-dot { position: absolute; left: 1px; top: 50%; width: 8px; height: 8px; border-radius: 50%; transform: translateY(-50%); pointer-events: none; }
+.users-online-dot.is-idle { background: rgba(148, 163, 184, 0.45); box-shadow: none; }
+.users-online-dot.is-active { background: #22c55e; box-shadow: 0 0 8px #22c55e; animation: pulse 1.25s infinite; }
 .panel-link-arrow { display: inline-block; margin-right: 2px; opacity: 0; transform: translateX(-10px); transition: all 0.3s ease; }
 .panel-link-btn:hover .panel-link-arrow { opacity: 1; transform: translateX(0); }
 
@@ -50,8 +63,7 @@ body { font-family: 'Space Mono', monospace; overflow: hidden; background: #0005
 .apod-link:hover { color: #5ce1ff; text-shadow: 0 0 20px rgba(0,212,255,0.7); }
 
 #onlineusers { position: absolute; bottom: 10px; right: 10px; background: rgba(0,20,40,0.85); padding: 14px 12px 0px 12px; border-radius: 8px; border: 1px solid rgba(100,200,255,0.3); z-index: 15;}
-#onlineusers h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; pointer-events: none; }
-#onlineusers h2::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; pointer-events: none; }
+#onlineusers h2 { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; pointer-events: none; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 #onlineusers p { font-size: 11px; color: #64748b; margin-bottom: 0; pointer-events: none; }
 #onlineusers ul { list-style: none; margin-top: 4px; padding: 0; cursor: pointer; }

@@ -189,6 +189,9 @@ export function Main() {
       setOnlineUsers(wsOnlineUsers);
     }
   }, [wsOnlineUsers]);
+
+  const otherOnlineUsersCount = onlineUsers.filter((name) => name && name !== username).length;
+  const hasOthersOnline = otherOnlineUsersCount > 0;
   
   // scene refs
   const containerRef = useRef(null);
@@ -921,7 +924,8 @@ export function Main() {
       </header>
 
       <div id="panel-links" className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
-        <button type="button" className="panel-link-btn" onClick={() => setActivePanel('users')}>
+        <button type="button" className="panel-link-btn users-link" onClick={() => setActivePanel('users')}>
+          <span className={`users-online-dot ${hasOthersOnline ? 'is-active' : 'is-idle'}`} aria-hidden="true"></span>
           <span className="panel-link-arrow">→</span>
           <span>Online Users</span>
         </button>
