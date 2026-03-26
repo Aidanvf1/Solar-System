@@ -1,47 +1,45 @@
 // imports
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 const USERS_PER_PAGE = 6;
 
-function buildUserList(onlineCount) {
-  const fallbackUsers = [
-    'NovaExplorer',
-    'StarGazer88',
-    'ViewingWorm',
-    'CosmicQuery',
-    'OrbitalSim_24',
-    'MoonMapper',
-    'PlasmaDrift',
-    'HeliosWatch',
-    'ZenithPilot',
-    'AstroBloom',
-    'SkyVector',
-    'SolarCarto',
-  ];
+function buildUserList(onlineUsers) {
+  if (!Array.isArray(onlineUsers)) {
+    return [];
+  }
 
-  const targetCount = Math.max(onlineCount, USERS_PER_PAGE);
-  return Array.from({ length: targetCount }, (_, index) => fallbackUsers[index] || `Explorer_${index + 1}`);
+  return onlineUsers.filter(Boolean);
 }
 
 // online users display
-export function OnlineUsers({ onlineCount }) {
+export function OnlineUsers({ onlineUsers }) {
   const [page, setPage] = useState(0);
-  const users = useMemo(() => buildUserList(onlineCount), [onlineCount]);
+  const users = useMemo(() => buildUserList(onlineUsers), [onlineUsers]);
+  const realOnlineCount = users.length;
   const pageCount = Math.max(1, Math.ceil(users.length / USERS_PER_PAGE));
   const visibleUsers = users.slice(page * USERS_PER_PAGE, (page + 1) * USERS_PER_PAGE);
-  const paddedUsers = [...visibleUsers, ...Array(Math.max(0, USERS_PER_PAGE - visibleUsers.length)).fill(null)];
+
+  useEffect(() => {
+    if (page > pageCount - 1) {
+      setPage(Math.max(0, pageCount - 1));
+    }
+  }, [page, pageCount]);
 
   return (
     <section id="onlineusers">
       <h2>Online Users</h2>
-      <p><span id="online-count">{onlineCount}</span> others online</p>
-      <ul className="user-placeholder-list online-users-paged-list" style={{ marginTop: '8px', fontSize: '10px' }}>
-        {paddedUsers.map((user, index) => (
-          <li key={user || `empty-${page}-${index}`} className={`user-placeholder ${user ? '' : 'user-placeholder-empty'}`}>
-            {user || 'placeholder'}
-          </li>
-        ))}
-      </ul>
+      <p><span id="online-count">{realOnlineCount}</span> others online</p>
+      {users.length === 0 ? (
+        <p style={{ marginTop: '8px', fontSize: '10px' }}>No one is online.</p>
+      ) : (
+        <ul className="user-placeholder-list online-users-paged-list" style={{ marginTop: '8px', fontSize: '10px' }}>
+          {visibleUsers.map((user) => (
+            <li key={user} className="user-placeholder">
+              {user}
+            </li>
+          ))}
+        </ul>
+      )}
       {pageCount > 1 && (
         <div className="users-pagination">
           <button type="button" onClick={() => setPage(prev => Math.max(prev - 1, 0))} disabled={page === 0}>

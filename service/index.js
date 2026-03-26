@@ -128,6 +128,22 @@ const httpServer = app.listen(port, () => {
 
 // webSocket server
 const wss = new WebSocketServer({ server: httpServer });
+const connectedUsers = new Map(); // Map of usernames
+
+function getOnlineUsersList() {
+  const users = Array.from(connectedUsers.values()).filter(Boolean);
+  return users;
+}
+
+function broadcastOnlineUsers() {
+  const users = getOnlineUsersList();
+  const msg = JSON.stringify({ type: 'onlineUsers', users });
+  wss.clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send(msg);
+    }
+  });
+}
 
 wss.on('connection', (ws) => {
   console.log('[WebSocket] Client connected. Total clients:', wss.clients.size);
@@ -135,16 +151,32 @@ wss.on('connection', (ws) => {
   // send current user count to the new client
   const userCountMsg = JSON.stringify({ type: 'userCount', count: wss.clients.size });
   ws.send(userCountMsg);
+  
+  // send current online users list
+  broadcastOnlineUsers();
 
-  wss.clients.forEach((client) => {
-    if (client.readyState === 1) {
-      client.send(userCountMsg);
+  ws.on('message', (data) => {
+    try {
+      const message = JSON.parse(data);
+      
+      if (message.type === 'userJoin' && message.username) {
+        console.log('[WebSocket] User joined:', message.username);
+        connectedUsers.set(ws, message.username);
+        broadcastOnlineUsers();
+      }
+    } catch (err) {
+      console.error('[WebSocket] Error parsing message:', err);
     }
   });
 
   ws.on('close', () => {
     console.log('[WebSocket] Client disconnected. Total clients:', wss.clients.size - 1);
-
+    
+    // remove user from connected users
+    connectedUsers.delete(ws);
+    
+    // broadcast updated online users list
+    broadcastOnlineUsers();
 
     const updatedMsg = JSON.stringify({ type: 'userCount', count: wss.clients.size - 1 });
     wss.clients.forEach((client) => {

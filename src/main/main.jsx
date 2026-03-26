@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
+import { useWebSocket } from '../useWebSocket';
 import { LoginModal } from './loginmodal';
 import { DateControls } from './datecontrols';
 import { PlayControls } from './playcontrols';
@@ -166,7 +167,29 @@ function populateBelt(group, store, beltData) {
   }
 }
 
-export function Main({ userCount }) {
+export function Main() {
+  // authentication
+  const [username, setUsername] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(true);
+  
+  // websocket connection with username
+  const { userCount: wsUserCount, onlineUsers: wsOnlineUsers } = useWebSocket(username);
+  const [userCount, setUserCount] = useState(wsUserCount);
+  const [onlineUsers, setOnlineUsers] = useState(wsOnlineUsers || []);
+  
+  // update local state when websocket data changes
+  useEffect(() => {
+    if (wsUserCount !== undefined) {
+      setUserCount(wsUserCount);
+    }
+  }, [wsUserCount]);
+
+  useEffect(() => {
+    if (Array.isArray(wsOnlineUsers)) {
+      setOnlineUsers(wsOnlineUsers);
+    }
+  }, [wsOnlineUsers]);
+  
   // scene refs
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
@@ -199,9 +222,7 @@ export function Main({ userCount }) {
   // saved dates
   const [savedDates, setSavedDates] = useState([]);
 
-  // authentication
-  const [username, setUsername] = useState(null);
-  const [showLoginModal, setShowLoginModal] = useState(true);
+  // more authentication
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [isMuted, setIsMuted] = useState(true);
@@ -1014,6 +1035,7 @@ export function Main({ userCount }) {
             {activePanel === 'users' && (
               <OnlineUsers
                 onlineCount={userCount}
+                onlineUsers={onlineUsers}
               />
             )}
           </div>
