@@ -73,17 +73,35 @@ KUIPER_BELT_DATA.count = Math.round(
 // month names
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const ORBIT_LINE_MAX_OPACITY = 0.7;
+const SIMULATION_END = { year: 3000, month: 12, day: 31 };
+const SIMULATION_END_NOTICE = 'You have reached the end of the simulation';
+
+function makeUTCDate(year, monthIndex, day, hour = 12) {
+  const d = new Date(Date.UTC(0, monthIndex, day, hour));
+  d.setUTCFullYear(year);
+  return d;
+}
+
+function isAtOrAfterSimulationEnd(year, month, day) {
+  if (year !== SIMULATION_END.year) {
+    return year > SIMULATION_END.year;
+  }
+  if (month !== SIMULATION_END.month) {
+    return month > SIMULATION_END.month;
+  }
+  return day >= SIMULATION_END.day;
+}
 
 // date to days
 function dateToDays(year, month, day) {
-  const j2000 = new Date(Date.UTC(2000, 0, 1, 12));
-  const target = new Date(Date.UTC(year, month - 1, day, 12));
+  const j2000 = makeUTCDate(2000, 0, 1, 12);
+  const target = makeUTCDate(year, month - 1, day, 12);
   return (target - j2000) / (1000 * 60 * 60 * 24);
 }
 
 // days in month
 function getDaysInMonth(year, month) {
-  return new Date(year, month, 0).getDate();
+  return makeUTCDate(year, month, 0, 12).getUTCDate();
 }
 
 // kepler's equation
@@ -224,6 +242,8 @@ export function Main() {
 
   // saved dates
   const [savedDates, setSavedDates] = useState([]);
+  const [simulationNotice, setSimulationNotice] = useState('');
+  const [showRefreshErrorBanner, setShowRefreshErrorBanner] = useState(false);
 
   // more authentication
   const [loginInput, setLoginInput] = useState('');
@@ -257,6 +277,16 @@ export function Main() {
   const isPlayingRef = useRef(false);
   const speedRef = useRef(1);
   const daysRef = useRef(dateToDays(today.getFullYear(), today.getMonth() + 1, today.getDate()));
+  const hasShownNanPromptRef = useRef(false);
+
+  function promptRefreshForInvalidState(reason = 'date or simulation') {
+    if (hasShownNanPromptRef.current) return;
+    hasShownNanPromptRef.current = true;
+    setIsPlaying(false);
+    setSimulationNotice('Error, refresh page.');
+    setShowRefreshErrorBanner(true);
+    console.error('Simulation error detected:', reason);
+  }
 
   // sync date
   function snapDateToRef() {
@@ -283,7 +313,14 @@ export function Main() {
   }
 
   function changeYear(delta) {
-    setYear(prev => prev + delta);
+    setYear(prev => Math.max(0, Math.min(3000, prev + delta)));
+  }
+
+  function setDateFromInput(nextDay, nextMonth, nextYear) {
+    setDay(nextDay);
+    setMonth(nextMonth);
+    setYear(nextYear);
+    setSimulationNotice('');
   }
 
   function returnToToday() {
@@ -296,6 +333,7 @@ export function Main() {
     setMonth(todayMonth);
     setYear(todayYear);
     daysRef.current = dateToDays(todayYear, todayMonth, todayDay);
+    setSimulationNotice('');
   }
 
   // save date — posts to backend if logged in
@@ -397,6 +435,10 @@ export function Main() {
 
   // sync days
   useEffect(() => {
+    if (!Number.isFinite(day) || !Number.isFinite(month) || !Number.isFinite(year)) {
+      promptRefreshForInvalidState('invalid date values');
+      return;
+    }
     daysRef.current = dateToDays(year, month, day);
   }, [day, month, year]);
 
@@ -404,6 +446,12 @@ export function Main() {
   useEffect(() => {
     orbitTargetOpacityRef.current = showOrbits ? ORBIT_LINE_MAX_OPACITY : 0;
   }, [showOrbits]);
+
+  useEffect(() => {
+    if (simulationNotice === SIMULATION_END_NOTICE && !isAtOrAfterSimulationEnd(year, month, day)) {
+      setSimulationNotice('');
+    }
+  }, [simulationNotice, year, month, day]);
 
   // scene init
   useEffect(() => {
@@ -576,6 +624,12 @@ export function Main() {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     const mouseDownPos = { x: 0, y: 0 };
+    const setCanvasCursor = (isClickable) => {
+      const cursorValue = isClickable
+        ? "url('/cursor-space.svg') 16 16, pointer"
+        : "url('/cursor-space.svg') 16 16, auto";
+      renderer.domElement.style.setProperty('cursor', cursorValue, 'important');
+    };
 
     const onMouseDown = (e) => {
       controlsRef.current.isDragging = true;
@@ -621,7 +675,7 @@ export function Main() {
           if (hoveredPlanetRef.current) {
             if (outlineRefs.current[hoveredPlanetRef.current]) outlineRefs.current[hoveredPlanetRef.current].visible = false;
             hoveredPlanetRef.current = null;
-            renderer.domElement.style.cursor = '';
+            setCanvasCursor(false);
           }
           return;
         }
@@ -639,7 +693,7 @@ export function Main() {
           if (validHit && outlineRefs.current[validHit]) {
             outlineRefs.current[validHit].visible = true;
           }
-          renderer.domElement.style.cursor = validHit ? 'pointer' : '';
+          setCanvasCursor(Boolean(validHit));
         }
       }
     };
@@ -801,17 +855,40 @@ export function Main() {
   // animation loop
   useEffect(() => {
     let animationId;
-    const animate = () => {
+    let lastFrameTimeMs = performance.now();
+
+    const animate = (nowMs) => {
       animationId = requestAnimationFrame(animate);
+
+      if (!Number.isFinite(nowMs) || !Number.isFinite(lastFrameTimeMs) || !Number.isFinite(daysRef.current)) {
+        promptRefreshForInvalidState('NaN time state');
+        return;
+      }
+
+      const deltaSeconds = Math.min((nowMs - lastFrameTimeMs) / 1000, 0.1);
+      lastFrameTimeMs = nowMs;
 
       // advance time
       if (isPlayingRef.current) {
-        daysRef.current += ((1/60) / 86400) * speedRef.current;
+        daysRef.current += (deltaSeconds / 86400) * speedRef.current;
         const d = new Date(Date.UTC(2000, 0, 1, 12));
         d.setUTCDate(d.getUTCDate() + Math.floor(daysRef.current));
-        setDay(d.getUTCDate());
-        setMonth(d.getUTCMonth() + 1);
-        setYear(d.getUTCFullYear());
+        const nextDay = d.getUTCDate();
+        const nextMonth = d.getUTCMonth() + 1;
+        const nextYear = d.getUTCFullYear();
+
+        if (isAtOrAfterSimulationEnd(nextYear, nextMonth, nextDay)) {
+          daysRef.current = dateToDays(SIMULATION_END.year, SIMULATION_END.month, SIMULATION_END.day);
+          setDay(SIMULATION_END.day);
+          setMonth(SIMULATION_END.month);
+          setYear(SIMULATION_END.year);
+          setIsPlaying(false);
+          setSimulationNotice(SIMULATION_END_NOTICE);
+        } else {
+          setDay(nextDay);
+          setMonth(nextMonth);
+          setYear(nextYear);
+        }
       }
 
       // update planets
@@ -820,6 +897,10 @@ export function Main() {
         if (!planet) return;
         const n = 360 / data.period;
         let M = (data.M0 + n * daysRef.current) % 360;
+        if (!Number.isFinite(M)) {
+          promptRefreshForInvalidState(`planet calculation for ${name}`);
+          return;
+        }
         if (M < 0) M += 360;
         const pos = getOrbitalPosition(data.a * SCALE, data.e, data.i, data.omega, data.node, M);
         planet.position.set(pos.x, pos.y, pos.z);
@@ -830,6 +911,10 @@ export function Main() {
         const earth = planetsRef.current.Earth;
         const nMoon = 360 / MOON_DATA.period;
         let moonM = (MOON_DATA.M0 + nMoon * daysRef.current) % 360;
+        if (!Number.isFinite(moonM)) {
+          promptRefreshForInvalidState('moon calculation');
+          return;
+        }
         if (moonM < 0) moonM += 360;
         const moonPos = getOrbitalPosition(
           MOON_DATA.a * SCALE * MOON_DISTANCE_VISUAL_BOOST,
@@ -870,6 +955,10 @@ export function Main() {
         const orbitalPeriod = 365.25 * Math.pow(a.r / SCALE, 1.5);
         const n = (2 * Math.PI) / orbitalPeriod;
         const angle = a.angle + n * daysRef.current;
+        if (!Number.isFinite(angle)) {
+          promptRefreshForInvalidState('asteroid calculation');
+          return;
+        }
         a.mesh.position.x = -Math.cos(angle) * a.r;
         a.mesh.position.z = Math.sin(angle) * a.r;
       });
@@ -912,7 +1001,7 @@ export function Main() {
         });
       }
     };
-    animate();
+    animationId = requestAnimationFrame(animate);
     return () => { if (animationId) cancelAnimationFrame(animationId); };
   }, []);
 
@@ -933,6 +1022,15 @@ export function Main() {
             <button className="login-btn" onClick={() => setShowLoginModal(true)}>Login</button>
           )}
         </p>
+        {simulationNotice && <p className="simulation-notice-header">{simulationNotice}</p>}
+        {showRefreshErrorBanner && (
+          <div className="refresh-error-banner" role="alert">
+            <span>Error, refresh page.</span>
+            <button type="button" className="refresh-error-btn" onClick={() => window.location.reload()}>
+              Refresh Page
+            </button>
+          </div>
+        )}
       </header>
 
       <div id="panel-links" className={`hud-fade ${hideHub ? 'hud-hidden' : 'hud-visible'}`}>
@@ -967,6 +1065,7 @@ export function Main() {
           onChangeDay={changeDay} 
           onChangeMonth={changeMonth} 
           onChangeYear={changeYear}
+          onSetDate={setDateFromInput}
           isPlaying={isPlaying}
           speed={speed}
           onReturnToToday={returnToToday}
