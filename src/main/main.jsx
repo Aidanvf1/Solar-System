@@ -57,13 +57,13 @@ const ASTEROID_BELT_DATA = {
 };
 
 const KUIPER_BELT_DATA = {
-  innerAU: 32.5,
-  widthAU: 2.6,
+  innerAU: 36.5, // move Kuiper Belt farther out from Neptune (Neptune a = 30.07)
+  widthAU: 5.0,  // optionally make the belt wider for realism
   ySpread: 1.1,
   minSize: 0.18,
   maxSize: 0.42,
   scatterChance: 0.4,
-  scatterAU: 2.6,
+  scatterAU: 4,
 };
 
 KUIPER_BELT_DATA.count = Math.round(
@@ -636,7 +636,7 @@ export function Main() {
     const mouseDownPos = { x: 0, y: 0 };
     const setCanvasCursor = (isClickable) => {
       const cursorValue = isClickable
-        ? "url('/cursor-space.svg') 16 16, pointer"
+        ? "url('/cursor-pointer.svg') 6 16, pointer"
         : "url('/cursor-space.svg') 16 16, auto";
       renderer.domElement.style.setProperty('cursor', cursorValue, 'important');
     };

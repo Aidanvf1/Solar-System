@@ -21,6 +21,7 @@ body {
   color: #fff;
 }
 
+
 button,
 a,
 input,
@@ -37,6 +38,7 @@ textarea,
 #saveddateslist li {
   cursor: url('/cursor-space.svg') 16 16, pointer !important;
 }
+
 
 button *,
 a *,
@@ -58,7 +60,7 @@ a *,
 #mainheader .simulation-notice-header {
   margin-top: 4px;
   font-size: clamp(8px, 2vw, 10px);
-  color: #f59e0b;
+  cursor: url('/cursor-space.svg') 16 16, pointer !important;
   text-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
 }
 .refresh-error-banner {
@@ -73,7 +75,7 @@ a *,
   border-radius: 6px;
   background: rgba(30, 8, 8, 0.88);
   color: #fca5a5;
-  text-shadow: 0 0 8px rgba(252, 165, 165, 0.35);
+  cursor: url('/cursor-space.svg') 16 16, pointer !important;
   font-size: clamp(9px, 2vw, 11px);
 }
 .refresh-error-btn {
@@ -282,7 +284,7 @@ a *,
 #speed::-moz-range-progress,
 #speed::-ms-track,
 #speed::-ms-thumb {
-  cursor: url('/cursor-space.svg') 16 16, pointer !important;
+  cursor: url('/cursor-dot.svg') 16 16, pointer !important;
 }
 .speed-range-wrap { width: 128px; }
 .speed-range-labels { display: flex; justify-content: space-between; margin-top: 3px; font-size: 0.62rem; color: #888; }
