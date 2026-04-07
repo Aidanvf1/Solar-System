@@ -4,20 +4,24 @@ export function useWebSocket(username) {
   const [userCount, setUserCount] = useState(0);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const wsRef = useRef(null);
+  const isDev = import.meta.env.DEV;
 
   useEffect(() => {
 
-    const isDev = window.location.hostname === 'localhost';
-    const wsHost = isDev ? 'localhost:4000' : window.location.host;
+    const wsHost = window.location.hostname === 'localhost' ? 'localhost:4000' : window.location.host;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${wsHost}`;
 
-    console.log('[useWebSocket] Connecting to', wsUrl);
+    if (isDev) {
+      console.log('[useWebSocket] Connecting to', wsUrl);
+    }
 
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log('[useWebSocket] Connected!');
+      if (isDev) {
+        console.log('[useWebSocket] Connected!');
+      }
       // send username when connected
       if (username) {
         ws.send(JSON.stringify({ type: 'userJoin', username }));
@@ -26,15 +30,21 @@ export function useWebSocket(username) {
 
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log('[useWebSocket] Message:', message);
+      if (isDev) {
+        console.log('[useWebSocket] Message:', message);
+      }
 
       if (message.type === 'userCount') {
-        console.log('[useWebSocket] Online users:', message.count);
+        if (isDev) {
+          console.log('[useWebSocket] Online users:', message.count);
+        }
         setUserCount(message.count);
       }
 
       if (message.type === 'onlineUsers') {
-        console.log('[useWebSocket] Online users list:', message.users);
+        if (isDev) {
+          console.log('[useWebSocket] Online users list:', message.users);
+        }
         setOnlineUsers(message.users);
         setUserCount(message.users.length);
       }
@@ -45,7 +55,9 @@ export function useWebSocket(username) {
     };
 
     ws.onclose = () => {
-      console.log('[useWebSocket] Disconnected');
+      if (isDev) {
+        console.log('[useWebSocket] Disconnected');
+      }
     };
 
     wsRef.current = ws;

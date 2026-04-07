@@ -80,6 +80,16 @@ const MIN_CAMERA_ZOOM = 15;
 const MAX_CAMERA_ZOOM = 320;
 const STARFIELD_MIN_RADIUS = 900;
 const STARFIELD_HALF_SPAN = 2600;
+const MAX_RENDER_PIXEL_RATIO = 1.5;
+
+function isLowPowerDevice() {
+  const coreCount = typeof navigator !== 'undefined' ? navigator.hardwareConcurrency : undefined;
+  const memory = typeof navigator !== 'undefined' ? navigator.deviceMemory : undefined;
+  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
+  return (typeof coreCount === 'number' && coreCount <= 4)
+    || (typeof memory === 'number' && memory <= 4)
+    || dpr > 1.75;
+}
 
 function makeUTCDate(year, monthIndex, day, hour = 12) {
   const d = new Date(Date.UTC(0, monthIndex, day, hour));
@@ -288,6 +298,7 @@ export function Main() {
   const speedRef = useRef(1);
   const daysRef = useRef(dateToDays(today.getFullYear(), today.getMonth() + 1, today.getDate()));
   const hasShownNanPromptRef = useRef(false);
+  const lastRenderedDayIndexRef = useRef(dayIndexFromRef(daysRef.current));
 
   function promptRefreshForInvalidState(reason = 'date or simulation') {
     if (hasShownNanPromptRef.current) return;
@@ -484,14 +495,52 @@ export function Main() {
     cameraRef.current = camera;
 
     // renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const lowPowerDevice = isLowPowerDevice();
+    const renderer = new THREE.WebGLRenderer({ antialias: !lowPowerDevice, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_RENDER_PIXEL_RATIO));
     renderer.setSize(w, h);
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
+    const canvasRect = { left: 0, top: 0, right: w, bottom: h, width: w, height: h };
+    const updateCanvasRect = () => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      canvasRect.left = rect.left;
+      canvasRect.top = rect.top;
+      canvasRect.right = rect.right;
+      canvasRect.bottom = rect.bottom;
+      canvasRect.width = rect.width;
+      canvasRect.height = rect.height;
+    };
+    updateCanvasRect();
+
+    const starCount = lowPowerDevice ? 1400 : 2200;
+    const beltCountScale = lowPowerDevice ? 0.28 : 0.5;
+    const asteroidBeltData = {
+      ...ASTEROID_BELT_DATA,
+      count: Math.max(450, Math.round(ASTEROID_BELT_DATA.count * beltCountScale)),
+    };
+    const kuiperBeltData = {
+      ...KUIPER_BELT_DATA,
+      count: Math.max(900, Math.round(KUIPER_BELT_DATA.count * beltCountScale)),
+    };
+
+    let cameraStateSaveTimeoutId = null;
+    const saveCameraState = () => {
+      const { rotX, rotY, zoom } = controlsRef.current;
+      localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
+    };
+    const scheduleCameraStateSave = () => {
+      if (cameraStateSaveTimeoutId) return;
+      cameraStateSaveTimeoutId = setTimeout(() => {
+        cameraStateSaveTimeoutId = null;
+        saveCameraState();
+      }, 120);
+    };
+
     // stars
     const starPositions = [];
-    for (let i = 0; i < 3000; i++) {
+    for (let i = 0; i < starCount; i++) {
       let x, y, z;
       do {
         x = (Math.random() - 0.5) * STARFIELD_HALF_SPAN * 2;
@@ -622,12 +671,12 @@ export function Main() {
 
     // asteroid belt
     const asteroidBeltGroup = new THREE.Group();
-    populateBelt(asteroidBeltGroup, asteroidsRef.current, ASTEROID_BELT_DATA);
+    populateBelt(asteroidBeltGroup, asteroidsRef.current, asteroidBeltData);
     scene.add(asteroidBeltGroup);
 
     // kuiper belt
     const kuiperBeltGroup = new THREE.Group();
-    populateBelt(kuiperBeltGroup, asteroidsRef.current, KUIPER_BELT_DATA);
+    populateBelt(kuiperBeltGroup, asteroidsRef.current, kuiperBeltData);
     scene.add(kuiperBeltGroup);
 
     // mouse controls
@@ -636,8 +685,8 @@ export function Main() {
     const mouseDownPos = { x: 0, y: 0 };
     const setCanvasCursor = (isClickable) => {
       const cursorValue = isClickable
-        ? "url('/cursor-pointer.svg') 6 16, pointer"
-        : "url('/cursor-space.svg') 16 16, auto";
+        ? "url('/cursor-dot.svg') 16 16, pointer"
+        : "url('/cursor-pointer.svg') 6 16, auto";
       renderer.domElement.style.setProperty('cursor', cursorValue, 'important');
     };
 
@@ -650,7 +699,10 @@ export function Main() {
       mouseDownPos.x = e.clientX;
       mouseDownPos.y = e.clientY;
     };
-    const onMouseUp = () => { controlsRef.current.isDragging = false; };
+    const onMouseUp = () => {
+      controlsRef.current.isDragging = false;
+      scheduleCameraStateSave();
+    };
     const onMouseMove = (e) => {
       if (controlsRef.current.isDragging) {
         const yawDirection = controlsRef.current.rotX >= 0 ? 1 : -1;
@@ -665,11 +717,8 @@ export function Main() {
         const maxAngle = Math.PI / 2 - 0.1;
         controlsRef.current.rotX = Math.max(-maxAngle, Math.min(maxAngle, controlsRef.current.rotX));
 
-        // save camera state
-        const { rotX, rotY, zoom } = controlsRef.current;
-        localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
-
         // update camera position
+        const { rotX, rotY, zoom } = controlsRef.current;
         camera.position.x = Math.sin(rotY) * Math.cos(rotX) * zoom;
         camera.position.y = Math.sin(rotX) * zoom;
         camera.position.z = Math.cos(rotY) * Math.cos(rotX) * zoom;
@@ -681,7 +730,7 @@ export function Main() {
         controlsRef.current.prevY = e.clientY;
       } else {
         // hover detection
-        const rect = renderer.domElement.getBoundingClientRect();
+        const rect = canvasRect;
         if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
           if (hoveredPlanetRef.current) {
             if (outlineRefs.current[hoveredPlanetRef.current]) outlineRefs.current[hoveredPlanetRef.current].visible = false;
@@ -724,16 +773,14 @@ export function Main() {
       // zoom
       controlsRef.current.zoom = Math.max(MIN_CAMERA_ZOOM, Math.min(MAX_CAMERA_ZOOM, controlsRef.current.zoom + e.deltaY * 0.05));
 
-      // save camera state
-      const { rotX, rotY, zoom } = controlsRef.current;
-      localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
-
       // update camera position
+      const { rotX, rotY, zoom } = controlsRef.current;
       camera.position.x = Math.sin(rotY) * Math.cos(rotX) * zoom;
       camera.position.y = Math.sin(rotX) * zoom;
       camera.position.z = Math.cos(rotY) * Math.cos(rotX) * zoom;
       camera.lookAt(0, 0, 0);
 
+      scheduleCameraStateSave();
       renderer.render(scene, camera);
     };
 
@@ -773,11 +820,8 @@ export function Main() {
         const maxAngle = Math.PI / 2 - 0.1;
         controlsRef.current.rotX = Math.max(-maxAngle, Math.min(maxAngle, controlsRef.current.rotX));
 
-        // save camera state
-        const { rotX, rotY, zoom } = controlsRef.current;
-        localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
-
         // update camera position
+        const { rotX, rotY, zoom } = controlsRef.current;
         camera.position.x = Math.sin(rotY) * Math.cos(rotX) * zoom;
         camera.position.y = Math.sin(rotX) * zoom;
         camera.position.z = Math.cos(rotY) * Math.cos(rotX) * zoom;
@@ -796,11 +840,8 @@ export function Main() {
           const delta = lastTouchDistance - distance;
           controlsRef.current.zoom = Math.max(MIN_CAMERA_ZOOM, Math.min(MAX_CAMERA_ZOOM, controlsRef.current.zoom + delta * 0.1));
 
-          // save camera state
-          const { rotX, rotY, zoom } = controlsRef.current;
-          localStorage.setItem('cameraState', JSON.stringify({ rotX, rotY, zoom }));
-
           // update camera position
+          const { rotX, rotY, zoom } = controlsRef.current;
           camera.position.x = Math.sin(rotY) * Math.cos(rotX) * zoom;
           camera.position.y = Math.sin(rotX) * zoom;
           camera.position.z = Math.cos(rotY) * Math.cos(rotX) * zoom;
@@ -816,6 +857,7 @@ export function Main() {
     const onTouchEnd = () => {
       controlsRef.current.isDragging = false;
       lastTouchDistance = 0;
+      scheduleCameraStateSave();
     };
 
     // handle window resize
@@ -826,6 +868,8 @@ export function Main() {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_RENDER_PIXEL_RATIO));
+      updateCanvasRect();
       renderer.render(scene, camera);
     };
 
@@ -853,6 +897,9 @@ export function Main() {
       renderer.domElement.removeEventListener('touchmove', onTouchMove);
       renderer.domElement.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('resize', onResize);
+      if (cameraStateSaveTimeoutId) {
+        clearTimeout(cameraStateSaveTimeoutId);
+      }
       renderer.dispose();
       if (containerRef.current?.contains(renderer.domElement)) containerRef.current.removeChild(renderer.domElement);
     };
@@ -883,20 +930,23 @@ export function Main() {
       // advance time
       if (isPlayingRef.current) {
         daysRef.current += (deltaSeconds / 86400) * speedRef.current;
+        const nextDayIndex = dayIndexFromRef(daysRef.current);
         const d = new Date(Date.UTC(2000, 0, 1, 12));
-        d.setUTCDate(d.getUTCDate() + dayIndexFromRef(daysRef.current));
+        d.setUTCDate(d.getUTCDate() + nextDayIndex);
         const nextDay = d.getUTCDate();
         const nextMonth = d.getUTCMonth() + 1;
         const nextYear = d.getUTCFullYear();
 
         if (isAtOrAfterSimulationEnd(nextYear, nextMonth, nextDay)) {
           daysRef.current = dateToDays(SIMULATION_END.year, SIMULATION_END.month, SIMULATION_END.day);
+          lastRenderedDayIndexRef.current = dayIndexFromRef(daysRef.current);
           setDay(SIMULATION_END.day);
           setMonth(SIMULATION_END.month);
           setYear(SIMULATION_END.year);
           setIsPlaying(false);
           setSimulationNotice(SIMULATION_END_NOTICE);
-        } else {
+        } else if (nextDayIndex !== lastRenderedDayIndexRef.current) {
+          lastRenderedDayIndexRef.current = nextDayIndex;
           setDay(nextDay);
           setMonth(nextMonth);
           setYear(nextYear);
@@ -1002,10 +1052,12 @@ export function Main() {
           if (!el) return;
           const vector = planet.position.clone();
           vector.project(cameraRef.current);
-          const rect = rendererRef.current.domElement.getBoundingClientRect();
+          const rect = rendererRef.current.domElement;
+          const width = rect.clientWidth;
+          const height = rect.clientHeight;
           if (vector.z < 1) {
-            el.style.left = (vector.x * 0.5 + 0.5) * rect.width + 'px';
-            el.style.top = ((-vector.y * 0.5 + 0.5) * rect.height - 20) + 'px';
+            el.style.left = (vector.x * 0.5 + 0.5) * width + 'px';
+            el.style.top = ((-vector.y * 0.5 + 0.5) * height - 20) + 'px';
             el.style.display = 'block';
           } else {
             el.style.display = 'none';
